@@ -19,6 +19,7 @@ book:
 
   chapters:
     - index.qmd
+    - learning-objectives.qmd
     - book/01_intro.ipynb
     
 format:
