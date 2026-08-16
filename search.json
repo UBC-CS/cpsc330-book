@@ -4,7 +4,17 @@
     "href": "index.html",
     "title": "CPSC 330: Applied Machine Learning",
     "section": "",
-    "text": "Preface\nCPSC 330 is an applied machine learning course offered by the Department of Computer Science at the University of British Columbia.\nThese notes grew out of materials developed for the course and are intended to provide a practical introduction to machine learning. The emphasis is on building intuition, using machine learning tools effectively, and developing good practices for model selection, evaluation, and interpretation.\nThis book is designed to be independent of any particular offering of CPSC 330. Individual course offerings may differ in scheduling, assessments, exercises, and some topics, while this book serves as a common reference for the core material.\nThe examples primarily use Python and the scikit-learn ecosystem, along with other libraries for working with modern pretrained models.",
+    "text": "Preface\nCPSC 330 is an applied machine learning course offered by the Department of Computer Science at the University of British Columbia.\nThis book grew out of materials developed for the course and are intended to provide a practical introduction to machine learning. The emphasis is on building intuition, using machine learning tools effectively, and developing good practices for model selection, evaluation, and interpretation. The book is designed to be independent of any particular offering of CPSC 330. Individual course offerings may differ in scheduling, assessments, exercises, and some topics, while this book serves as a common reference for the core material.\nThe examples primarily use Python and the scikit-learn ecosystem, along with other libraries for working with modern pretrained models.",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "index.html#the-goal-of-the-course",
+    "href": "index.html#the-goal-of-the-course",
+    "title": "CPSC 330: Applied Machine Learning",
+    "section": "The goal of the course",
+    "text": "The goal of the course\nAI systems can look like black boxes: a real-world problem and some data go in, and a prediction or decision comes out. In this course, we will open that box. Our goal is not simply to train models, but to learn how to approach messy problems thoughtfully from beginning to end.\nBy the end of the course, given a real-world problem, you should be able to:\n\nFrame the problem: decide whether machine learning is an appropriate approach.\nChoose the ingredients: identify suitable data, representations, and modeling methods.\nBuild and evaluate a prototype: create a working solution and assess how well it serves the real-world goal.\nRecognize limitations: identify uncertainty, failure modes, and possible harms.\nCommunicate responsibly: explain the evidence and limitations clearly enough for others to make informed decisions.\n\nThese broad goals are developed through the detailed course learning objectives.",
     "crumbs": [
       "Preface"
     ]
@@ -50,21 +60,71 @@
     ]
   },
   {
+    "objectID": "learning-objectives.html",
+    "href": "learning-objectives.html",
+    "title": "Detailed Course Learning Objectives",
+    "section": "",
+    "text": "1. Frame the problem\nCPSC 330 is designed for students from a range of backgrounds, including Computer Science and Statistics. It provides a gentle introduction to machine learning while emphasizing the practical judgment required to use machine learning responsibly. The objectives below expand the five broad goals introduced in the preface.\nBy the end of the course, given a real-world problem, students should be able to do the following.",
+    "crumbs": [
+      "Detailed Course Learning Objectives"
+    ]
+  },
+  {
+    "objectID": "learning-objectives.html#frame-the-problem",
+    "href": "learning-objectives.html#frame-the-problem",
+    "title": "Detailed Course Learning Objectives",
+    "section": "",
+    "text": "Translate a real-world question into a clearly defined machine learning task, identifying the unit of analysis, available inputs, prediction target, and intended use of the result.\nDistinguish among classification, regression, clustering, recommendation, forecasting, and survival-analysis problems.\nDecide whether machine learning is an appropriate approach or whether explicit rules, human judgment, or a combination of approaches would better serve the goal.\nIdentify what data and evidence would be needed to determine whether a proposed system is useful in practice.",
+    "crumbs": [
+      "Detailed Course Learning Objectives"
+    ]
+  },
+  {
+    "objectID": "learning-objectives.html#choose-the-ingredients",
+    "href": "learning-objectives.html#choose-the-ingredients",
+    "title": "Detailed Course Learning Objectives",
+    "section": "2. Choose the ingredients",
+    "text": "2. Choose the ingredients\n\nSelect and justify preprocessing operations for numerical, categorical, text, image, time-series, and other structured data, and combine those operations safely in a pipeline.\nExplain the intuition, strengths, and limitations of common supervised learning methods and ensemble techniques, including averaging, stacking, random forests, and gradient boosting.\nApply and compare unsupervised learning methods such as K-means, hierarchical clustering, and DBSCAN.\nExplain the core ideas behind collaborative-filtering and content-based recommendation systems, text representations such as Word2Vec and GloVe, and neural networks for image data.\nDesign appropriate feature-engineering and feature-selection strategies, including model-based selection and recursive feature elimination.\nRecognize when specialized representations, data splits, and methods are required for time-series and right-censored data.",
+    "crumbs": [
+      "Detailed Course Learning Objectives"
+    ]
+  },
+  {
+    "objectID": "learning-objectives.html#build-and-evaluate-a-prototype",
+    "href": "learning-objectives.html#build-and-evaluate-a-prototype",
+    "title": "Detailed Course Learning Objectives",
+    "section": "3. Build and evaluate a prototype",
+    "text": "3. Build and evaluate a prototype\n\nBuild reproducible end-to-end machine learning pipelines in Python using scikit-learn and related tools.\nSplit data and use cross-validation in ways that respect the structure of the problem, avoid data leakage, and support a credible estimate of performance on new cases.\nDiagnose underfitting and overfitting and reason about the trade-off between model complexity and generalization.\nSelect, compute, and interpret evaluation measures appropriate to the context, including classification metrics such as accuracy, precision, recall, F1-score, average precision, and ROC AUC, and regression metrics such as mean absolute error, mean squared error, and \\(R^2\\).\nCompare candidate approaches and assess whether improvements in a metric are meaningful for the real-world goal and the consequences of different errors.\nApply, interpret, and make predictions with methods for time-series and survival data, including temporal feature engineering, appropriate data splitting, Kaplan–Meier curves, and Cox proportional hazards models.",
+    "crumbs": [
+      "Detailed Course Learning Objectives"
+    ]
+  },
+  {
+    "objectID": "learning-objectives.html#recognize-limitations",
+    "href": "learning-objectives.html#recognize-limitations",
+    "title": "Detailed Course Learning Objectives",
+    "section": "4. Recognize limitations",
+    "text": "4. Recognize limitations\n\nIdentify uncertainty, likely failure modes, distribution shift, and examples for which a model may be unreliable.\nUse model interpretation tools, including feature importances, while recognizing that an explanation of a model is not necessarily a causal explanation of the world.\nCritically evaluate how data collection, representation, preprocessing, and modeling choices can introduce bias, privacy risks, and societal harms.\nConsider the costs of errors, the people affected, appropriate human oversight, and who should be accountable for a system’s decisions.\nDescribe practical challenges in deploying and monitoring a model, including changing data, performance degradation, and the need to revisit earlier design decisions.",
+    "crumbs": [
+      "Detailed Course Learning Objectives"
+    ]
+  },
+  {
+    "objectID": "learning-objectives.html#communicate-responsibly",
+    "href": "learning-objectives.html#communicate-responsibly",
+    "title": "Detailed Course Learning Objectives",
+    "section": "5. Communicate responsibly",
+    "text": "5. Communicate responsibly\n\nExplain a machine learning problem, approach, evidence, and limitations in language appropriate to the intended audience.\nCreate and critically evaluate visualizations so that they communicate results clearly, accurately, and in context.\nDistinguish conclusions supported by the evidence from assumptions, speculation, and claims the analysis cannot establish.\nDocument enough of the data, workflow, evaluation, and deployment context for others to understand, reproduce, and responsibly act on the work.",
+    "crumbs": [
+      "Detailed Course Learning Objectives"
+    ]
+  },
+  {
     "objectID": "book/01_intro.html",
     "href": "book/01_intro.html",
     "title": "Chapter 1: Course Introduction",
     "section": "",
-    "text": "The goal of this course\nAI systems can look like black boxes: a real-world problem and some data go in, and a prediction or decision comes out. In this course, we will open that box. Our goal is not simply to train models, but to learn how to approach messy problems thoughtfully from beginning to end.\nBy the end of the course, given a real-world problem, you should be able to:\nThis journey from problem framing to responsible communication is the story of CPSC 330.\nImports",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Chapter 1: Course Introduction</span>"
-    ]
-  },
-  {
-    "objectID": "book/01_intro.html#the-goal-of-this-course",
-    "href": "book/01_intro.html#the-goal-of-this-course",
-    "title": "Chapter 1: Course Introduction",
-    "section": "",
-    "text": "Frame the problem: decide whether machine learning is an appropriate approach.\nChoose the ingredients: identify suitable data, representations, and modeling methods.\nBuild and evaluate a prototype: create a working solution and assess how well it serves the real-world goal.\nRecognize limitations: identify uncertainty, failure modes, and possible harms.\nCommunicate responsibly: explain the evidence and limitations clearly enough for others to make informed decisions.",
+    "text": "Learning outcomes\nFrom this lecture, you will be able to\nImports",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>Chapter 1: Course Introduction</span>"
     ]
@@ -73,8 +133,8 @@
     "objectID": "book/01_intro.html#learning-outcomes",
     "href": "book/01_intro.html#learning-outcomes",
     "title": "Chapter 1: Course Introduction",
-    "section": "Learning outcomes",
-    "text": "Learning outcomes\nFrom this lecture, you will be able to\n\nExplain the difference between Artificial Intelligence (AI), Machine Learning (ML), and Deep Learning (DL)\nDescribe what machine learning is and when it is appropriate to use ML-based solutions.\nBriefly describe supervised learning.\nDifferentiate between traditional programming and machine learning.\nEvaluate whether a machine learning solution is suitable for your problem or whether a rule-based or human-expert solution is more appropriate.",
+    "section": "",
+    "text": "Explain the difference between Artificial Intelligence (AI), Machine Learning (ML), and Deep Learning (DL)\nDescribe what machine learning is and when it is appropriate to use ML-based solutions.\nBriefly describe supervised learning.\nDifferentiate between traditional programming and machine learning.\nEvaluate whether a machine learning solution is suitable for your problem or whether a rule-based or human-expert solution is more appropriate.",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>Chapter 1: Course Introduction</span>"
     ]

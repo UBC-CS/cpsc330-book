@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>CPSC 330: Applied Machine Learning</title>
+<title>Detailed Course Learning Objectives – CPSC 330: Applied Machine Learning</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -36,7 +36,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./learning-objectives.html" rel="next">
+<link href="./book/01_intro.html" rel="next">
+<link href="./index.html" rel="prev">
 <link href="./book/img/UBC-CS-logo.png" rel="icon" type="image/png">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -136,7 +137,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Preface</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./learning-objectives.html">Detailed Course Learning Objectives</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -156,13 +157,13 @@ window.Quarto = {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preface</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./learning-objectives.html" class="sidebar-item-text sidebar-link">
+  <a href="./learning-objectives.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Detailed Course Learning Objectives</span></a>
   </div>
 </li>
@@ -181,18 +182,11 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#preface" id="toc-preface" class="nav-link active" data-scroll-target="#preface">Preface</a>
-  <ul>
-  <li><a href="#the-goal-of-the-course" id="toc-the-goal-of-the-course" class="nav-link" data-scroll-target="#the-goal-of-the-course">The goal of the course</a></li>
-  <li><a href="#how-to-use-this-book" id="toc-how-to-use-this-book" class="nav-link" data-scroll-target="#how-to-use-this-book">How to use this book</a></li>
-  <li><a href="#about-cpsc-330" id="toc-about-cpsc-330" class="nav-link" data-scroll-target="#about-cpsc-330">About CPSC 330</a></li>
-  <li><a href="#acknowledgments" id="toc-acknowledgments" class="nav-link" data-scroll-target="#acknowledgments">Acknowledgments</a></li>
-  <li><a href="#license" id="toc-license" class="nav-link" data-scroll-target="#license">License</a>
-  <ul class="collapse">
-  <li><a href="#instructional-material" id="toc-instructional-material" class="nav-link" data-scroll-target="#instructional-material">Instructional Material</a></li>
-  <li><a href="#software" id="toc-software" class="nav-link" data-scroll-target="#software">Software</a></li>
-  </ul></li>
-  </ul></li>
+  <li><a href="#frame-the-problem" id="toc-frame-the-problem" class="nav-link active" data-scroll-target="#frame-the-problem">1. Frame the problem</a></li>
+  <li><a href="#choose-the-ingredients" id="toc-choose-the-ingredients" class="nav-link" data-scroll-target="#choose-the-ingredients">2. Choose the ingredients</a></li>
+  <li><a href="#build-and-evaluate-a-prototype" id="toc-build-and-evaluate-a-prototype" class="nav-link" data-scroll-target="#build-and-evaluate-a-prototype">3. Build and evaluate a prototype</a></li>
+  <li><a href="#recognize-limitations" id="toc-recognize-limitations" class="nav-link" data-scroll-target="#recognize-limitations">4. Recognize limitations</a></li>
+  <li><a href="#communicate-responsibly" id="toc-communicate-responsibly" class="nav-link" data-scroll-target="#communicate-responsibly">5. Communicate responsibly</a></li>
   </ul>
 </nav>
     </div>
@@ -201,7 +195,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">CPSC 330: Applied Machine Learning</h1>
+<h1 class="title">Detailed Course Learning Objectives</h1>
 </div>
 
 
@@ -218,79 +212,60 @@ window.Quarto = {
 </header>
 
 
-<section id="preface" class="level1 unnumbered">
-<h1 class="unnumbered">Preface</h1>
-<p>CPSC 330 is an applied machine learning course offered by the Department of Computer Science at the University of British Columbia.</p>
-<p>This book grew out of materials developed for the course and are intended to provide a practical introduction to machine learning. The emphasis is on building intuition, using machine learning tools effectively, and developing good practices for model selection, evaluation, and interpretation. The book is designed to be independent of any particular offering of CPSC 330. Individual course offerings may differ in scheduling, assessments, exercises, and some topics, while this book serves as a common reference for the core material.</p>
-<p>The examples primarily use Python and the <code>scikit-learn</code> ecosystem, along with other libraries for working with modern pretrained models.</p>
-<section id="the-goal-of-the-course" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="the-goal-of-the-course">The goal of the course</h2>
-<p>AI systems can look like black boxes: a real-world problem and some data go in, and a prediction or decision comes out. In this course, we will open that box. Our goal is not simply to train models, but to learn how to approach messy problems thoughtfully from beginning to end.</p>
-<p>By the end of the course, given a real-world problem, you should be able to:</p>
-<ol type="1">
-<li><strong>Frame the problem:</strong> decide whether machine learning is an appropriate approach.</li>
-<li><strong>Choose the ingredients:</strong> identify suitable data, representations, and modeling methods.</li>
-<li><strong>Build and evaluate a prototype:</strong> create a working solution and assess how well it serves the real-world goal.</li>
-<li><strong>Recognize limitations:</strong> identify uncertainty, failure modes, and possible harms.</li>
-<li><strong>Communicate responsibly:</strong> explain the evidence and limitations clearly enough for others to make informed decisions.</li>
-</ol>
-<p>These broad goals are developed through the <a href="./learning-objectives.html">detailed course learning objectives</a>.</p>
-</section>
-<section id="how-to-use-this-book" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="how-to-use-this-book">How to use this book</h2>
-<p>The chapters are organized around the main ideas covered in CPSC 330 and include explanations, code examples, visualizations, demonstrations, and exercises.</p>
-<p>Students currently taking CPSC 330 should follow the schedule and instructions on the website for their particular course offering. The course website will point to the relevant chapters and sections of this book.</p>
-<p>The book can also be used independently as a practical introduction to applied machine learning.</p>
-</section>
-<section id="about-cpsc-330" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="about-cpsc-330">About CPSC 330</h2>
-<p>CPSC 330 focuses on the practical application of machine learning rather than detailed derivations of learning algorithms.</p>
-<p>Topics include supervised and unsupervised learning, preprocessing, model selection, evaluation, feature engineering, model interpretation, and applied machine learning problems involving computer vision, text, and time series. The course also covers effective communication and ethical considerations, which are essential parts of becoming an effective machine learning practitioner.</p>
-<p>The course emphasizes not only how to fit models, but also how to formulate machine learning problems, evaluate models appropriately, avoid common pitfalls, and communicate results responsibly.</p>
-</section>
-<section id="acknowledgments" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="acknowledgments">Acknowledgments</h2>
-<p>These notes have evolved over multiple offerings of CPSC 330 and have benefited from the contributions and feedback of instructors, teaching assistants, and students.</p>
-<p>The original course notes were developed by Mike Gelbart, who taught the first two offerings of CPSC 330. Varada Kolhatkar subsequently expanded and substantially revised the notes, added examples, and created accompanying videos.</p>
-<p>Over the years, several instructors (Giulia Toti, Firas Moosvi, Mehrdad Oveisi, and Mathias Lécuyer), teaching assistants, and students have contributed to the course materials and provided valuable feedback that has helped improve these notes. Thank you all!</p>
-</section>
-<section id="license" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="license">License</h2>
-<section id="instructional-material" class="level3">
-<h3 class="anchored" data-anchor-id="instructional-material">Instructional Material</h3>
-<p>All instructional material in the <code>cpsc330</code> repository is made available under the <strong>Attribution 4.0 International</strong> (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>).</p>
-<p>This is a human-readable summary of (and not a substitute for) the <a href="https://creativecommons.org/licenses/by/4.0/legalcode">license</a>.</p>
-<p>You are free:</p>
+<p>CPSC 330 is designed for students from a range of backgrounds, including Computer Science and Statistics. It provides a gentle introduction to machine learning while emphasizing the practical judgment required to use machine learning responsibly. The objectives below expand the five broad goals introduced in the preface.</p>
+<p>By the end of the course, given a real-world problem, students should be able to do the following.</p>
+<section id="frame-the-problem" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="frame-the-problem">1. Frame the problem</h2>
 <ul>
-<li>to <strong>Share</strong>—copy and redistribute the material in any medium or format</li>
-<li>to <strong>Adapt</strong>—remix, transform, and build upon the material</li>
-</ul>
-<p>for any purpose, even commercially.</p>
-<p>The licensor cannot revoke these freedoms as long as you follow the license terms.</p>
-<p>Under the following terms:</p>
-<ul>
-<li><strong>Attribution</strong>—You must give appropriate credit (mentioning that your work is derived from work that is Copyright © Varada Kolhatkar, Mike Gelbart, Giulia Toti, and Firas Moosvi, where practical, linking to https://github.com/UBC-CS/cpsc330-2024W1), provide a [link to the license][cc-by-human], and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.</li>
-</ul>
-<p><strong>No additional restrictions</strong>—You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits. With the understanding that:</p>
-<p>Notices:</p>
-<ul>
-<li>You do not have to comply with the license for elements of the material in the public domain or where your use is permitted by an applicable exception or limitation.</li>
-<li>No warranties are given. The license may not give you all of the permissions necessary for your intended use. For example, other rights such as publicity, privacy, or moral rights may limit how you use the material.</li>
+<li>Translate a real-world question into a clearly defined machine learning task, identifying the unit of analysis, available inputs, prediction target, and intended use of the result.</li>
+<li>Distinguish among classification, regression, clustering, recommendation, forecasting, and survival-analysis problems.</li>
+<li>Decide whether machine learning is an appropriate approach or whether explicit rules, human judgment, or a combination of approaches would better serve the goal.</li>
+<li>Identify what data and evidence would be needed to determine whether a proposed system is useful in practice.</li>
 </ul>
 </section>
-<section id="software" class="level3">
-<h3 class="anchored" data-anchor-id="software">Software</h3>
-<p>Except where otherwise noted, the example programs and other software provided in the <code>cpsc330</code> repository are made available under the MIT license.</p>
-<p>MIT License</p>
-<p>Copyright (c) 2024 Varada Kolhatkar and Mike Gelbart</p>
-<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
-<p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
-<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+<section id="choose-the-ingredients" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="choose-the-ingredients">2. Choose the ingredients</h2>
+<ul>
+<li>Select and justify preprocessing operations for numerical, categorical, text, image, time-series, and other structured data, and combine those operations safely in a pipeline.</li>
+<li>Explain the intuition, strengths, and limitations of common supervised learning methods and ensemble techniques, including averaging, stacking, random forests, and gradient boosting.</li>
+<li>Apply and compare unsupervised learning methods such as K-means, hierarchical clustering, and DBSCAN.</li>
+<li>Explain the core ideas behind collaborative-filtering and content-based recommendation systems, text representations such as Word2Vec and GloVe, and neural networks for image data.</li>
+<li>Design appropriate feature-engineering and feature-selection strategies, including model-based selection and recursive feature elimination.</li>
+<li>Recognize when specialized representations, data splits, and methods are required for time-series and right-censored data.</li>
+</ul>
+</section>
+<section id="build-and-evaluate-a-prototype" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="build-and-evaluate-a-prototype">3. Build and evaluate a prototype</h2>
+<ul>
+<li>Build reproducible end-to-end machine learning pipelines in Python using <code>scikit-learn</code> and related tools.</li>
+<li>Split data and use cross-validation in ways that respect the structure of the problem, avoid data leakage, and support a credible estimate of performance on new cases.</li>
+<li>Diagnose underfitting and overfitting and reason about the trade-off between model complexity and generalization.</li>
+<li>Select, compute, and interpret evaluation measures appropriate to the context, including classification metrics such as accuracy, precision, recall, F1-score, average precision, and ROC AUC, and regression metrics such as mean absolute error, mean squared error, and <span class="math inline">\(R^2\)</span>.</li>
+<li>Compare candidate approaches and assess whether improvements in a metric are meaningful for the real-world goal and the consequences of different errors.</li>
+<li>Apply, interpret, and make predictions with methods for time-series and survival data, including temporal feature engineering, appropriate data splitting, Kaplan–Meier curves, and Cox proportional hazards models.</li>
+</ul>
+</section>
+<section id="recognize-limitations" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="recognize-limitations">4. Recognize limitations</h2>
+<ul>
+<li>Identify uncertainty, likely failure modes, distribution shift, and examples for which a model may be unreliable.</li>
+<li>Use model interpretation tools, including feature importances, while recognizing that an explanation of a model is not necessarily a causal explanation of the world.</li>
+<li>Critically evaluate how data collection, representation, preprocessing, and modeling choices can introduce bias, privacy risks, and societal harms.</li>
+<li>Consider the costs of errors, the people affected, appropriate human oversight, and who should be accountable for a system’s decisions.</li>
+<li>Describe practical challenges in deploying and monitoring a model, including changing data, performance degradation, and the need to revisit earlier design decisions.</li>
+</ul>
+</section>
+<section id="communicate-responsibly" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="communicate-responsibly">5. Communicate responsibly</h2>
+<ul>
+<li>Explain a machine learning problem, approach, evidence, and limitations in language appropriate to the intended audience.</li>
+<li>Create and critically evaluate visualizations so that they communicate results clearly, accurately, and in context.</li>
+<li>Distinguish conclusions supported by the evidence from assumptions, speculation, and claims the analysis cannot establish.</li>
+<li>Document enough of the data, workflow, evaluation, and deployment context for others to understand, reproduce, and responsibly act on the work.</li>
+</ul>
 
 
 
-</section>
-</section>
 </section>
 
 </main> <!-- /main -->
@@ -696,10 +671,13 @@ window.Quarto = {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
+      <a href="./index.html" class="pagination-link" aria-label="Preface">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Preface</span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./learning-objectives.html" class="pagination-link" aria-label="Detailed Course Learning Objectives">
-        <span class="nav-page-text">Detailed Course Learning Objectives</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./book/01_intro.html" class="pagination-link" aria-label="Chapter 1: Course Introduction">
+        <span class="nav-page-text"><span class="chapter-title">Chapter 1: Course Introduction</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
