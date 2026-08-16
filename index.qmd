@@ -1,0 +1,101 @@
+# Preface {.unnumbered}
+
+CPSC 330 is an applied machine learning course offered by the Department of Computer Science at the University of British Columbia.
+
+These notes grew out of materials developed for the course and are intended to provide a practical introduction to machine learning. The emphasis is on building intuition, using machine learning tools effectively, and developing good practices for model selection, evaluation, and interpretation.
+
+This book is designed to be independent of any particular offering of CPSC 330. Individual course offerings may differ in scheduling, assessments, exercises, and some topics, while this book serves as a common reference for the core material.
+
+The examples primarily use Python and the `scikit-learn` ecosystem, along with other libraries for working with modern pretrained models.
+
+## How to use this book {.unnumbered}
+
+The chapters are organized around the main ideas covered in CPSC 330 and include explanations, code examples, visualizations, demonstrations, and exercises.
+
+Students currently taking CPSC 330 should follow the schedule and instructions on the website for their particular course offering. The course website will point to the relevant chapters and sections of this book.
+
+The book can also be used independently as a practical introduction to applied machine learning.
+
+## About CPSC 330 {.unnumbered}
+
+CPSC 330 focuses on the practical application of machine learning rather than detailed derivations of learning algorithms.
+
+Topics include supervised and unsupervised learning, preprocessing, model selection, evaluation, feature engineering, model interpretation, and applied machine learning problems involving computer vision, text, and time series. The course also covers effective communication and ethical considerations, which are essential parts of becoming an effective machine learning practitioner.
+
+The course emphasizes not only how to fit models, but also how to formulate machine learning problems, evaluate models appropriately, avoid common pitfalls, and communicate results responsibly.
+
+## Acknowledgments {.unnumbered}
+
+These notes have evolved over multiple offerings of CPSC 330 and have benefited from the contributions and feedback of instructors, teaching assistants, and students.
+
+The original course notes were developed by Mike Gelbart, who taught the first two offerings of CPSC 330. Varada Kolhatkar subsequently expanded and substantially revised the notes, added examples, and created accompanying videos.
+
+Over the years, several instructors (Giulia Toti, Firas Moosvi, Mehrdad Oveisi, and Mathias Lécuyer), teaching assistants, and students have contributed to the course materials and provided valuable feedback that has helped improve these notes. Thank you all! 
+
+## License {.unnumbered}
+
+### Instructional Material
+
+All instructional material in the `cpsc330` repository is made available under the **Attribution 4.0 International** ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)). 
+
+This is a human-readable summary of (and not a substitute for) the [license](https://creativecommons.org/licenses/by/4.0/legalcode).
+
+You are free:
+
+* to **Share**---copy and redistribute the material in any medium or format
+* to **Adapt**---remix, transform, and build upon the material
+
+for any purpose, even commercially.
+
+The licensor cannot revoke these freedoms as long as you follow the
+license terms.
+
+Under the following terms:
+
+* **Attribution**---You must give appropriate credit (mentioning that
+  your work is derived from work that is Copyright © Varada Kolhatkar, Mike  Gelbart, Giulia Toti, and Firas Moosvi, where practical, linking to https://github.com/UBC-CS/cpsc330-2024W1), provide a [link to the
+  license][cc-by-human], and indicate if changes were made. You may do
+  so in any reasonable manner, but not in any way that suggests the
+  licensor endorses you or your use.
+
+**No additional restrictions**---You may not apply legal terms or
+technological measures that legally restrict others from doing
+anything the license permits.  With the understanding that:
+
+Notices:
+
+* You do not have to comply with the license for elements of the
+  material in the public domain or where your use is permitted by an
+  applicable exception or limitation.
+* No warranties are given. The license may not give you all of the
+  permissions necessary for your intended use. For example, other
+  rights such as publicity, privacy, or moral rights may limit how you
+  use the material.
+
+### Software
+
+Except where otherwise noted, the example programs and other software
+provided in the `cpsc330` repository are made available under the
+MIT license.
+
+MIT License
+
+Copyright (c) 2024 Varada Kolhatkar and Mike Gelbart
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

@@ -1,0 +1,40 @@
+project:
+  type: book
+
+book:
+  title: "CPSC 330: Applied Machine Learning"
+  reader-mode: true
+  page-navigation: true
+  favicon: "book/img/UBC-CS-logo.png"
+
+  sidebar:
+    style: floating
+    collapse-level: 1
+    logo: "book/img/UBC-CS-logo.png"
+
+
+  navbar:
+    background: "#002145"
+    foreground: "#FFFFFF"
+
+  chapters:
+    - index.qmd
+    - book/01_intro.ipynb
+    
+format:
+  html:
+    theme: cosmo
+    css: style.css
+    toc: true
+    toc-depth: 4
+    number-sections: false
+    code-copy: true
+    math: katex
+    # anchor-sections: true
+    smooth-scroll: true
+    mermaid: {}
+    grid:
+      sidebar-width: 250px
+      body-width: 960px
+      margin-width: 200px
+      gutter-width: 1.3em
