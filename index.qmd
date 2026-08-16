@@ -2,11 +2,24 @@
 
 CPSC 330 is an applied machine learning course offered by the Department of Computer Science at the University of British Columbia.
 
-These notes grew out of materials developed for the course and are intended to provide a practical introduction to machine learning. The emphasis is on building intuition, using machine learning tools effectively, and developing good practices for model selection, evaluation, and interpretation.
-
-This book is designed to be independent of any particular offering of CPSC 330. Individual course offerings may differ in scheduling, assessments, exercises, and some topics, while this book serves as a common reference for the core material.
+This book grew out of materials developed for the course and are intended to provide a practical introduction to machine learning. The emphasis is on building intuition, using machine learning tools effectively, and developing good practices for model selection, evaluation, and interpretation. The book is designed to be independent of any particular offering of CPSC 330. Individual course offerings may differ in scheduling, assessments, exercises, and some topics, while this book serves as a common reference for the core material.
 
 The examples primarily use Python and the `scikit-learn` ecosystem, along with other libraries for working with modern pretrained models.
+
+## The goal of the course {.unnumbered}
+
+AI systems can look like black boxes: a real-world problem and some data go in, and a prediction or decision comes out. In this course, we will open that box. Our goal is not simply to train models, but to learn how to approach messy problems thoughtfully from beginning to end.
+
+By the end of the course, given a real-world problem, you should be able to:
+
+1. **Frame the problem:** decide whether machine learning is an appropriate approach.
+2. **Choose the ingredients:** identify suitable data, representations, and modeling methods.
+3. **Build and evaluate a prototype:** create a working solution and assess how well it serves the real-world goal.
+4. **Recognize limitations:** identify uncertainty, failure modes, and possible harms.
+5. **Communicate responsibly:** explain the evidence and limitations clearly enough for others to make informed decisions.
+
+These broad goals are developed through the
+[detailed course learning objectives](learning-objectives.qmd).
 
 ## How to use this book {.unnumbered}
 

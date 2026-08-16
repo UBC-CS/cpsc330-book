@@ -1,0 +1,45 @@
+# Detailed Course Learning Objectives {.unnumbered}
+
+CPSC 330 is designed for students from a range of backgrounds, including Computer Science and Statistics. It provides a gentle introduction to machine learning while emphasizing the practical judgment required to use machine learning responsibly. The objectives below expand the five broad goals introduced in the preface.
+
+By the end of the course, given a real-world problem, students should be able to do the following.
+
+## 1. Frame the problem {.unnumbered}
+
+- Translate a real-world question into a clearly defined machine learning task, identifying the unit of analysis, available inputs, prediction target, and intended use of the result.
+- Distinguish among classification, regression, clustering, recommendation, forecasting, and survival-analysis problems.
+- Decide whether machine learning is an appropriate approach or whether explicit rules, human judgment, or a combination of approaches would better serve the goal.
+- Identify what data and evidence would be needed to determine whether a proposed system is useful in practice.
+
+## 2. Choose the ingredients {.unnumbered}
+
+- Select and justify preprocessing operations for numerical, categorical, text, image, time-series, and other structured data, and combine those operations safely in a pipeline.
+- Explain the intuition, strengths, and limitations of common supervised learning methods and ensemble techniques, including averaging, stacking, random forests, and gradient boosting.
+- Apply and compare unsupervised learning methods such as K-means, hierarchical clustering, and DBSCAN.
+- Explain the core ideas behind collaborative-filtering and content-based recommendation systems, text representations such as Word2Vec and GloVe, and neural networks for image data.
+- Design appropriate feature-engineering and feature-selection strategies, including model-based selection and recursive feature elimination.
+- Recognize when specialized representations, data splits, and methods are required for time-series and right-censored data.
+
+## 3. Build and evaluate a prototype {.unnumbered}
+
+- Build reproducible end-to-end machine learning pipelines in Python using `scikit-learn` and related tools.
+- Split data and use cross-validation in ways that respect the structure of the problem, avoid data leakage, and support a credible estimate of performance on new cases.
+- Diagnose underfitting and overfitting and reason about the trade-off between model complexity and generalization.
+- Select, compute, and interpret evaluation measures appropriate to the context, including classification metrics such as accuracy, precision, recall, F1-score, average precision, and ROC AUC, and regression metrics such as mean absolute error, mean squared error, and $R^2$.
+- Compare candidate approaches and assess whether improvements in a metric are meaningful for the real-world goal and the consequences of different errors.
+- Apply, interpret, and make predictions with methods for time-series and survival data, including temporal feature engineering, appropriate data splitting, Kaplan–Meier curves, and Cox proportional hazards models.
+
+## 4. Recognize limitations {.unnumbered}
+
+- Identify uncertainty, likely failure modes, distribution shift, and examples for which a model may be unreliable.
+- Use model interpretation tools, including feature importances, while recognizing that an explanation of a model is not necessarily a causal explanation of the world.
+- Critically evaluate how data collection, representation, preprocessing, and modeling choices can introduce bias, privacy risks, and societal harms.
+- Consider the costs of errors, the people affected, appropriate human oversight, and who should be accountable for a system's decisions.
+- Describe practical challenges in deploying and monitoring a model, including changing data, performance degradation, and the need to revisit earlier design decisions.
+
+## 5. Communicate responsibly {.unnumbered}
+
+- Explain a machine learning problem, approach, evidence, and limitations in language appropriate to the intended audience.
+- Create and critically evaluate visualizations so that they communicate results clearly, accurately, and in context.
+- Distinguish conclusions supported by the evidence from assumptions, speculation, and claims the analysis cannot establish.
+- Document enough of the data, workflow, evaluation, and deployment context for others to understand, reproduce, and responsibly act on the work.
