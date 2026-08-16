@@ -1,0 +1,322 @@
+/* Custom styles for the statistics course website */
+
+/* Main content styling */
+.content {
+  max-width: 1000px;
+}
+
+:root {
+    --blue-light: #d0e7ff;
+    --blue-medium: #7fbfff;
+    --blue-dark: #136ecf;
+    --blue-darker: #0b4b91;
+    --white: #FFFFFF;
+    --blue-lightest: #eaf4ff;
+    --blue-medium-light: #a9d1ff;
+    --blue-dark-light: #4d97e0;
+    --grey-medium: #808080;
+    --orange-light: #F5CBA7;
+    --orange-dark: #f35c24;
+    --orange-dark-2: #f39624;
+    --yellow-light: #f8c471;
+    --green-light: #87D34D;
+    --green-medium: #598B2C;
+    --green-dark: #31761E;
+   /* Question / Answer palette */
+    --purple-light: #efe6ff;   /* soft lavender */
+    --purple-dark:  #6f42c1;   /* friendly purple */
+    --teal-light:   #e6faf6;   /* soft mint */
+    --teal-dark:    #0f766e;   /* calm teal */
+}
+
+Homepage welcome section */
+/* #welcome {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+}
+
+/* #welcome h1 {
+  color: white;
+  margin-bottom: 1rem;
+} */
+
+/* Navigation and sidebar styling */
+.navbar-brand {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.sidebar-navigation .sidebar-item {
+  margin-bottom: 0.5rem;
+}
+
+/* Make sidebar part titles bold */
+.sidebar .sidebar-item-section > .sidebar-item-container > .sidebar-item-text {
+  font-weight: 700 !important;
+}
+
+/* Code blocks and syntax highlighting */
+pre {
+  background-color: rgb(248, 251, 251);   /* #f8f9fa; */
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+code {
+  background-color: #f1f3f4;
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+/* Mathematical expressions */
+.katex {
+  font-size: 1.1em;
+}
+
+/* Callout boxes for important information */
+.callout {
+  border-left: 4px solid #007bff;
+  background-color: #f8f9fa;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 0 6px 6px 0;
+}
+
+.callout-note {
+  border-left-color: #17a2b8;
+}
+
+.callout-warning {
+  border-left-color: #fd7e14;
+}
+
+.callout-caution {
+  border-left-color: #ffc107;
+  background-color: #fff3cd;
+}
+
+.callout-important {
+  border-left-color: #dc3545;
+  background-color: #f8d7da;
+}
+
+.callout-lo-header {
+  margin-left: 0em;
+  padding-left:  60px;
+  padding-top:  5px;
+  padding-bottom: 0.1em;
+  color: #ECFFDC;
+  background-color: rgb(123, 173, 173);
+  border-top-right-radius: 10px;
+  font-size: 1em;
+  font-weight: bold;
+  background-size: 40px;
+  background-repeat: no-repeat;
+  background-position: 15px center;
+}
+
+.callout-lo-container {
+  padding-top: 5px;
+  padding-left: 10px;
+  color: black;
+  border-bottom-right-radius: 10px;
+}
+
+.callout-lo {
+  margin: 1em 0;
+  border: 2px solid gray;
+  border-left: 10px solid teal; 
+  border-radius: 5px;
+  padding-top: 10px;
+  padding-left: 10px;
+  background-color: #e8ffff;
+}
+
+.callout-tip {
+  margin: 0.5em 0;
+  border: 1px solid var(--green-medium);
+  border-radius: 5px;
+  border-left-color: #198754;
+  background-color: #ECFFDC;
+  .callout-header {
+    background-color: #9FE2BF; 
+    color: black;
+  }
+}
+
+/* Tables */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1rem 0;
+}
+
+table th,
+table td {
+  border: 1px solid #dee2e6;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+table th {
+  background-color: #e9ecef;
+  font-weight: bold;
+}
+
+table tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+/* Figures and images */
+figure {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+figure img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+figcaption {
+  margin-top: 0.5rem;
+  font-style: italic;
+  color: #6c757d;
+}
+
+/* Links */
+a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+/* Section headers */
+h1, h2, h3, h4, h5, h6 {
+  color: #343a40;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+/* h1 {
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 0.5rem;
+} */
+
+/* Table of contents */
+#TOC {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+#TOC ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+#TOC li {
+  margin: 0.5rem 0;
+}
+
+#TOC a {
+  color: #495057;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .content {
+    padding: 1rem;
+  }
+  
+  #welcome {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  pre {
+    padding: 0.5rem;
+    font-size: 0.9em;
+  }
+}
+
+/* Print styles */
+@media print {
+  .sidebar,
+  .navbar {
+    display: none !important;
+  }
+  
+  .content {
+    max-width: none;
+    margin: 0;
+  }
+  
+  a {
+    color: black;
+    text-decoration: none;
+  }
+  
+  pre {
+    border: 1px solid #ccc;
+    page-break-inside: avoid;
+  }
+}
+
+/* Adjust right sidebar width */
+.sidebar {
+  width: 250px; /* Decreased from default 300px */
+  max-width: 100%; /* Optional: make responsive */
+}
+
+/* Adjust main content width to match */
+.main-content {
+  margin-right: 460px; /* Slightly more than sidebar width */
+}
+
+/* Question box */
+.callout-question {
+  border-left: 5px solid #1E90FF;
+  background-color: #E6F0FA;
+  padding: 1em;
+  margin: 1em 0;
+  border-radius: 4px;
+}
+
+.callout-question .callout-header {
+  font-weight: bold;
+}
+
+.callout-question .callout-body {
+  margin-top: 0.5em;
+}
+
+/* Answer box */
+.callout-answer {
+  border-left: 5px solid #32CD32;
+  background-color: #E6FAE6;
+  padding: 1em;
+  margin: 1em 0;
+  border-radius: 4px;
+}
+
+.callout-answer .callout-header {
+  font-weight: bold;
+}
+
+.callout-answer .callout-body {
+  margin-top: 0.5em;
+}
