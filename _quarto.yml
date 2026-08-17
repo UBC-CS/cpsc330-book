@@ -12,7 +12,6 @@ book:
     collapse-level: 1
     logo: "book/img/UBC-CS-logo.png"
 
-
   navbar:
     background: "#002145"
     foreground: "#FFFFFF"
@@ -21,7 +20,16 @@ book:
     - index.qmd
     - learning-objectives.qmd
     - book/01_intro.ipynb
-    
+    - part: "Foundations and Supervised Learning"
+      chapters:
+        - book/02_terminology-baselines-decision-trees.ipynb
+        # Add Chapters 3 and 4 after converting them to book chapters.
+
+    # Add the following parts when their first chapters are ready:
+    # - Unsupervised Learning and Recommendation
+    # - Working with Different Data Types
+    # - Responsible Machine Learning in Practice
+
 format:
   html:
     theme: cosmo
