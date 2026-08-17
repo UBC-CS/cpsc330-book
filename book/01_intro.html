@@ -71,6 +71,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
+<link href="../book/02_terminology-baselines-decision-trees.html" rel="next">
 <link href="../learning-objectives.html" rel="prev">
 <link href="../book/img/UBC-CS-logo.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
@@ -114,6 +115,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
 
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
@@ -209,6 +211,22 @@ window.Quarto = {
   <a href="../book/01_intro.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Chapter 1: Course Introduction</span></a>
   </div>
 </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Foundations and Supervised Learning</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/02_terminology-baselines-decision-trees.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 2: From Data to a First Model</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
     </ul>
     </div>
 </nav>
@@ -220,22 +238,20 @@ window.Quarto = {
    
   <ul>
   <li><a href="#learning-outcomes" id="toc-learning-outcomes" class="nav-link active" data-scroll-target="#learning-outcomes">Learning outcomes</a></li>
-  <li><a href="#who-will-accompany-us" id="toc-who-will-accompany-us" class="nav-link" data-scroll-target="#who-will-accompany-us">Who will accompany us?</a>
-  <ul>
-  <li><a href="#meet-eva-a-fictitious-student" id="toc-meet-eva-a-fictitious-student" class="nav-link" data-scroll-target="#meet-eva-a-fictitious-student">Meet Eva, a fictitious student</a></li>
-  </ul></li>
   <li><a href="#what-are-ai-ml-and-dl" id="toc-what-are-ai-ml-and-dl" class="nav-link" data-scroll-target="#what-are-ai-ml-and-dl">What are AI, ML, and DL?</a></li>
   <li><a href="#why-machine-learning-ml-video" id="toc-why-machine-learning-ml-video" class="nav-link" data-scroll-target="#why-machine-learning-ml-video">Why machine learning (ML)? [video]</a>
   <ul>
+  <li><a href="#when-is-machine-learning-a-useful-approach" id="toc-when-is-machine-learning-a-useful-approach" class="nav-link" data-scroll-target="#when-is-machine-learning-a-useful-approach">When is machine learning a useful approach?</a></li>
   <li><a href="#the-big-idea" id="toc-the-big-idea" class="nav-link" data-scroll-target="#the-big-idea">The big idea</a></li>
   <li><a href="#learning-patterns-in-images" id="toc-learning-patterns-in-images" class="nav-link" data-scroll-target="#learning-patterns-in-images">Learning patterns in images</a></li>
   <li><a href="#learning-patterns-in-preferences" id="toc-learning-patterns-in-preferences" class="nav-link" data-scroll-target="#learning-patterns-in-preferences">Learning patterns in preferences</a></li>
   <li><a href="#learning-patterns-in-language" id="toc-learning-patterns-in-language" class="nav-link" data-scroll-target="#learning-patterns-in-language">Learning patterns in language</a></li>
+  <li><a href="#learning-patterns-without-labels" id="toc-learning-patterns-without-labels" class="nav-link" data-scroll-target="#learning-patterns-without-labels">Learning patterns without labels</a></li>
   <li><a href="#one-recurring-idea" id="toc-one-recurring-idea" class="nav-link" data-scroll-target="#one-recurring-idea">One recurring idea</a></li>
   </ul></li>
+  <li><a href="#a-map-of-the-course" id="toc-a-map-of-the-course" class="nav-link" data-scroll-target="#a-map-of-the-course">A map of the course</a></li>
   <li><a href="#supervised-machine-learning" id="toc-supervised-machine-learning" class="nav-link" data-scroll-target="#supervised-machine-learning">Supervised machine learning</a>
   <ul>
-  <li><a href="#types-of-machine-learning" id="toc-types-of-machine-learning" class="nav-link" data-scroll-target="#types-of-machine-learning">Types of machine learning</a></li>
   <li><a href="#what-is-supervised-machine-learning-ml" id="toc-what-is-supervised-machine-learning-ml" class="nav-link" data-scroll-target="#what-is-supervised-machine-learning-ml">What is supervised machine learning (ML)?</a></li>
   <li><a href="#example-predict-whether-a-message-is-spam-or-not" id="toc-example-predict-whether-a-message-is-spam-or-not" class="nav-link" data-scroll-target="#example-predict-whether-a-message-is-spam-or-not">Example: Predict whether a message is spam or not</a>
   <ul class="collapse">
@@ -248,12 +264,13 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#example-1-predicting-whether-a-patient-has-a-liver-disease-or-not" id="toc-example-1-predicting-whether-a-patient-has-a-liver-disease-or-not" class="nav-link" data-scroll-target="#example-1-predicting-whether-a-patient-has-a-liver-disease-or-not">Example 1: Predicting whether a patient has a liver disease or not</a></li>
   <li><a href="#example-2-predicting-the-label-of-a-given-image" id="toc-example-2-predicting-the-label-of-a-given-image" class="nav-link" data-scroll-target="#example-2-predicting-the-label-of-a-given-image">Example 2: Predicting the label of a given image</a></li>
-  <li><a href="#example-3-predicting-sentiment-expressed-in-a-movie-review" id="toc-example-3-predicting-sentiment-expressed-in-a-movie-review" class="nav-link" data-scroll-target="#example-3-predicting-sentiment-expressed-in-a-movie-review">Example 3: Predicting sentiment expressed in a movie review</a></li>
+  <li><a href="#example-3-text-classification-with-a-pretrained-language-model" id="toc-example-3-text-classification-with-a-pretrained-language-model" class="nav-link" data-scroll-target="#example-3-text-classification-with-a-pretrained-language-model">Example 3: Text classification with a pretrained language model</a></li>
   <li><a href="#example-4-predicting-housing-prices" id="toc-example-4-predicting-housing-prices" class="nav-link" data-scroll-target="#example-4-predicting-housing-prices">Example 4: Predicting housing prices</a></li>
   </ul></li>
   <li><a href="#evas-questions" id="toc-evas-questions" class="nav-link" data-scroll-target="#evas-questions">🤔 Eva’s questions</a></li>
   <li><a href="#supervised-machine-learning-workflow" id="toc-supervised-machine-learning-workflow" class="nav-link" data-scroll-target="#supervised-machine-learning-workflow">Supervised machine learning workflow</a></li>
   <li><a href="#who-or-what-should-solve-the-problem" id="toc-who-or-what-should-solve-the-problem" class="nav-link" data-scroll-target="#who-or-what-should-solve-the-problem">Who or what should solve the problem?</a></li>
+  <li><a href="#try-framing-an-ml-problem" id="toc-try-framing-an-ml-problem" class="nav-link" data-scroll-target="#try-framing-an-ml-problem">Try framing an ML problem</a></li>
   <li><a href="#questions-for-you" id="toc-questions-for-you" class="nav-link" data-scroll-target="#questions-for-you">❓❓ Questions for you</a></li>
   <li><a href="#exercise-1.1" id="toc-exercise-1.1" class="nav-link" data-scroll-target="#exercise-1.1">Exercise 1.1</a></li>
   </ul></li>
@@ -295,7 +312,7 @@ window.Quarto = {
 </ul>
 </section>
 <p><strong>Imports</strong></p>
-<div id="05be1ee9-5aa2-4b6c-9b20-ccb6d482a60a" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;skip&quot;}}" data-execution_count="1">
+<div id="05be1ee9-5aa2-4b6c-9b20-ccb6d482a60a" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;skip&quot;}}" data-execution_count="20">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -316,32 +333,22 @@ window.Quarto = {
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>DATA_DIR <span class="op">=</span> <span class="st">'data/'</span> </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="d845c471-cfbb-47c5-b0f9-050e9bd740d7" class="cell" data-execution_count="2">
+<div id="d845c471-cfbb-47c5-b0f9-050e9bd740d7" class="cell" data-execution_count="21">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Make sure you're using the correct virtual environment. </span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>sys.executable</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># '/Users/kvarada/CS/2026-27/cpsc330-book/.venv/bin/python'</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="2">
+<div class="cell-output cell-output-display" data-execution_count="21">
 <pre><code>'/Users/kvarada/CS/2026-27/cpsc330-book/.venv/bin/python'</code></pre>
 </div>
 </div>
 <p><br><br></p>
-<section id="who-will-accompany-us" class="level2">
-<h2 class="anchored" data-anchor-id="who-will-accompany-us">Who will accompany us?</h2>
-<ul>
-<li>CPSC 330 teaching team (instructors and the TAs)</li>
-<li>Eva (a fictitious enthusiastic student)</li>
-<li>And you all, of course 🙂!</li>
-</ul>
-<section id="meet-eva-a-fictitious-student" class="level3">
-<h3 class="anchored" data-anchor-id="meet-eva-a-fictitious-student">Meet Eva, a fictitious student</h3>
+<p><strong>Meet Eva, a fictitious student</strong></p>
 <p><img src="img/eva-hi.png" class="img-fluid"></p>
 <p>Eva may have a lot in common with you. She has some Python experience and has heard machine learning discussed as a buzzword. During a recent internship, she encountered a messy problem that seemed as though it might benefit from ML. But she did not know how to tell whether ML was the right tool, what data she would need, or whether she could trust the result.</p>
 <p>Eva is curious and asks many questions. We will return to her questions throughout the course as she learns to move from a real-world problem to a responsible ML prototype.</p>
 <p><br><br></p>
-</section>
-</section>
 <section id="what-are-ai-ml-and-dl" class="level2">
 <h2 class="anchored" data-anchor-id="what-are-ai-ml-and-dl">What are AI, ML, and DL?</h2>
 <p>To begin opening the black box, let’s distinguish three terms you have probably heard: AI, ML, and DL.</p>
@@ -369,6 +376,17 @@ window.Quarto = {
 <p>Check out <a href="https://www.youtube.com/watch?v=-1hTcS5ZE4w&amp;t=1s">the accompanying video</a> on this material.</p>
 </div>
 </div>
+<section id="when-is-machine-learning-a-useful-approach" class="level3">
+<h3 class="anchored" data-anchor-id="when-is-machine-learning-a-useful-approach">When is machine learning a useful approach?</h3>
+<p>Machine learning is especially useful when we have many examples and expect useful patterns in them, but the relationship is too complicated, noisy, or changeable to express as a reliable set of hand-written rules. Image recognition, spam filtering, and personalized recommendations all have this character.</p>
+<p>ML is not automatically the right tool for every problem:</p>
+<ul>
+<li>Use <strong>explicit rules</strong> when the logic is known, stable, and deterministic.</li>
+<li>Use <strong>human judgment</strong> when the task depends heavily on context, empathy, values, or accountability.</li>
+<li>Consider <strong>machine learning</strong> when useful rules are difficult to specify but representative data and a meaningful way to evaluate errors are available.</li>
+</ul>
+<p>Real systems often combine all three. Before building a model, we should ask what role—if any—ML ought to play and what the consequences of its mistakes would be.</p>
+</section>
 <section id="the-big-idea" class="level3">
 <h3 class="anchored" data-anchor-id="the-big-idea">The big idea</h3>
 <p>Many modern AI systems are not magic. <strong>They learn patterns from examples.</strong></p>
@@ -380,92 +398,112 @@ window.Quarto = {
 <p><img src="img/cat-or-fox.png" class="img-fluid"></p>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 10%">
+<col style="width: 12%">
+<col style="width: 21%">
+<col style="width: 13%">
 <col style="width: 14%">
 <col style="width: 14%">
-<col style="width: 17%">
-<col style="width: 17%">
 <col style="width: 15%">
-<col style="width: 10%">
+<col style="width: 8%">
 </colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: center;">Image</th>
-<th style="text-align: center;">Whiskers</th>
-<th style="text-align: center;">Ear size</th>
-<th style="text-align: center;">Face shape</th>
-<th style="text-align: center;">Fur colour</th>
-<th style="text-align: center;">Eye shape</th>
-<th style="text-align: center;">Label</th>
+<th>Image ID</th>
+<th>Whiskers Present</th>
+<th>Ear Size</th>
+<th>Face Shape</th>
+<th>Fur Color</th>
+<th>Eye Shape</th>
+<th>Label</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: center;">1</td>
-<td style="text-align: center;">Yes</td>
-<td style="text-align: center;">Large</td>
-<td style="text-align: center;">Round</td>
-<td style="text-align: center;">Mixed</td>
-<td style="text-align: center;">Round</td>
-<td style="text-align: center;">Cat</td>
+<td>1</td>
+<td>Yes</td>
+<td>Large</td>
+<td>Round</td>
+<td>Mixed</td>
+<td>Round</td>
+<td>Cat</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;">2</td>
-<td style="text-align: center;">Yes</td>
-<td style="text-align: center;">Medium</td>
-<td style="text-align: center;">Round</td>
-<td style="text-align: center;">Brown</td>
-<td style="text-align: center;">Almond</td>
-<td style="text-align: center;">Cat</td>
+<td>2</td>
+<td>Yes</td>
+<td>Medium</td>
+<td>Round</td>
+<td>Brown</td>
+<td>Almond</td>
+<td>Cat</td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;">3</td>
-<td style="text-align: center;">Yes</td>
-<td style="text-align: center;">Large</td>
-<td style="text-align: center;">Pointed</td>
-<td style="text-align: center;">Red</td>
-<td style="text-align: center;">Narrow</td>
-<td style="text-align: center;">Fox</td>
+<td>3</td>
+<td>Yes</td>
+<td>Large</td>
+<td>Pointed</td>
+<td>Red</td>
+<td>Narrow</td>
+<td>Fox</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;">4</td>
-<td style="text-align: center;">Yes</td>
-<td style="text-align: center;">Small</td>
-<td style="text-align: center;">Round</td>
-<td style="text-align: center;">Grey</td>
-<td style="text-align: center;">Round</td>
-<td style="text-align: center;">Cat</td>
+<td>4</td>
+<td>Yes</td>
+<td>Large</td>
+<td>Pointed</td>
+<td>Red</td>
+<td>Narrow</td>
+<td>Fox</td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;">5</td>
-<td style="text-align: center;">Yes</td>
-<td style="text-align: center;">Large</td>
-<td style="text-align: center;">Pointed</td>
-<td style="text-align: center;">Red</td>
-<td style="text-align: center;">Narrow</td>
-<td style="text-align: center;">Fox</td>
+<td>5</td>
+<td>Yes</td>
+<td>Small</td>
+<td>Round</td>
+<td>Mixed</td>
+<td>Round</td>
+<td>Cat</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;">6</td>
-<td style="text-align: center;">Yes</td>
-<td style="text-align: center;">Small</td>
-<td style="text-align: center;">Round</td>
-<td style="text-align: center;">Black</td>
-<td style="text-align: center;">Round</td>
-<td style="text-align: center;">Cat</td>
+<td>6</td>
+<td>Yes</td>
+<td>Large</td>
+<td>Pointed</td>
+<td>Red</td>
+<td>Narrow</td>
+<td>Fox</td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;">7</td>
-<td style="text-align: center;">Yes</td>
-<td style="text-align: center;">Large</td>
-<td style="text-align: center;">Pointed</td>
-<td style="text-align: center;">Red</td>
-<td style="text-align: center;">Narrow</td>
-<td style="text-align: center;">Fox</td>
+<td>7</td>
+<td>Yes</td>
+<td>Small</td>
+<td>Round</td>
+<td>Grey</td>
+<td>Round</td>
+<td>Cat</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>Yes</td>
+<td>Small</td>
+<td>Round</td>
+<td>Black</td>
+<td>Round</td>
+<td>Cat</td>
+</tr>
+<tr class="odd">
+<td>9</td>
+<td>Yes</td>
+<td>Large</td>
+<td>Pointed</td>
+<td>Red</td>
+<td>Narrow</td>
+<td>Fox</td>
 </tr>
 </tbody>
 </table>
 <p>Which patterns would you use to classify a new image?</p>
+<p>In this small dataset, <strong>fur colour, face shape, and eye shape seem informative</strong>: the foxes have red fur, pointed faces, and narrow eyes, whereas the cats tend to have non-red fur and rounder faces and eyes. <strong>Whiskers are not informative here</strong> because every example has them; a feature that does not vary cannot help distinguish the two classes. Ear size may provide some information, but it does not separate the classes perfectly because some cats also have large ears.</p>
+<p>These are patterns in the observed examples, not universal rules about all cats and foxes. More varied data could reveal exceptions or different useful patterns.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -485,6 +523,8 @@ Note
 <p>Imagine that you want to recommend a movie to Pat. Based on these examples, what would you recommend?</p>
 <p><img src="img/toy-movie-pattern.png" class="img-fluid"></p>
 <p>What pattern connects Sam’s and Pat’s preferences? How confident are you in your recommendation?</p>
+<p>Sam and Pat both rate <em>The Lion King</em>, <em>The Little Mermaid</em>, and <em>Bambi</em> highly, suggesting that their movie preferences may be similar. Because Sam also likes <em>Toy Story</em>, it could be a reasonable recommendation for Pat. This is the basic intuition behind <strong>collaborative filtering</strong>: interactions from people with similar preferences can help fill in a missing preference. Recommendation systems often combine this idea with information about the items or users, so they do not fit neatly into only one learning category.</p>
+<p>Our confidence should be limited, however: the pattern is based on only a few overlapping ratings, and we know very little about the other factors that shape either person’s preferences.</p>
 </section>
 <section id="learning-patterns-in-language" class="level3">
 <h3 class="anchored" data-anchor-id="learning-patterns-in-language">Learning patterns in language</h3>
@@ -528,14 +568,23 @@ Note
 <li>Which patterns might be misleading?</li>
 <li>How would you test whether your detector works on new messages?</li>
 </ul>
+<p>In these examples, spam is associated with phrases such as <strong>“YOU WON”</strong> and <strong>“FREE PRIZE,”</strong> mentions of money, celebratory emoji, and extensive capitalization. The non-spam messages use more ordinary conversational or informational language. These cues may help on this dataset, but none is a universal rule: legitimate promotions can mention prizes, and genuine messages can use capital letters or emoji. A reliable detector would need more varied examples and evaluation on messages it did not learn from.</p>
+</section>
+<section id="learning-patterns-without-labels" class="level3">
+<h3 class="anchored" data-anchor-id="learning-patterns-without-labels">Learning patterns without labels</h3>
+<p>Suppose we have a large collection of food photographs but no category labels. How might you organize these images into useful groups?</p>
+<p><img src="img/food-clustering-activity.png" class="img-fluid" alt="A collage of many foods, including desserts, pasta, salads, soup, and breakfast dishes"></p>
+<p>A <strong>clustering</strong> method looks for groups of similar examples without being told the correct group for each image. To do this, we first need a numerical <strong>representation</strong> of each image—perhaps features learned by a neural network—and a way to describe which representations are similar. The method might then group foods by visual appearance, ingredients, cuisine, or some other pattern encoded by that representation. Unlike cat-versus-fox classification, there is no supplied target label and often no single correct grouping.</p>
+<p>The resulting clusters do not explain themselves. People must examine and interpret them—and check whether the discovered grouping is useful or merely reflects incidental features such as plate colour, lighting, or background.</p>
 </section>
 <section id="one-recurring-idea" class="level3">
 <h3 class="anchored" data-anchor-id="one-recurring-idea">One recurring idea</h3>
-<p>All three systems learn from examples:</p>
+<p>These systems all learn from examples:</p>
 <ul>
 <li>Image classifiers learn patterns in visual information.</li>
 <li>Recommenders learn patterns in preferences and interactions.</li>
 <li>Spam filters learn patterns in language.</li>
+<li>Clustering methods look for structure among examples that do not have labels.</li>
 </ul>
 <p>The data and methods differ, but the goal is similar: <strong>learn from observed examples and generalize to new cases.</strong></p>
 <div class="callout callout-style-default callout-caution callout-titled">
@@ -554,35 +603,49 @@ Caution
 <p><br><br></p>
 </section>
 </section>
+<section id="a-map-of-the-course" class="level2">
+<h2 class="anchored" data-anchor-id="a-map-of-the-course">A map of the course</h2>
+<p>The course studies several ways of learning from data and follows them through the broader problem-solving workflow.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Course component</th>
+<th>Guiding question</th>
+<th>Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Supervised learning</strong></td>
+<td>Can labeled examples help us predict a target for a new case?</td>
+<td>Spam detection, disease prediction, house-price prediction</td>
+</tr>
+<tr class="even">
+<td><strong>Unsupervised learning and recommendations</strong></td>
+<td>What structure or preferences can we discover when the desired answer is not directly supplied?</td>
+<td>Clustering foods or customers, recommending movies</td>
+</tr>
+<tr class="odd">
+<td><strong>Different kinds of data</strong></td>
+<td>How should the representation and method change with the data?</td>
+<td>Images, text, time series, and right-censored data</td>
+</tr>
+<tr class="even">
+<td><strong>Communication, ethics, and deployment</strong></td>
+<td>Does the system serve the real-world goal, and how should we describe and monitor its limitations?</td>
+<td>Error analysis, fairness, explanations, deployment and monitoring</td>
+</tr>
+</tbody>
+</table>
+<p>We will begin with supervised learning because it provides a concrete setting in which to introduce the vocabulary, workflow, and evaluation habits that recur throughout the course.</p>
+</section>
 <section id="supervised-machine-learning" class="level2">
 <h2 class="anchored" data-anchor-id="supervised-machine-learning">Supervised machine learning</h2>
-<section id="types-of-machine-learning" class="level3">
-<h3 class="anchored" data-anchor-id="types-of-machine-learning">Types of machine learning</h3>
-<p>Here are some typical learning problems.</p>
-<ul>
-<li><strong>Supervised learning</strong> (<a href="https://support.google.com/a/answer/2368132?hl=en">Gmail spam filtering</a>)
-<ul>
-<li>Training a model from input-output pairs (features and labeled targets) to make predictions on unseen data.</li>
-</ul></li>
-<li><strong>Unsupervised learning</strong> (<a href="https://news.google.com/">Google News</a>)
-<ul>
-<li>Training a model to discover hidden structure or patterns in unlabeled data (e.g., clustering, dimensionality reduction)</li>
-</ul></li>
-<li>Reinforcement learning (<a href="https://deepmind.com/research/case-studies/alphago-the-story-so-far">AlphaGo</a>)
-<ul>
-<li>A family of algorithms for finding suitable actions to take in a given situation in order to maximize a long-term reward.</li>
-</ul></li>
-<li>Generative AI (<a href="https://chatgpt.com/">ChatGPT</a>)
-<ul>
-<li>Training a model to generate new data resembling the training data (e.g., text, images, music). Modern generative AI systems often combine supervised, unsupervised, and reinforcement learning techniques.</li>
-</ul></li>
-<li><strong>Recommendation systems</strong> (<a href="https://www.cs.umd.edu/~samir/498/Amazon-Recommendations.pdf">Amazon item recommendation system</a>)
-<ul>
-<li>Predict user ratings or preferences for items.</li>
-<li>Typically combines supervised learning and unsupervised learning.</li>
-</ul></li>
-</ul>
-</section>
 <section id="what-is-supervised-machine-learning-ml" class="level3">
 <h3 class="anchored" data-anchor-id="what-is-supervised-machine-learning-ml">What is supervised machine learning (ML)?</h3>
 <ul>
@@ -626,13 +689,13 @@ Note
 </section>
 <section id="training-a-supervised-machine-learning-model-with-x-and-y" class="level4">
 <h4 class="anchored" data-anchor-id="training-a-supervised-machine-learning-model-with-x-and-y">Training a supervised machine learning model with <span class="math inline">\(X\)</span> and <span class="math inline">\(y\)</span></h4>
-<div id="f4511fed-6251-4301-9217-240723c2075e" class="cell" data-tags="[&quot;hide-input&quot;]" data-execution_count="3">
+<div id="f4511fed-6251-4301-9217-240723c2075e" class="cell" data-tags="[&quot;hide-input&quot;]" data-execution_count="22">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>sms_df <span class="op">=</span> pd.read_csv(DATA_DIR <span class="op">+</span> <span class="st">"spam.csv"</span>, encoding<span class="op">=</span><span class="st">"latin-1"</span>)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>sms_df <span class="op">=</span> sms_df.drop(columns <span class="op">=</span> [<span class="st">"Unnamed: 2"</span>, <span class="st">"Unnamed: 3"</span>, <span class="st">"Unnamed: 4"</span>])</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>sms_df <span class="op">=</span> sms_df.rename(columns<span class="op">=</span>{<span class="st">"v1"</span>: <span class="st">"target"</span>, <span class="st">"v2"</span>: <span class="st">"sms"</span>})</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>train_df, test_df <span class="op">=</span> train_test_split(sms_df, test_size<span class="op">=</span><span class="fl">0.10</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>HTML(train_df.head().to_html(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
+<div class="cell-output cell-output-display" data-execution_count="22">
 <table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
@@ -665,7 +728,7 @@ Note
 </table>
 </div>
 </div>
-<div id="6f38510c-ad87-4d48-b267-cfe7bf44aa83" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-tags="[]" data-execution_count="4">
+<div id="6f38510c-ad87-4d48-b267-cfe7bf44aa83" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-tags="[]" data-execution_count="23">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>X_train, y_train <span class="op">=</span> train_df[<span class="st">"sms"</span>], train_df[<span class="st">"target"</span>]</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>X_test, y_test <span class="op">=</span> test_df[<span class="st">"sms"</span>], test_df[<span class="st">"target"</span>]</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>clf <span class="op">=</span> make_pipeline(CountVectorizer(max_features<span class="op">=</span><span class="dv">5000</span>), LogisticRegression(max_iter<span class="op">=</span><span class="dv">5000</span>))</span>
@@ -674,9 +737,9 @@ Note
 </section>
 <section id="predicting-on-unseen-data-using-the-trained-model" class="level4">
 <h4 class="anchored" data-anchor-id="predicting-on-unseen-data-using-the-trained-model">Predicting on unseen data using the trained model</h4>
-<div id="e20d2921-a8d0-4b63-8756-3bb5fb5c869a" class="cell" data-execution_count="5">
+<div id="e20d2921-a8d0-4b63-8756-3bb5fb5c869a" class="cell" data-execution_count="24">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(X_test[<span class="dv">0</span>:<span class="dv">4</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="5">
+<div class="cell-output cell-output-display" data-execution_count="24">
 <div>
 
 
@@ -723,48 +786,48 @@ Note
 <p>Do not worry about the code and syntax for now.</p>
 </div>
 </div>
-<div id="ec41e07b-5c3b-4a44-ad64-519c9dc4bda7" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-tags="[]" data-execution_count="6">
+<div id="ec41e07b-5c3b-4a44-ad64-519c9dc4bda7" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-tags="[]" data-execution_count="25">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>pred_dict <span class="op">=</span> {</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"sms"</span>: X_test[<span class="dv">0</span>:<span class="dv">4</span>],</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"spam_predictions"</span>: clf.predict(X_test[<span class="dv">0</span>:<span class="dv">4</span>]),</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>pred_df <span class="op">=</span> pd.DataFrame(pred_dict)</span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>pred_df.style.set_properties(<span class="op">**</span>{<span class="st">"text-align"</span>: <span class="st">"left"</span>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="6">
+<div class="cell-output cell-output-display" data-execution_count="25">
 <style type="text/css">
-#T_14d81_row0_col0, #T_14d81_row0_col1, #T_14d81_row1_col0, #T_14d81_row1_col1, #T_14d81_row2_col0, #T_14d81_row2_col1, #T_14d81_row3_col0, #T_14d81_row3_col1 {
+#T_d946b_row0_col0, #T_d946b_row0_col1, #T_d946b_row1_col0, #T_d946b_row1_col1, #T_d946b_row2_col0, #T_d946b_row2_col1, #T_d946b_row3_col0, #T_d946b_row3_col1 {
   text-align: left;
 }
 </style>
 
-<table id="T_14d81" class="caption-top table table-sm table-striped small">
+<table id="T_d946b" class="caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
-<th id="T_14d81_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">sms</th>
-<th id="T_14d81_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">spam_predictions</th>
+<th id="T_d946b_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">sms</th>
+<th id="T_d946b_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">spam_predictions</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<th id="T_14d81_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">3245</th>
-<td id="T_14d81_row0_col0" class="data row0 col0">Funny fact Nobody teaches volcanoes 2 erupt, tsunamis 2 arise, hurricanes 2 sway aroundn no 1 teaches hw 2 choose a wife Natural disasters just happens</td>
-<td id="T_14d81_row0_col1" class="data row0 col1">ham</td>
+<th id="T_d946b_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">3245</th>
+<td id="T_d946b_row0_col0" class="data row0 col0">Funny fact Nobody teaches volcanoes 2 erupt, tsunamis 2 arise, hurricanes 2 sway aroundn no 1 teaches hw 2 choose a wife Natural disasters just happens</td>
+<td id="T_d946b_row0_col1" class="data row0 col1">ham</td>
 </tr>
 <tr class="even">
-<th id="T_14d81_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">944</th>
-<td id="T_14d81_row1_col0" class="data row1 col0">I sent my scores to sophas and i had to do secondary application for a few schools. I think if you are thinking of applying, do a research on cost also. Contact joke ogunrinde, her school is one me the less expensive ones</td>
-<td id="T_14d81_row1_col1" class="data row1 col1">ham</td>
+<th id="T_d946b_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">944</th>
+<td id="T_d946b_row1_col0" class="data row1 col0">I sent my scores to sophas and i had to do secondary application for a few schools. I think if you are thinking of applying, do a research on cost also. Contact joke ogunrinde, her school is one me the less expensive ones</td>
+<td id="T_d946b_row1_col1" class="data row1 col1">ham</td>
 </tr>
 <tr class="odd">
-<th id="T_14d81_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">1044</th>
-<td id="T_14d81_row2_col0" class="data row2 col0">We know someone who you know that fancies you. Call 09058097218 to find out who. POBox 6, LS15HB 150p</td>
-<td id="T_14d81_row2_col1" class="data row2 col1">spam</td>
+<th id="T_d946b_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">1044</th>
+<td id="T_d946b_row2_col0" class="data row2 col0">We know someone who you know that fancies you. Call 09058097218 to find out who. POBox 6, LS15HB 150p</td>
+<td id="T_d946b_row2_col1" class="data row2 col1">spam</td>
 </tr>
 <tr class="even">
-<th id="T_14d81_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">2484</th>
-<td id="T_14d81_row3_col0" class="data row3 col0">Only if you promise your getting out as SOON as you can. And you'll text me in the morning to let me know you made it in ok.</td>
-<td id="T_14d81_row3_col1" class="data row3 col1">ham</td>
+<th id="T_d946b_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">2484</th>
+<td id="T_d946b_row3_col0" class="data row3 col0">Only if you promise your getting out as SOON as you can. And you'll text me in the morning to let me know you made it in ok.</td>
+<td id="T_d946b_row3_col1" class="data row3 col1">ham</td>
 </tr>
 </tbody>
 </table>
@@ -816,7 +879,7 @@ Note
 <p>Download the data from <a href="https://www.kaggle.com/uciml/indian-liver-patient-records">here</a>.</p>
 </div>
 </div>
-<div id="86996f4a-2365-40d7-b3d0-cb67f511ee31" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-tags="[&quot;hide-input&quot;]" data-execution_count="7">
+<div id="86996f4a-2365-40d7-b3d0-cb67f511ee31" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-tags="[&quot;hide-input&quot;]" data-execution_count="26">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(DATA_DIR <span class="op">+</span> <span class="st">"indian_liver_patient.csv"</span>)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop(columns <span class="op">=</span> [<span class="st">"Gender"</span>])</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"Dataset"</span>] <span class="op">=</span> df[<span class="st">"Dataset"</span>].replace(<span class="dv">1</span>, <span class="st">"Disease"</span>)</span>
@@ -824,7 +887,7 @@ Note
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>df.rename(columns<span class="op">=</span>{<span class="st">"Dataset"</span>: <span class="st">"Target"</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>train_df, test_df <span class="op">=</span> train_test_split(df, test_size<span class="op">=</span><span class="dv">4</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>HTML(train_df.head().to_html(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="7">
+<div class="cell-output cell-output-display" data-execution_count="26">
 <table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
@@ -909,7 +972,7 @@ Note
 <section id="building-a-supervise-machine-learning-model" class="level5">
 <h5 class="anchored" data-anchor-id="building-a-supervise-machine-learning-model">Building a supervise machine learning model</h5>
 <p>Let’s train a supervised machine learning model with the input and output above.</p>
-<div id="e82be94f-e169-41e7-93a4-124f692c82d3" class="cell" data-execution_count="8">
+<div id="e82be94f-e169-41e7-93a4-124f692c82d3" class="cell" data-execution_count="27">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lightgbm.sklearn <span class="im">import</span> LGBMClassifier</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> train_df.drop(columns<span class="op">=</span>[<span class="st">"Target"</span>])</span>
@@ -918,7 +981,7 @@ Note
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>y_test <span class="op">=</span> test_df[<span class="st">"Target"</span>]</span>
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> LGBMClassifier(random_state<span class="op">=</span><span class="dv">123</span>, verbose<span class="op">=-</span><span class="dv">1</span>,  n_jobs<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>model.fit(X_train, y_train)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="8">
+<div class="cell-output cell-output-display" data-execution_count="27">
 <style>.sk-global {
   /* Definition of color scheme common for light and dark mode */
   --sklearn-color-text: #000;
@@ -1617,7 +1680,7 @@ a.param-doc-link::before {
   justify-content: center;
   margin-top: 0.5em;
 }
-</style><div id="sk-container-id-1" tabindex="0" class="sk-top-container sk-global"><div class="sk-text-repr-fallback"><pre>LGBMClassifier(n_jobs=1, random_state=123, verbose=-1)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-1" type="checkbox" checked=""><label for="sk-estimator-id-1" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>LGBMClassifier</div></div><div><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></div></label><div class="sk-toggleable__content fitted" data-param-prefix="">
+</style><div id="sk-container-id-2" tabindex="0" class="sk-top-container sk-global"><div class="sk-text-repr-fallback"><pre>LGBMClassifier(n_jobs=1, random_state=123, verbose=-1)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-2" type="checkbox" checked=""><label for="sk-estimator-id-2" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>LGBMClassifier</div></div><div><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></div></label><div class="sk-toggleable__content fitted" data-param-prefix="">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -1754,7 +1817,7 @@ a.param-doc-link::before {
 <tr class="default even">
 <td class="param"><span class="param-doc-link" style="text-decoration:none;">booster_</span></td>
 <td class="fitted-att-type">Booster</td>
-<td>&lt;lightgbm.bas...t 0x169e3a5d0&gt;</td>
+<td>&lt;lightgbm.bas...t 0x1389d8050&gt;</td>
 </tr>
 <tr class="default odd">
 <td class="param"><span class="param-doc-link" style="text-decoration:none;">classes_</span></td>
@@ -1991,7 +2054,7 @@ function forceTheme(elementId) {
     }
 }
 
-forceTheme('sk-container-id-1');</script>
+forceTheme('sk-container-id-2');</script>
 </div>
 </div>
 </section>
@@ -2000,9 +2063,9 @@ forceTheme('sk-container-id-1');</script>
 <ul>
 <li>Given features of new patients below we’ll use this model to predict whether these patients have the liver disease or not.</li>
 </ul>
-<div id="7b1496c4-4094-491a-8e0c-f76a8b4ce442" class="cell" data-execution_count="9">
+<div id="7b1496c4-4094-491a-8e0c-f76a8b4ce442" class="cell" data-execution_count="28">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>HTML(X_test.reset_index(drop<span class="op">=</span><span class="va">True</span>).to_html(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="9">
+<div class="cell-output cell-output-display" data-execution_count="28">
 <table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
@@ -2066,12 +2129,12 @@ forceTheme('sk-container-id-1');</script>
 </table>
 </div>
 </div>
-<div id="df5916f4-c4c1-4a9d-b3ab-db7ca5b01f56" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="10">
+<div id="df5916f4-c4c1-4a9d-b3ab-db7ca5b01f56" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="29">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>pred_df <span class="op">=</span> pd.DataFrame({<span class="st">"Predicted_target"</span>: model.predict(X_test).tolist()})</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>df_concat <span class="op">=</span> pd.concat([pred_df, X_test.reset_index(drop<span class="op">=</span><span class="va">True</span>)], axis<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>HTML(df_concat.to_html(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="10">
+<div class="cell-output cell-output-display" data-execution_count="29">
 <table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
@@ -2146,7 +2209,7 @@ forceTheme('sk-container-id-1');</script>
 <section id="example-2-predicting-the-label-of-a-given-image" class="level4">
 <h4 class="anchored" data-anchor-id="example-2-predicting-the-label-of-a-given-image">Example 2: Predicting the label of a given image</h4>
 <p>Suppose you want to predict the label of a given image using supervised machine learning. We are using a pre-trained model here to predict labels of new unseen images.</p>
-<div id="61d0d419-54e3-4265-bcda-864dcb956bcb" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="11">
+<div id="61d0d419-54e3-4265-bcda-864dcb956bcb" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="30">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> glob</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -2154,7 +2217,7 @@ forceTheme('sk-container-id-1');</script>
 <span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>images <span class="op">=</span> glob.glob(DATA_DIR <span class="op">+</span> <span class="st">"test_images/*.*"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="400756cf-2b43-46cf-ba54-f687e37ed2b0" class="cell" data-execution_count="12">
+<div id="400756cf-2b43-46cf-ba54-f687e37ed2b0" class="cell" data-execution_count="31">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> image_path <span class="kw">in</span> images:</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    image <span class="op">=</span> Image.<span class="bu">open</span>(image_path).convert(<span class="st">"RGB"</span>)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -2169,7 +2232,7 @@ forceTheme('sk-container-id-1');</script>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="01_intro_files/figure-html/cell-14-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="01_intro_files/figure-html/cell-13-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -2184,7 +2247,7 @@ Persian cat              0.275
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="01_intro_files/figure-html/cell-14-output-3.png" class="img-fluid figure-img"></p>
+<p><img src="01_intro_files/figure-html/cell-13-output-3.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -2199,7 +2262,7 @@ snow leopard              0.001
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="01_intro_files/figure-html/cell-14-output-5.png" class="img-fluid figure-img"></p>
+<p><img src="01_intro_files/figure-html/cell-13-output-5.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -2214,7 +2277,7 @@ capuchin              0.011
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="01_intro_files/figure-html/cell-14-output-7.png" class="img-fluid figure-img"></p>
+<p><img src="01_intro_files/figure-html/cell-13-output-7.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -2229,153 +2292,84 @@ Greater Swiss Mountain dog              0.235
 </div>
 <p><br><br></p>
 </section>
-<section id="example-3-predicting-sentiment-expressed-in-a-movie-review" class="level4">
-<h4 class="anchored" data-anchor-id="example-3-predicting-sentiment-expressed-in-a-movie-review">Example 3: Predicting sentiment expressed in a movie review</h4>
-<p>Suppose you are interested in predicting whether a given movie review is positive or negative. You can do it using supervised machine learning.</p>
-<div class="callout callout-style-default callout-note callout-titled">
+<section id="example-3-text-classification-with-a-pretrained-language-model" class="level4">
+<h4 class="anchored" data-anchor-id="example-3-text-classification-with-a-pretrained-language-model">Example 3: Text classification with a pretrained language model</h4>
+<p>A <strong>large language model (LLM)</strong> is trained on a very large collection of text and can be adapted or prompted for many language tasks. Instead of training a sentiment classifier from scratch on movie reviews, we can start with a pretrained model that has already been fine-tuned to classify text as positive or negative.</p>
+<p>Here, a Hugging Face <code>pipeline</code> handles tokenization, model inference, and conversion of the model output into a label and confidence score.</p>
+<div id="481fdad0-5006-4384-a0cb-0c5090b8133b" class="cell" data-execution_count="32">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> pipeline</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>sentiment_analyzer <span class="op">=</span> pipeline(</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="st">"sentiment-analysis"</span>,</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    model<span class="op">=</span><span class="st">"distilbert-base-uncased-finetuned-sst-2-english"</span>,</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>texts <span class="op">=</span> [</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"I asked my model to predict my future, and it said '404: Life not found.'"</span>,</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Machine learning is like cooking: sometimes you follow the recipe, and sometimes you hope for the best!"</span>,</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>sentiment_analyzer(texts)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"e9e5ab13f3604d46bbde4dd04267b4c3","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="32">
+<pre><code>[{'label': 'NEGATIVE', 'score': 0.995707631111145},
+ {'label': 'POSITIVE', 'score': 0.9992092251777649}]</code></pre>
+</div>
+</div>
+<p>The result is one dictionary per text containing a predicted <code>label</code>—here <code>POSITIVE</code> or <code>NEGATIVE</code>—and a <code>score</code>. Notice what changed from the earlier examples: we did not collect and label a new sentiment dataset or fit a model in this notebook. We reused a model trained elsewhere.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Why isn't this cell executed while building the book?">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Note
+<span class="screen-reader-only">Note</span>Why isn’t this cell executed while building the book?
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Download the data from <a href="https://www.kaggle.com/datasets/lakshmi25npathi/imdb-dataset-of-50k-movie-reviews">here</a>. You’ll have to rename it to <code>imdb_master.csv</code> and move it under <code>../data/</code> directory.</p>
+<p>The first run downloads the pretrained model. Keeping this example non-executing makes the book build reproducible in offline and resource-constrained environments. You can run it interactively after installing the project dependencies and allowing the model download.</p>
 </div>
 </div>
-<div id="7ab8c22f" class="cell" data-execution_count="13">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>imdb_df <span class="op">=</span> pd.read_csv(DATA_DIR <span class="op">+</span> <span class="st">"imdb_master.csv"</span>, encoding<span class="op">=</span><span class="st">"ISO-8859-1"</span>)</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>imdb_df[<span class="st">'sentiment'</span>].value_counts()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="13">
-<pre><code>sentiment
-positive    25000
-negative    25000
-Name: count, dtype: int64</code></pre>
+<section id="going-beyond-the-models-original-labels-zero-shot-classification" class="level5">
+<h5 class="anchored" data-anchor-id="going-beyond-the-models-original-labels-zero-shot-classification">Going beyond the model’s original labels: zero-shot classification</h5>
+<p>The sentiment model above is restricted to the labels it was trained to predict. Suppose instead that we want to classify text using our own candidate emotion labels—without first providing labeled examples for this particular task. A pretrained model designed for <strong>zero-shot classification</strong> can score how well each candidate label fits the text.</p>
+<div id="fc98c6ce-0fa2-4645-94ae-5dd501a1d994" class="cell" data-execution_count="33">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> pipeline</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>emotion_classifier <span class="op">=</span> pipeline(</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="st">"zero-shot-classification"</span>,</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    model<span class="op">=</span><span class="st">"facebook/bart-large-mnli"</span>,</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>text <span class="op">=</span> <span class="st">"I submitted the assignment after weeks of work, and it finally passed every test."</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>candidate_labels <span class="op">=</span> [<span class="st">"sadness"</span>, <span class="st">"joy"</span>, <span class="st">"love"</span>, <span class="st">"anger"</span>, <span class="st">"fear"</span>, <span class="st">"surprise"</span>]</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>emotion_classifier(text, candidate_labels)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"e176c2fe79be4a7ea6800733fcb4a1a8","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="33">
+<pre><code>{'sequence': 'I submitted the assignment after weeks of work, and it finally passed every test.',
+ 'labels': ['surprise', 'joy', 'anger', 'fear', 'sadness', 'love'],
+ 'scores': [0.4165930449962616,
+  0.3298921585083008,
+  0.08962558954954147,
+  0.06469517946243286,
+  0.05273403599858284,
+  0.04646006599068642]}</code></pre>
 </div>
 </div>
-<div id="3bc2a175-d33f-4c36-9cb1-6effc877abad" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-tags="[&quot;hide-input&quot;]" data-execution_count="14">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>imdb_df <span class="op">=</span> pd.read_csv(DATA_DIR <span class="op">+</span> <span class="st">"imdb_master.csv"</span>, encoding<span class="op">=</span><span class="st">"ISO-8859-1"</span>)</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>train_df, test_df <span class="op">=</span> train_test_split(imdb_df, test_size<span class="op">=</span><span class="fl">0.10</span>, random_state<span class="op">=</span><span class="dv">123</span>)</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>HTML(train_df.head().to_html(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="14">
-<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th">review</th>
-<th data-quarto-table-cell-role="th">sentiment</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Often tagged as a comedy, The Man In The White Suit is laying out far more than a chuckle here and there.&lt;br /&gt;&lt;br /&gt;Sidney Stratton is an eccentric inventor who isn't getting the chances to flourish his inventions on the world because nobody pays him notice, he merely is the odd ball odd job man about the place as it were. After bluffing his way into Birnley's textile mill, he uses their laboratory to achieve his goal of inventing a fabric that not only never wears out, but also never needs to be cleaned!. He is at first proclaimed a genius and those who ignored him at first suddenly want a big piece of him, but then the doom portents of an industry going bust rears its head and acclaim quickly turns to something far more scary.&lt;br /&gt;&lt;br /&gt;Yes the film is very funny, in fact some scenes are dam hilarious, but it's the satirical edge to the film that lifts it way above the ordinary to me. The contradictions about the advent of technology is a crucial theme here, do we want inventions that save us fortunes whilst closing down industries ?, you only have to see what happened to the coal industry in Britain to know what I'm on about. The decade the film was made is a crucial point to note, the making of nuclear weapons became more than just hearsay, science was advancing to frighteningly new proportions. You watch this film and see the quick turnaround of events for the main protagonist Stanley, from hero to enemy in one foul swoop, a victim of his own pursuit to better mankind !, it's so dark the film should of been called The Man In The Black Suit.&lt;br /&gt;&lt;br /&gt;I honestly can't find anything wrong in this film, the script from Roger MacDougall, John Dighton, and director Alex Mackendrick could be filmed today and it wouldn't be out of place such is the sharpness and thought of mind it has. The sound and setting is tremendous, the direction is seamless, with the tonal shift adroitly handled by Mackendrick. Some of the scenes are just wonderful, one in particular tugs on the heart strings and brings one to think of a certain scene in David Lynch's Elephant Man some 29 years later, and yet after such a downturn of events the film still manages to take a wink as the genius that is Alec Guinness gets to close out the film to keep the viewers pondering not only the future of Stanley, but also the rest of us in this rapidly advancing world.&lt;br /&gt;&lt;br /&gt;A timeless masterpiece, thematically and as a piece of art, 10/10.</td>
-<td>positive</td>
-</tr>
-<tr class="even">
-<td>Dirty Harry goes to Atlanta is what Burt called this fantastic, first-rate detective thriller that borrows some of its plot from the venerable Dana Andrews movie "Laura." Not only does Burt Reynolds star in this superb saga but he also helmed it and he doesn't make a single mistake either staging the action or with his casting of characters. Not a bad performance in the movie and Reynolds does an outstanding job of directing it. Henry Silva is truly icy as a hit-man.&lt;br /&gt;&lt;br /&gt;Detective Tom Sharky (Burt Reynolds) is on a narcotics case in underground Atlanta when everything goes wrong. He winds up chasing a suspect and shooting it out with the gunman on a bus. During the melee, an innocent bystander dies. John Woo's "The Killer" replicates this scene. Anyway, the Atlanta Police Department busts Burt down to Vice and he takes orders from a new boss, Frisco (Charles Durning of "Oh, Brother, Where Art Thou?") in the basement. Sharky winds up in a real cesspool of crime. Sharky and his fellow detectives Arch (Bernie Casey) and Papa (Brian Keith) set up surveillance on a high-priced call girl Dominoe (Rachel Ward of "After Dark, My Sweet")who has a luxurious apartment that she shares with another girl.&lt;br /&gt;&lt;br /&gt;Dominoe is seeing a local politician Hotchkins (Earl Holliman of "Police Woman") on the side who is campaigning for governor but the chief villain, Victor (Vittorio Gassman of "The Dirty Game") wants him to end the affair. Hotchkins is reluctant to accommodate Victor, so Victor has cocaine snorting Billy Score (Henry Silva of "Wipeout")terminate Dominoe. Billy blasts a hole the size of a twelve inch pizza in the door of Dominoe's apartment and kills her.&lt;br /&gt;&lt;br /&gt;Sharky has done the unthinkable. During the surveillance, he has grown fond of Dominoe to the point that he becomes hopelessly infatuated with her. Sharky's mission in life now is to bust Victor, but he learns that Victor has an informant inside the Atlanta Police Department. The plot really heats up when Sharky discovers later that Billy shot the wrong girl and that Dominoe is still alive! Sharky takes her into protective custody and things grow even more complicated. He assembles his "Machine" of the title to deal with Victor and his hoods.&lt;br /&gt;&lt;br /&gt;William Fraker's widescreen lensing of the action is immaculate. Unfortunately, this vastly underrated classic is available only as a full-frame film. Fraker definitely contributes to the atmosphere of the picture, especially during the mutilation scene on the boat when the villain's cut off one of Sharky's fingers. This is a rather gruesome scene.&lt;br /&gt;&lt;br /&gt;Burt never made a movie that surpassed "Sharky's Machine."</td>
-<td>positive</td>
-</tr>
-<tr class="odd">
-<td>Yah. I know. It has the name "Sinatra" in the title, so how bad can it be? Well, it's bad, trust me! I rented this thinking it was some movie I missed in the theaters. It's not. It's some garbage "movie" made by the folks at Showtime (cable station). Geez, these cable stations make a few bucks they think they can make whatever garbage movies they want! It's not good. I am as big a Sinatra fan as any sane man, but this movie was just dumb. Boring. Dull. Unfunny. Uninteresting. The only redeeming quality is that (assuming they did stick to the facts) you do learn about what happened to the captors of Frank Jr. Otherwise it's just a stupid film.</td>
-<td>negative</td>
-</tr>
-<tr class="even">
-<td>The other lowest-rating reviewers have summed up this sewage so perfectly there seems little to add. I must stress that I've only had the Cockney Filth imposed on me during visits from my children, who insist on watching the Sunday omnibus. My god, it's depressing! Like all soaps, it consists entirely of totally unlikeable characters being unpleasant to each other, but it's ten times as bad as the next worst one could be. The reviewer who mocked the 'true to life' bilge spouted by its defenders was spot-on. If anyone lived in a social environment like this, they'd slash their wrists within days. And I can assure anyone not familiar with the real East End that it's rather more 'ethnically enriched' than you'll ever see here. Take my advice - avoid this nadir of the British TV industry. It is EVIL.</td>
-<td>negative</td>
-</tr>
-<tr class="odd">
-<td>Made the unfortunate mistake of seeing this film in the Edinburgh film festival. It was well shot from the outset, but that's the last positive comment I have about the film. The acting was awful, I wonder if actual gogo girls were hired? But it was the plot that was truly laughable, in fact that it was laughable and not boring is the only reason I gave this 3/10.&lt;br /&gt;&lt;br /&gt;** Spoilers below **.&lt;br /&gt;&lt;br /&gt;I just want to mention a few of the scenes that really got the audience laughing:.&lt;br /&gt;&lt;br /&gt;Shoving the girl in the field: who would have thought that a kid shoving another kid could be acted so badly. A real eye-opener.&lt;br /&gt;&lt;br /&gt;The getting on the bus scene: the girl is getting on the bus. But, according to the music, the world is ending.&lt;br /&gt;&lt;br /&gt;The rolling under the clothes line: Wow, this one really demonstrates the plot writer's skills. In the room, followed by raw meat and skill selling. Why not just get her to perform all three 'sins' at once? At least then the film might have been slightly shorter.&lt;br /&gt;&lt;br /&gt;The running down the stairs of the mall: watch as one of the girls takes to flight down the stairs pursued by a flesh eating Dau, no wait .. she *is* just walking quickly trying not to break her nails.&lt;br /&gt;&lt;br /&gt;The running covered in blood: this is definitely my favourite scene, and a fitting end to the movie. A half marathon in red paint, completed by vaulting up stairs and over the bridge, only to be sent flying most unrealistically by a passing car. Not only this, but this suicide is undertaken by the most self obsessed girl in the film, now that's sticking to character for you.&lt;br /&gt;&lt;br /&gt;I'd like to think that this film was created by a 16 year old and their mates. Sadly, having met the director at the presentation, this is not the case.&lt;br /&gt;&lt;br /&gt;But, if you're in a sarcastic mood, and fancy a laugh with a few mates.. then still don't even think about it.</td>
-<td>negative</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div id="fc98c6ce-0fa2-4645-94ae-5dd501a1d994" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="15">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build an ML model</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>X_train, y_train <span class="op">=</span> train_df[<span class="st">"review"</span>], train_df[<span class="st">"sentiment"</span>]</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>X_test, y_test <span class="op">=</span> test_df[<span class="st">"review"</span>], test_df[<span class="st">"sentiment"</span>]</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>clf <span class="op">=</span> make_pipeline(CountVectorizer(max_features<span class="op">=</span><span class="dv">5000</span>), LogisticRegression(max_iter<span class="op">=</span><span class="dv">5000</span>))</span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>clf.fit(X_train, y_train)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<div id="3f345969-880e-4453-a1bf-7ad78fe98755" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="16">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Predict on unseen data using the built model</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>pred_dict <span class="op">=</span> {</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"reviews"</span>: X_test[<span class="dv">0</span>:<span class="dv">4</span>],</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"sentiment_predictions"</span>: clf.predict(X_test[<span class="dv">0</span>:<span class="dv">4</span>]),</span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>pred_df <span class="op">=</span> pd.DataFrame(pred_dict)</span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>pred_df.style.set_properties(<span class="op">**</span>{<span class="st">"text-align"</span>: <span class="st">"left"</span>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="16">
-<style type="text/css">
-#T_1f151_row0_col0, #T_1f151_row0_col1, #T_1f151_row1_col0, #T_1f151_row1_col1, #T_1f151_row2_col0, #T_1f151_row2_col1, #T_1f151_row3_col0, #T_1f151_row3_col1 {
-  text-align: left;
-}
-</style>
-
-<table id="T_1f151" class="caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
-<th id="T_1f151_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">reviews</th>
-<th id="T_1f151_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">sentiment_predictions</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<th id="T_1f151_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">11872</th>
-<td id="T_1f151_row0_col0" class="data row0 col0">This movie was beyond awful, it was a pimple on the a*s of the movie industry. I know that every movie can't be a hit or for that matter even average, but the responsible parties that got together for this epic dud, should have been able to see that they had a ticking time bomb on their hands. I can't help but think that the cast would get together in between scenes and console each other for being in such a massive heap of dung. I can hear it now, "You getting' paid?" "Nope, you?" I understand that this flick was more than likely made on a shoe string budget but even with that taken into account, it still could've been better. You wait for the appearance of a monster/creature and when you finally see it, it's a big yawn.I'm so mad at myself for spending a 1.07 on this stinker!!!</td>
-<td id="T_1f151_row0_col1" class="data row0 col1">negative</td>
-</tr>
-<tr class="even">
-<th id="T_1f151_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">40828</th>
-<td id="T_1f151_row1_col0" class="data row1 col0">As of this writing John Carpenter's 'Halloween' is nearing it's 30th anniversary. It has since spawned 7 sequels, a remake, a whole mess of imitations and every year around Halloween when they do those 'Top 10 Scariest Movies' lists it's always on there. That's quite amazing for a film that was made on a budget of around $300,000 and featured a then almost completely unknown cast of up and coming young talent. I could go on and on, but the big question here is: How does the film hold up today? And all I can say to that is, fantastically!<br>
-<br>
-Pros: A simple, but spooky opening credits sequence that really sets the mood. An unforgettable and goosebump-inducing score by director/co-writer John Carpenter and Alan Howarth. Great cinematography. Stellar direction by Carpenter who keeps the suspense high, gets some great shots, and is careful not to show too much of his villain. Good performances from the then mostly unknown cast. A good sense of humor. Michael Myers is one scary, evil guy. A lot of eerie moments that'll stay with you. The pace is slow, but steady and never drags. Unlike most other slasher films, this one is more about suspense and terror than blood and a big body count.<br>
-<br>
-Cons: Probably not nearly as scary now as it was then. Many of the goofs really stand out.<br>
-<br>
-Final thoughts: I want to start out this section by saying this is not my favorite film in the series. I know that's not a popular opinion, but it's really how I feel. Despite that it truly is an important film that keeps reaching new generations of film buffs. And just because it's been remade for a new generation doesn't mean it'll be forgotten. No way, no how.<br>
-<br>
-My rating: 5/5</td>
-<td id="T_1f151_row1_col1" class="data row1 col1">positive</td>
-</tr>
-<tr class="odd">
-<th id="T_1f151_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">36400</th>
-<td id="T_1f151_row2_col0" class="data row2 col0">I must admit a slight disappointment with this film; I had read a lot about how spectacular it was, yet the actual futuristic sequences, the Age of Science, take up a very small amount of the film. The sets and are excellent when we get to them, and there are some startling images, but this final sequence is lacking in too many other regards...<br>
-<br>
-Much the best drama of the piece is in the mid-section, and then it plays as melodrama, arising from the 'high concept' science-fiction nature of it all, and insufficiently robust dialogue. There is far more human life in this part though, with the great Ralph Richardson sailing gloriously over-the-top as the small dictator, the "Boss" of the Everytown. I loved Richardson's mannerisms and curt delivery of lines, dismissing the presence and ideas of Raymond Massey's aloof, confident visitor. This Boss is a posturing, convincingly deluded figure, unable to realise the small-fry nature of his kingdom... It's not a great role, yet Richardson makes a lot of it.<br>
-<br>
-Everytown itself is presumably meant to be England, or at least an English town fairly representative of England. Interesting was the complete avoidance of any religious side to things; the 'things to come' seem to revolve around a conflict between warlike barbarism and a a faith in science that seems to have little ultimate goal, but to just go on and on. There is a belated attempt to raise some arguments and tensions in the last section, concerning more personal 'life', yet one is left quite unsatisfied. The film hasn't got much interest in subtle complexities; it goes for barnstorming spectacle and unsubtle, blunt moralism, every time. And, of course, recall the hedged-bet finale: Raymond Massey waxing lyrical about how uncertain things are!<br>
-<br>
-Concerning the question of the film being a prediction: I must say it's not at all bad as such, considering that one obviously allows that it is impossible to gets the details of life anything like right. The grander conceptions have something to them; a war in 1940, well that was perhaps predictable... Lasting nearly 30 years, mind!? A nuclear bomb - the "super gun" or some such contraption - in 2036... A technocratic socialist "we don't believe in independent nation states"-type government, in Britain, after 1970... Hmmm, sadly nowhere near on that one, chaps! ;-) No real politics are gone into here which is a shame; all that surfaces is a very laudable anti-war sentiment. Generally, it is assumed that dictatorship - whether boneheaded-luddite-fascist, as under the Boss, or all-hands-to-the-pump scientific socialism - will *be the deal*, and these implications are not broached... While we must remember that in 1936, there was no knowledge at all of how Nazism and Communism would turn out - or even how they were turning out - the lack of consideration of this seems meek beside the scope of the filmmakers' vision on other matters.<br>
-<br>
-Much of the earlier stuff should - and could - have been cut in my opinion; only the briefest stuff from '1940' would have been necessary, yet this segment tends to get rather ponderous, and it is ages before we get to the Richardson-Massey parts. I would have liked to have seen more done with Margareta Scott; who is just a trifle sceptical, cutting a flashing-eyed Mediterranean figure to negligible purpose. The character is not explored, or frankly explained or exploited, except for one scene which I shall not spoil, and her relationship with the Boss isn't explored; but then this was the 1930s, and there was such a thing as widespread institutional censorship back then. Edward Chapman is mildly amusing in his two roles; more so in the first as a hapless chap, praying for war, only to be bluntly put down by another Massey character. Massey himself helps things a lot, playing his parts with a mixture of restraint and sombre gusto, contrasting well with a largely diffident cast, save for Richardson, and Scott and Chapman, slightly.<br>
-<br>
-I would say that "Things to Come" is undoubtedly a very extraordinary film to have been made in Britain in 1936; one of the few serious British science fiction films to date, indeed! Its set (piece) design and harnessing of resources are ravenous, marvellous.<br>
-<br>
-Yet, the script is ultimately over-earnest and, at times, all over the place. The direction is prone to a flatness, though it does step up a scenic gear or two upon occasion. The cinematographer and Mr Richardson really do salvage things however; respectively creating an awed sense of wonder at technology, and an engaging, jerky performance that consistently beguiles. Such a shame there is so little substance or real filmic conception to the whole thing; Powell and Pressburger would have been the perfect directors to take on such a task as this - they are without peer among British directors as daring visual storytellers, great helmsmen of characters and dealers in dialogue of the first rate.<br>
-<br>
-"Things to Come", as it stands, is an intriguing oddity, well worth perusing, yet far short of a "Metropolis"... 'Tis much as "silly", in Wells' words, as that Lang film, yet with nothing like the astonishing force of it.</td>
-<td id="T_1f151_row2_col1" class="data row2 col1">positive</td>
-</tr>
-<tr class="even">
-<th id="T_1f151_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">5166</th>
-<td id="T_1f151_row3_col0" class="data row3 col0">Oh dear! The BBC is not about to be knocked off its pedestal for absorbing period dramas by this one. I agree this novel of Jane Austens is the difficult to portray particularly to a modern audience, the heroine is hardly a Elizabeth Bennet, even Edmund is not calculated to cause female hearts to skip a beat. However I must say I was hoping for an improvement on the last and was sadly disappointed. The basic story was preserved, but the dialogue was so altered that all that was Jane Austen's tone, manner, feeling, wit, depth, was diluted if not lost. If some past adaptions may be seen as dated the weakness of this one must be that it is too modern ('his life is one long party'?????) The cast was generally adequate, but I think Billie Piper was the wrong choice, it needed someone more restrained, I gained no impression of hidden depths beneath a submissive exterior, she was more like a frolicking child. I see I must wait for the BBC to weave its magic once again.</td>
-<td id="T_1f151_row3_col1" class="data row3 col1">negative</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p>The classifier returns all candidate labels ranked by score. Calling this <em>zero-shot</em> does not mean the model learned from no data: it was pretrained on substantial data, but it was not trained on labeled examples from this exact emotion-classification task.</p>
+<p>This flexibility is powerful, but the output is still a prediction, not an objective reading of a person’s internal state. Results depend on the wording, candidate labels, training data, and context available to the model. We still need suitable evaluation data before deciding whether the classifier is useful for a real application.</p>
 <p><br><br></p>
+</section>
 </section>
 <section id="example-4-predicting-housing-prices" class="level4">
 <h4 class="anchored" data-anchor-id="example-4-predicting-housing-prices">Example 4: Predicting housing prices</h4>
@@ -2393,13 +2387,13 @@ Note
 <p>Download the data from <a href="https://www.kaggle.com/harlfoxem/housesalesprediction">here</a>.</p>
 </div>
 </div>
-<div id="6b42804c-09df-4905-bab9-0ed09090cc32" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-tags="[&quot;hide-input&quot;]" data-execution_count="17">
+<div id="6b42804c-09df-4905-bab9-0ed09090cc32" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-tags="[&quot;hide-input&quot;]" data-execution_count="34">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv( DATA_DIR <span class="op">+</span> <span class="st">"kc_house_data.csv"</span>)</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop(columns <span class="op">=</span> [<span class="st">"id"</span>, <span class="st">"date"</span>])</span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>df.rename(columns<span class="op">=</span>{<span class="st">"price"</span>: <span class="st">"target"</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>train_df, test_df <span class="op">=</span> train_test_split(df, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">4</span>)</span>
 <span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>HTML(train_df.head().to_html(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="17">
+<div class="cell-output cell-output-display" data-execution_count="34">
 <table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
@@ -2534,7 +2528,7 @@ Note
 </table>
 </div>
 </div>
-<div id="3c7669ee-891e-40d3-9d47-7b4e9d9e25b4" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="18">
+<div id="3c7669ee-891e-40d3-9d47-7b4e9d9e25b4" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="35">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build a regression model</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lightgbm.sklearn <span class="im">import</span> LGBMRegressor</span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -2545,7 +2539,7 @@ Note
 <span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="co">#model = XGBRegressor()</span></span>
 <span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>model.fit(X_train, y_train)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="86257c76-3e64-4f1d-858b-3f9023f01773" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="19">
+<div id="86257c76-3e64-4f1d-858b-3f9023f01773" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="36">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Predict on unseen examples using the built model</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>pred_df <span class="op">=</span> pd.DataFrame(</span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># {"Predicted target": model.predict(X_test[0:4]).tolist(), "Actual price": y_test[0:4].tolist()}</span></span>
@@ -2553,7 +2547,7 @@ Note
 <span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>df_concat <span class="op">=</span> pd.concat([pred_df, X_test[<span class="dv">0</span>:<span class="dv">4</span>].reset_index(drop<span class="op">=</span><span class="va">True</span>)], axis<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>HTML(df_concat.to_html(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="19">
+<div class="cell-output cell-output-display" data-execution_count="36">
 <table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
@@ -2744,6 +2738,18 @@ Important
 <p>The fact that ML <em>can</em> make a prediction does not mean it should make the final decision. Consider the cost of errors, who is affected, and who should be accountable.</p>
 </div>
 </div>
+</section>
+<section id="try-framing-an-ml-problem" class="level3">
+<h3 class="anchored" data-anchor-id="try-framing-an-ml-problem">Try framing an ML problem</h3>
+<p>Think of a problem that might benefit from machine learning. Before choosing an algorithm, discuss these questions:</p>
+<ol type="1">
+<li>What would the inputs and desired outputs be?</li>
+<li>How is the problem handled now? Are there useful human heuristics or explicit rules?</li>
+<li>What data already exist, and what additional data could reasonably be collected?</li>
+<li>What kinds of mistakes could the system make, and who would be affected?</li>
+<li>Would ML support a person, automate part of the process, or make the final decision?</li>
+</ol>
+<p>These questions connect model building to the real-world problem it is meant to address.</p>
 </section>
 <section id="questions-for-you" class="level3">
 <h3 class="anchored" data-anchor-id="questions-for-you">❓❓ Questions for you</h3>
@@ -3214,6 +3220,9 @@ Important
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="../book/02_terminology-baselines-decision-trees.html" class="pagination-link" aria-label="Chapter 2: From Data to a First Model">
+        <span class="nav-page-text"><span class="chapter-title">Chapter 2: From Data to a First Model</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->
