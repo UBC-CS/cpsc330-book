@@ -333,21 +333,11 @@ window.Quarto = {
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>DATA_DIR <span class="op">=</span> <span class="st">'data/'</span> </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="d845c471-cfbb-47c5-b0f9-050e9bd740d7" class="cell" data-execution_count="21">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Make sure you're using the correct virtual environment. </span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>sys.executable</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># '/Users/kvarada/CS/2026-27/cpsc330-book/.venv/bin/python'</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="21">
-<pre><code>'/Users/kvarada/CS/2026-27/cpsc330-book/.venv/bin/python'</code></pre>
-</div>
-</div>
 <p><br><br></p>
 <p><strong>Meet Eva, a fictitious student</strong></p>
 <p><img src="img/eva-hi.png" class="img-fluid"></p>
 <p>Eva may have a lot in common with you. She has some Python experience and has heard machine learning discussed as a buzzword. During a recent internship, she encountered a messy problem that seemed as though it might benefit from ML. But she did not know how to tell whether ML was the right tool, what data she would need, or whether she could trust the result.</p>
-<p>Eva is curious and asks many questions. We will return to her questions throughout the course as she learns to move from a real-world problem to a responsible ML prototype.</p>
+<p>Eva is curious and asks many questions. We will return to her questions throughout the book as she learns to move from a real-world problem to a responsible ML prototype.</p>
 <p><br><br></p>
 <section id="what-are-ai-ml-and-dl" class="level2">
 <h2 class="anchored" data-anchor-id="what-are-ai-ml-and-dl">What are AI, ML, and DL?</h2>
@@ -378,14 +368,14 @@ window.Quarto = {
 </div>
 <section id="when-is-machine-learning-a-useful-approach" class="level3">
 <h3 class="anchored" data-anchor-id="when-is-machine-learning-a-useful-approach">When is machine learning a useful approach?</h3>
-<p>Machine learning is especially useful when we have many examples and expect useful patterns in them, but the relationship is too complicated, noisy, or changeable to express as a reliable set of hand-written rules. Image recognition, spam filtering, and personalized recommendations all have this character.</p>
+<p>Machine learning is especially useful when we have many examples and expect useful patterns in them, but the relationship is too complicated and noisy to express as a reliable set of hand-written rules. Image recognition, spam filtering, and personalized recommendations all have this character.</p>
 <p>ML is not automatically the right tool for every problem:</p>
 <ul>
 <li>Use <strong>explicit rules</strong> when the logic is known, stable, and deterministic.</li>
 <li>Use <strong>human judgment</strong> when the task depends heavily on context, empathy, values, or accountability.</li>
 <li>Consider <strong>machine learning</strong> when useful rules are difficult to specify but representative data and a meaningful way to evaluate errors are available.</li>
 </ul>
-<p>Real systems often combine all three. Before building a model, we should ask what role—if any—ML ought to play and what the consequences of its mistakes would be.</p>
+<p>Real systems often combine all three. Before building a model, we should ask what role (if any) ML ought to play and what the consequences of its mistakes would be.</p>
 </section>
 <section id="the-big-idea" class="level3">
 <h3 class="anchored" data-anchor-id="the-big-idea">The big idea</h3>
@@ -574,7 +564,7 @@ Note
 <h3 class="anchored" data-anchor-id="learning-patterns-without-labels">Learning patterns without labels</h3>
 <p>Suppose we have a large collection of food photographs but no category labels. How might you organize these images into useful groups?</p>
 <p><img src="img/food-clustering-activity.png" class="img-fluid" alt="A collage of many foods, including desserts, pasta, salads, soup, and breakfast dishes"></p>
-<p>A <strong>clustering</strong> method looks for groups of similar examples without being told the correct group for each image. To do this, we first need a numerical <strong>representation</strong> of each image—perhaps features learned by a neural network—and a way to describe which representations are similar. The method might then group foods by visual appearance, ingredients, cuisine, or some other pattern encoded by that representation. Unlike cat-versus-fox classification, there is no supplied target label and often no single correct grouping.</p>
+<p>A <strong>clustering</strong> method looks for groups of similar examples without being told the correct group for each image. To do this, we first need a numerical <strong>representation</strong> of each image, perhaps features learned by a neural network, and a way to describe which representations are similar. The method might then group foods by visual appearance, ingredients, cuisine, or some other pattern encoded by that representation. Unlike cat-versus-fox classification, there is no supplied target label and often no single correct grouping.</p>
 <p>The resulting clusters do not explain themselves. People must examine and interpret them—and check whether the discovered grouping is useful or merely reflects incidental features such as plate colour, lighting, or background.</p>
 </section>
 <section id="one-recurring-idea" class="level3">
@@ -690,11 +680,11 @@ Note
 <section id="training-a-supervised-machine-learning-model-with-x-and-y" class="level4">
 <h4 class="anchored" data-anchor-id="training-a-supervised-machine-learning-model-with-x-and-y">Training a supervised machine learning model with <span class="math inline">\(X\)</span> and <span class="math inline">\(y\)</span></h4>
 <div id="f4511fed-6251-4301-9217-240723c2075e" class="cell" data-tags="[&quot;hide-input&quot;]" data-execution_count="22">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>sms_df <span class="op">=</span> pd.read_csv(DATA_DIR <span class="op">+</span> <span class="st">"spam.csv"</span>, encoding<span class="op">=</span><span class="st">"latin-1"</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>sms_df <span class="op">=</span> sms_df.drop(columns <span class="op">=</span> [<span class="st">"Unnamed: 2"</span>, <span class="st">"Unnamed: 3"</span>, <span class="st">"Unnamed: 4"</span>])</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>sms_df <span class="op">=</span> sms_df.rename(columns<span class="op">=</span>{<span class="st">"v1"</span>: <span class="st">"target"</span>, <span class="st">"v2"</span>: <span class="st">"sms"</span>})</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>train_df, test_df <span class="op">=</span> train_test_split(sms_df, test_size<span class="op">=</span><span class="fl">0.10</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>HTML(train_df.head().to_html(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>sms_df <span class="op">=</span> pd.read_csv(DATA_DIR <span class="op">+</span> <span class="st">"spam.csv"</span>, encoding<span class="op">=</span><span class="st">"latin-1"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>sms_df <span class="op">=</span> sms_df.drop(columns <span class="op">=</span> [<span class="st">"Unnamed: 2"</span>, <span class="st">"Unnamed: 3"</span>, <span class="st">"Unnamed: 4"</span>])</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>sms_df <span class="op">=</span> sms_df.rename(columns<span class="op">=</span>{<span class="st">"v1"</span>: <span class="st">"target"</span>, <span class="st">"v2"</span>: <span class="st">"sms"</span>})</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>train_df, test_df <span class="op">=</span> train_test_split(sms_df, test_size<span class="op">=</span><span class="fl">0.10</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>HTML(train_df.head().to_html(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="22">
 <table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
@@ -729,16 +719,16 @@ Note
 </div>
 </div>
 <div id="6f38510c-ad87-4d48-b267-cfe7bf44aa83" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-tags="[]" data-execution_count="23">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>X_train, y_train <span class="op">=</span> train_df[<span class="st">"sms"</span>], train_df[<span class="st">"target"</span>]</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>X_test, y_test <span class="op">=</span> test_df[<span class="st">"sms"</span>], test_df[<span class="st">"target"</span>]</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>clf <span class="op">=</span> make_pipeline(CountVectorizer(max_features<span class="op">=</span><span class="dv">5000</span>), LogisticRegression(max_iter<span class="op">=</span><span class="dv">5000</span>))</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>clf.fit(X_train, y_train)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>X_train, y_train <span class="op">=</span> train_df[<span class="st">"sms"</span>], train_df[<span class="st">"target"</span>]</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>X_test, y_test <span class="op">=</span> test_df[<span class="st">"sms"</span>], test_df[<span class="st">"target"</span>]</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>clf <span class="op">=</span> make_pipeline(CountVectorizer(max_features<span class="op">=</span><span class="dv">5000</span>), LogisticRegression(max_iter<span class="op">=</span><span class="dv">5000</span>))</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>clf.fit(X_train, y_train)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="predicting-on-unseen-data-using-the-trained-model" class="level4">
 <h4 class="anchored" data-anchor-id="predicting-on-unseen-data-using-the-trained-model">Predicting on unseen data using the trained model</h4>
 <div id="e20d2921-a8d0-4b63-8756-3bb5fb5c869a" class="cell" data-execution_count="24">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(X_test[<span class="dv">0</span>:<span class="dv">4</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(X_test[<span class="dv">0</span>:<span class="dv">4</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="24">
 <div>
 
@@ -787,12 +777,12 @@ Note
 </div>
 </div>
 <div id="ec41e07b-5c3b-4a44-ad64-519c9dc4bda7" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-tags="[]" data-execution_count="25">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>pred_dict <span class="op">=</span> {</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"sms"</span>: X_test[<span class="dv">0</span>:<span class="dv">4</span>],</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"spam_predictions"</span>: clf.predict(X_test[<span class="dv">0</span>:<span class="dv">4</span>]),</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>pred_df <span class="op">=</span> pd.DataFrame(pred_dict)</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>pred_df.style.set_properties(<span class="op">**</span>{<span class="st">"text-align"</span>: <span class="st">"left"</span>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>pred_dict <span class="op">=</span> {</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"sms"</span>: X_test[<span class="dv">0</span>:<span class="dv">4</span>],</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"spam_predictions"</span>: clf.predict(X_test[<span class="dv">0</span>:<span class="dv">4</span>]),</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>pred_df <span class="op">=</span> pd.DataFrame(pred_dict)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>pred_df.style.set_properties(<span class="op">**</span>{<span class="st">"text-align"</span>: <span class="st">"left"</span>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="25">
 <style type="text/css">
 #T_d946b_row0_col0, #T_d946b_row0_col1, #T_d946b_row1_col0, #T_d946b_row1_col1, #T_d946b_row2_col0, #T_d946b_row2_col1, #T_d946b_row3_col0, #T_d946b_row3_col1 {
@@ -880,13 +870,13 @@ Note
 </div>
 </div>
 <div id="86996f4a-2365-40d7-b3d0-cb67f511ee31" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-tags="[&quot;hide-input&quot;]" data-execution_count="26">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(DATA_DIR <span class="op">+</span> <span class="st">"indian_liver_patient.csv"</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop(columns <span class="op">=</span> [<span class="st">"Gender"</span>])</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"Dataset"</span>] <span class="op">=</span> df[<span class="st">"Dataset"</span>].replace(<span class="dv">1</span>, <span class="st">"Disease"</span>)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"Dataset"</span>] <span class="op">=</span> df[<span class="st">"Dataset"</span>].replace(<span class="dv">2</span>, <span class="st">"No Disease"</span>)</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>df.rename(columns<span class="op">=</span>{<span class="st">"Dataset"</span>: <span class="st">"Target"</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>train_df, test_df <span class="op">=</span> train_test_split(df, test_size<span class="op">=</span><span class="dv">4</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>HTML(train_df.head().to_html(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(DATA_DIR <span class="op">+</span> <span class="st">"indian_liver_patient.csv"</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop(columns <span class="op">=</span> [<span class="st">"Gender"</span>])</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"Dataset"</span>] <span class="op">=</span> df[<span class="st">"Dataset"</span>].replace(<span class="dv">1</span>, <span class="st">"Disease"</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"Dataset"</span>] <span class="op">=</span> df[<span class="st">"Dataset"</span>].replace(<span class="dv">2</span>, <span class="st">"No Disease"</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>df.rename(columns<span class="op">=</span>{<span class="st">"Dataset"</span>: <span class="st">"Target"</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>train_df, test_df <span class="op">=</span> train_test_split(df, test_size<span class="op">=</span><span class="dv">4</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>HTML(train_df.head().to_html(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="26">
 <table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
@@ -973,14 +963,14 @@ Note
 <h5 class="anchored" data-anchor-id="building-a-supervise-machine-learning-model">Building a supervise machine learning model</h5>
 <p>Let’s train a supervised machine learning model with the input and output above.</p>
 <div id="e82be94f-e169-41e7-93a4-124f692c82d3" class="cell" data-execution_count="27">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lightgbm.sklearn <span class="im">import</span> LGBMClassifier</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> train_df.drop(columns<span class="op">=</span>[<span class="st">"Target"</span>])</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>y_train <span class="op">=</span> train_df[<span class="st">"Target"</span>]</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>X_test <span class="op">=</span> test_df.drop(columns<span class="op">=</span>[<span class="st">"Target"</span>])</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>y_test <span class="op">=</span> test_df[<span class="st">"Target"</span>]</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> LGBMClassifier(random_state<span class="op">=</span><span class="dv">123</span>, verbose<span class="op">=-</span><span class="dv">1</span>,  n_jobs<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>model.fit(X_train, y_train)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lightgbm.sklearn <span class="im">import</span> LGBMClassifier</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> train_df.drop(columns<span class="op">=</span>[<span class="st">"Target"</span>])</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>y_train <span class="op">=</span> train_df[<span class="st">"Target"</span>]</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>X_test <span class="op">=</span> test_df.drop(columns<span class="op">=</span>[<span class="st">"Target"</span>])</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>y_test <span class="op">=</span> test_df[<span class="st">"Target"</span>]</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> LGBMClassifier(random_state<span class="op">=</span><span class="dv">123</span>, verbose<span class="op">=-</span><span class="dv">1</span>,  n_jobs<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>model.fit(X_train, y_train)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="27">
 <style>.sk-global {
   /* Definition of color scheme common for light and dark mode */
@@ -2064,7 +2054,7 @@ forceTheme('sk-container-id-2');</script>
 <li>Given features of new patients below we’ll use this model to predict whether these patients have the liver disease or not.</li>
 </ul>
 <div id="7b1496c4-4094-491a-8e0c-f76a8b4ce442" class="cell" data-execution_count="28">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>HTML(X_test.reset_index(drop<span class="op">=</span><span class="va">True</span>).to_html(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>HTML(X_test.reset_index(drop<span class="op">=</span><span class="va">True</span>).to_html(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="28">
 <table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
@@ -2130,10 +2120,10 @@ forceTheme('sk-container-id-2');</script>
 </div>
 </div>
 <div id="df5916f4-c4c1-4a9d-b3ab-db7ca5b01f56" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="29">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>pred_df <span class="op">=</span> pd.DataFrame({<span class="st">"Predicted_target"</span>: model.predict(X_test).tolist()})</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>df_concat <span class="op">=</span> pd.concat([pred_df, X_test.reset_index(drop<span class="op">=</span><span class="va">True</span>)], axis<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>HTML(df_concat.to_html(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>pred_df <span class="op">=</span> pd.DataFrame({<span class="st">"Predicted_target"</span>: model.predict(X_test).tolist()})</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>df_concat <span class="op">=</span> pd.concat([pred_df, X_test.reset_index(drop<span class="op">=</span><span class="va">True</span>)], axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>HTML(df_concat.to_html(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="29">
 <table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
@@ -2210,29 +2200,29 @@ forceTheme('sk-container-id-2');</script>
 <h4 class="anchored" data-anchor-id="example-2-predicting-the-label-of-a-given-image">Example 2: Predicting the label of a given image</h4>
 <p>Suppose you want to predict the label of a given image using supervised machine learning. We are using a pre-trained model here to predict labels of new unseen images.</p>
 <div id="61d0d419-54e3-4265-bcda-864dcb956bcb" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="30">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> glob</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> Image</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>images <span class="op">=</span> glob.glob(DATA_DIR <span class="op">+</span> <span class="st">"test_images/*.*"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> glob</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> Image</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>images <span class="op">=</span> glob.glob(DATA_DIR <span class="op">+</span> <span class="st">"test_images/*.*"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div id="400756cf-2b43-46cf-ba54-f687e37ed2b0" class="cell" data-execution_count="31">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> image_path <span class="kw">in</span> images:</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    image <span class="op">=</span> Image.<span class="bu">open</span>(image_path).convert(<span class="st">"RGB"</span>)</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    plt.imshow(image)</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    plt.axis(<span class="st">"off"</span>)</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    plt.show()</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    predictions <span class="op">=</span> classify_image(image_path)</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(predictions.to_string(index<span class="op">=</span><span class="va">False</span>))</span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"-"</span> <span class="op">*</span> <span class="dv">60</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> image_path <span class="kw">in</span> images:</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    image <span class="op">=</span> Image.<span class="bu">open</span>(image_path).convert(<span class="st">"RGB"</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    plt.imshow(image)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    plt.axis(<span class="st">"off"</span>)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    plt.show()</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    predictions <span class="op">=</span> classify_image(image_path)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(predictions.to_string(index<span class="op">=</span><span class="va">False</span>))</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"-"</span> <span class="op">*</span> <span class="dv">60</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="01_intro_files/figure-html/cell-13-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="01_intro_files/figure-html/cell-12-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -2247,7 +2237,7 @@ Persian cat              0.275
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="01_intro_files/figure-html/cell-13-output-3.png" class="img-fluid figure-img"></p>
+<p><img src="01_intro_files/figure-html/cell-12-output-3.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -2262,7 +2252,7 @@ snow leopard              0.001
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="01_intro_files/figure-html/cell-13-output-5.png" class="img-fluid figure-img"></p>
+<p><img src="01_intro_files/figure-html/cell-12-output-5.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -2277,7 +2267,7 @@ capuchin              0.011
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="01_intro_files/figure-html/cell-13-output-7.png" class="img-fluid figure-img"></p>
+<p><img src="01_intro_files/figure-html/cell-12-output-7.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -2297,18 +2287,18 @@ Greater Swiss Mountain dog              0.235
 <p>A <strong>large language model (LLM)</strong> is trained on a very large collection of text and can be adapted or prompted for many language tasks. Instead of training a sentiment classifier from scratch on movie reviews, we can start with a pretrained model that has already been fine-tuned to classify text as positive or negative.</p>
 <p>Here, a Hugging Face <code>pipeline</code> handles tokenization, model inference, and conversion of the model output into a label and confidence score.</p>
 <div id="481fdad0-5006-4384-a0cb-0c5090b8133b" class="cell" data-execution_count="32">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> pipeline</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>sentiment_analyzer <span class="op">=</span> pipeline(</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="st">"sentiment-analysis"</span>,</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    model<span class="op">=</span><span class="st">"distilbert-base-uncased-finetuned-sst-2-english"</span>,</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>texts <span class="op">=</span> [</span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"I asked my model to predict my future, and it said '404: Life not found.'"</span>,</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Machine learning is like cooking: sometimes you follow the recipe, and sometimes you hope for the best!"</span>,</span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>sentiment_analyzer(texts)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> pipeline</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>sentiment_analyzer <span class="op">=</span> pipeline(</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="st">"sentiment-analysis"</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    model<span class="op">=</span><span class="st">"distilbert-base-uncased-finetuned-sst-2-english"</span>,</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>texts <span class="op">=</span> [</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"I asked my model to predict my future, and it said '404: Life not found.'"</span>,</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Machine learning is like cooking: sometimes you follow the recipe, and sometimes you hope for the best!"</span>,</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>sentiment_analyzer(texts)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.</code></pre>
 </div>
@@ -2340,16 +2330,16 @@ Greater Swiss Mountain dog              0.235
 <h5 class="anchored" data-anchor-id="going-beyond-the-models-original-labels-zero-shot-classification">Going beyond the model’s original labels: zero-shot classification</h5>
 <p>The sentiment model above is restricted to the labels it was trained to predict. Suppose instead that we want to classify text using our own candidate emotion labels—without first providing labeled examples for this particular task. A pretrained model designed for <strong>zero-shot classification</strong> can score how well each candidate label fits the text.</p>
 <div id="fc98c6ce-0fa2-4645-94ae-5dd501a1d994" class="cell" data-execution_count="33">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> pipeline</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>emotion_classifier <span class="op">=</span> pipeline(</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="st">"zero-shot-classification"</span>,</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    model<span class="op">=</span><span class="st">"facebook/bart-large-mnli"</span>,</span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>text <span class="op">=</span> <span class="st">"I submitted the assignment after weeks of work, and it finally passed every test."</span></span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>candidate_labels <span class="op">=</span> [<span class="st">"sadness"</span>, <span class="st">"joy"</span>, <span class="st">"love"</span>, <span class="st">"anger"</span>, <span class="st">"fear"</span>, <span class="st">"surprise"</span>]</span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>emotion_classifier(text, candidate_labels)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> pipeline</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>emotion_classifier <span class="op">=</span> pipeline(</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="st">"zero-shot-classification"</span>,</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    model<span class="op">=</span><span class="st">"facebook/bart-large-mnli"</span>,</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>text <span class="op">=</span> <span class="st">"I submitted the assignment after weeks of work, and it finally passed every test."</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>candidate_labels <span class="op">=</span> [<span class="st">"sadness"</span>, <span class="st">"joy"</span>, <span class="st">"love"</span>, <span class="st">"anger"</span>, <span class="st">"fear"</span>, <span class="st">"surprise"</span>]</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>emotion_classifier(text, candidate_labels)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
 {"model_id":"e176c2fe79be4a7ea6800733fcb4a1a8","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
@@ -2388,11 +2378,11 @@ Note
 </div>
 </div>
 <div id="6b42804c-09df-4905-bab9-0ed09090cc32" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-tags="[&quot;hide-input&quot;]" data-execution_count="34">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv( DATA_DIR <span class="op">+</span> <span class="st">"kc_house_data.csv"</span>)</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop(columns <span class="op">=</span> [<span class="st">"id"</span>, <span class="st">"date"</span>])</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>df.rename(columns<span class="op">=</span>{<span class="st">"price"</span>: <span class="st">"target"</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>train_df, test_df <span class="op">=</span> train_test_split(df, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">4</span>)</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>HTML(train_df.head().to_html(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv( DATA_DIR <span class="op">+</span> <span class="st">"kc_house_data.csv"</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop(columns <span class="op">=</span> [<span class="st">"id"</span>, <span class="st">"date"</span>])</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>df.rename(columns<span class="op">=</span>{<span class="st">"price"</span>: <span class="st">"target"</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>train_df, test_df <span class="op">=</span> train_test_split(df, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">4</span>)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>HTML(train_df.head().to_html(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="34">
 <table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
@@ -2529,24 +2519,24 @@ Note
 </div>
 </div>
 <div id="3c7669ee-891e-40d3-9d47-7b4e9d9e25b4" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="35">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build a regression model</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lightgbm.sklearn <span class="im">import</span> LGBMRegressor</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>X_train, y_train <span class="op">=</span> train_df.drop(columns<span class="op">=</span> [<span class="st">"target"</span>]), train_df[<span class="st">"target"</span>]</span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>X_test, y_test <span class="op">=</span> test_df.drop(columns<span class="op">=</span> [<span class="st">"target"</span>]), train_df[<span class="st">"target"</span>]</span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> LGBMRegressor(random_state<span class="op">=</span><span class="dv">123</span>, verbose<span class="op">=-</span><span class="dv">1</span>, n_jobs<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="co">#model = XGBRegressor()</span></span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>model.fit(X_train, y_train)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build a regression model</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lightgbm.sklearn <span class="im">import</span> LGBMRegressor</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>X_train, y_train <span class="op">=</span> train_df.drop(columns<span class="op">=</span> [<span class="st">"target"</span>]), train_df[<span class="st">"target"</span>]</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>X_test, y_test <span class="op">=</span> test_df.drop(columns<span class="op">=</span> [<span class="st">"target"</span>]), train_df[<span class="st">"target"</span>]</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> LGBMRegressor(random_state<span class="op">=</span><span class="dv">123</span>, verbose<span class="op">=-</span><span class="dv">1</span>, n_jobs<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="co">#model = XGBRegressor()</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>model.fit(X_train, y_train)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div id="86257c76-3e64-4f1d-858b-3f9023f01773" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="36">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Predict on unseen examples using the built model</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>pred_df <span class="op">=</span> pd.DataFrame(</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># {"Predicted target": model.predict(X_test[0:4]).tolist(), "Actual price": y_test[0:4].tolist()}</span></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"Predicted_target"</span>: model.predict(X_test[<span class="dv">0</span>:<span class="dv">4</span>]).tolist()}</span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>df_concat <span class="op">=</span> pd.concat([pred_df, X_test[<span class="dv">0</span>:<span class="dv">4</span>].reset_index(drop<span class="op">=</span><span class="va">True</span>)], axis<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>HTML(df_concat.to_html(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Predict on unseen examples using the built model</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>pred_df <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># {"Predicted target": model.predict(X_test[0:4]).tolist(), "Actual price": y_test[0:4].tolist()}</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"Predicted_target"</span>: model.predict(X_test[<span class="dv">0</span>:<span class="dv">4</span>]).tolist()}</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>df_concat <span class="op">=</span> pd.concat([pred_df, X_test[<span class="dv">0</span>:<span class="dv">4</span>].reset_index(drop<span class="op">=</span><span class="va">True</span>)], axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>HTML(df_concat.to_html(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="36">
 <table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
