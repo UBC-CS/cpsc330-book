@@ -23,7 +23,7 @@ book:
     - part: "Foundations and Supervised Learning"
       chapters:
         - book/02_terminology-baselines-decision-trees.ipynb
-        # Add Chapters 3 and 4 after converting them to book chapters.
+        - book/03_ml-fundamentals.ipynb
 
     # Add the following parts when their first chapters are ready:
     # - Unsupervised Learning and Recommendation
