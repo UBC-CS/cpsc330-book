@@ -1,5 +1,6 @@
 from utils import *
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
 import mglearn
 from imageio import imread
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
@@ -50,22 +51,49 @@ def plot_loss_diagram(labels_inside=False): # From Mike's notebook: https://gith
     plt.tight_layout()
     
 def plot_tree_decision_boundary_and_tree(
-    model, X, y, height=6, width=16, fontsize = 9, x_label="x-axis", y_label="y-axis", eps=None
+    model,
+    X,
+    y,
+    height=6,
+    width=16,
+    fontsize=9,
+    x_label="x-axis",
+    y_label="y-axis",
+    eps=None,
+    class_names=None,
 ):
-    fig, ax = plt.subplots(
+    """Plot a two-feature decision boundary beside its decision tree."""
+    if class_names is None:
+        class_names = [str(label) for label in model.classes_]
+
+    fig, axes = plt.subplots(
         1,
         2,
         figsize=(width, height),
-        subplot_kw={"xticks": (), "yticks": ()},
         gridspec_kw={"width_ratios": [1.5, 2]},
     )
-    plot_tree_decision_boundary(model, X, y, x_label, y_label, eps, ax=ax[0])
-    custom_plot_tree(model, 
-                 feature_names=X.columns.tolist(), 
-                 class_names=['A+', 'not A+'],
-                 impurity=False,
-                 fontsize=fontsize, ax=ax[1])
-    ax[1].set_axis_off()
+
+    boundary_ax, tree_ax = axes
+    plot_tree_decision_boundary(
+        model, X, y, x_label, y_label, eps, ax=boundary_ax
+    )
+    boundary_ax.xaxis.set_major_locator(MaxNLocator(nbins=6))
+    boundary_ax.yaxis.set_major_locator(MaxNLocator(nbins=6))
+    boundary_ax.tick_params(
+        axis="both", which="both", bottom=True, left=True, labelbottom=True, labelleft=True
+    )
+    boundary_ax.grid(linestyle=":", alpha=0.4)
+
+    custom_plot_tree(
+        model,
+        feature_names=X.columns.tolist(),
+        class_names=class_names,
+        impurity=False,
+        fontsize=fontsize,
+        ax=tree_ax,
+    )
+    tree_ax.set_axis_off()
+    fig.tight_layout()
     plt.show()
     
 def plot_fruit_tree(ax=None):
@@ -480,5 +508,3 @@ def my_heatmap(values, xlabel, ylabel, xticklabels, yticklabels, cmap=None,
             c = 'w'        
         ax.text(x, y, fmt % value, color=c, ha="center", va="center")
     return img
-
-        

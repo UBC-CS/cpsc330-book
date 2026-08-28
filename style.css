@@ -106,6 +106,26 @@ code {
   background-color: #f8d7da;
 }
 
+/* Prompts that ask readers to pause and reason before continuing */
+.callout-reflection {
+  margin: 1rem 0;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--purple-dark);
+  border-left: 6px solid var(--purple-dark);
+  border-radius: 6px;
+  background-color: var(--purple-light);
+}
+
+.callout-reflection .callout-reflection-title {
+  margin-bottom: 0.4rem;
+  color: var(--purple-dark);
+  font-weight: 700;
+}
+
+.callout-reflection > :last-child {
+  margin-bottom: 0;
+}
+
 .callout-lo-header {
   margin-left: 0em;
   padding-left:  60px;
@@ -296,12 +316,11 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 4px;
 }
 
-.callout-question .callout-header {
-  font-weight: bold;
-}
-
-.callout-question .callout-body {
-  margin-top: 0.5em;
+.callout-question .exercise-title {
+  margin-bottom: 0.5em;
+  color: #145da0;
+  font-weight: 700;
+  font-size: 1.05em;
 }
 
 /* Answer box */
