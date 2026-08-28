@@ -302,7 +302,7 @@ window.Quarto = {
 
 <section id="learning-outcomes" class="level2 unnumbered callout-lo">
 <h2 class="unnumbered anchored" data-anchor-id="learning-outcomes">Learning outcomes</h2>
-<p>From this lecture, you will be able to</p>
+<p>By the end of this chapter, you should be able to:</p>
 <ul>
 <li>Explain the difference between Artificial Intelligence (AI), Machine Learning (ML), and Deep Learning (DL)</li>
 <li>Describe what machine learning is and when it is appropriate to use ML-based solutions.</li>
@@ -312,7 +312,7 @@ window.Quarto = {
 </ul>
 </section>
 <p><strong>Imports</strong></p>
-<div id="05be1ee9-5aa2-4b6c-9b20-ccb6d482a60a" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;skip&quot;}}" data-execution_count="20">
+<div id="05be1ee9-5aa2-4b6c-9b20-ccb6d482a60a" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;skip&quot;}}" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -679,13 +679,13 @@ Note
 </section>
 <section id="training-a-supervised-machine-learning-model-with-x-and-y" class="level4">
 <h4 class="anchored" data-anchor-id="training-a-supervised-machine-learning-model-with-x-and-y">Training a supervised machine learning model with <span class="math inline">\(X\)</span> and <span class="math inline">\(y\)</span></h4>
-<div id="f4511fed-6251-4301-9217-240723c2075e" class="cell" data-tags="[&quot;hide-input&quot;]" data-execution_count="22">
+<div id="f4511fed-6251-4301-9217-240723c2075e" class="cell" data-tags="[&quot;hide-input&quot;]" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>sms_df <span class="op">=</span> pd.read_csv(DATA_DIR <span class="op">+</span> <span class="st">"spam.csv"</span>, encoding<span class="op">=</span><span class="st">"latin-1"</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>sms_df <span class="op">=</span> sms_df.drop(columns <span class="op">=</span> [<span class="st">"Unnamed: 2"</span>, <span class="st">"Unnamed: 3"</span>, <span class="st">"Unnamed: 4"</span>])</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>sms_df <span class="op">=</span> sms_df.rename(columns<span class="op">=</span>{<span class="st">"v1"</span>: <span class="st">"target"</span>, <span class="st">"v2"</span>: <span class="st">"sms"</span>})</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>train_df, test_df <span class="op">=</span> train_test_split(sms_df, test_size<span class="op">=</span><span class="fl">0.10</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>HTML(train_df.head().to_html(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="22">
+<div class="cell-output cell-output-display" data-execution_count="2">
 <table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
@@ -718,7 +718,7 @@ Note
 </table>
 </div>
 </div>
-<div id="6f38510c-ad87-4d48-b267-cfe7bf44aa83" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-tags="[]" data-execution_count="23">
+<div id="6f38510c-ad87-4d48-b267-cfe7bf44aa83" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-tags="[]" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>X_train, y_train <span class="op">=</span> train_df[<span class="st">"sms"</span>], train_df[<span class="st">"target"</span>]</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>X_test, y_test <span class="op">=</span> test_df[<span class="st">"sms"</span>], test_df[<span class="st">"target"</span>]</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>clf <span class="op">=</span> make_pipeline(CountVectorizer(max_features<span class="op">=</span><span class="dv">5000</span>), LogisticRegression(max_iter<span class="op">=</span><span class="dv">5000</span>))</span>
@@ -727,9 +727,9 @@ Note
 </section>
 <section id="predicting-on-unseen-data-using-the-trained-model" class="level4">
 <h4 class="anchored" data-anchor-id="predicting-on-unseen-data-using-the-trained-model">Predicting on unseen data using the trained model</h4>
-<div id="e20d2921-a8d0-4b63-8756-3bb5fb5c869a" class="cell" data-execution_count="24">
+<div id="e20d2921-a8d0-4b63-8756-3bb5fb5c869a" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(X_test[<span class="dv">0</span>:<span class="dv">4</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="24">
+<div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
 
@@ -776,48 +776,48 @@ Note
 <p>Do not worry about the code and syntax for now.</p>
 </div>
 </div>
-<div id="ec41e07b-5c3b-4a44-ad64-519c9dc4bda7" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-tags="[]" data-execution_count="25">
+<div id="ec41e07b-5c3b-4a44-ad64-519c9dc4bda7" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-tags="[]" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>pred_dict <span class="op">=</span> {</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"sms"</span>: X_test[<span class="dv">0</span>:<span class="dv">4</span>],</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"spam_predictions"</span>: clf.predict(X_test[<span class="dv">0</span>:<span class="dv">4</span>]),</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>pred_df <span class="op">=</span> pd.DataFrame(pred_dict)</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>pred_df.style.set_properties(<span class="op">**</span>{<span class="st">"text-align"</span>: <span class="st">"left"</span>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="25">
+<div class="cell-output cell-output-display" data-execution_count="5">
 <style type="text/css">
-#T_d946b_row0_col0, #T_d946b_row0_col1, #T_d946b_row1_col0, #T_d946b_row1_col1, #T_d946b_row2_col0, #T_d946b_row2_col1, #T_d946b_row3_col0, #T_d946b_row3_col1 {
+#T_91e4f_row0_col0, #T_91e4f_row0_col1, #T_91e4f_row1_col0, #T_91e4f_row1_col1, #T_91e4f_row2_col0, #T_91e4f_row2_col1, #T_91e4f_row3_col0, #T_91e4f_row3_col1 {
   text-align: left;
 }
 </style>
 
-<table id="T_d946b" class="caption-top table table-sm table-striped small">
+<table id="T_91e4f" class="caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
-<th id="T_d946b_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">sms</th>
-<th id="T_d946b_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">spam_predictions</th>
+<th id="T_91e4f_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">sms</th>
+<th id="T_91e4f_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">spam_predictions</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<th id="T_d946b_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">3245</th>
-<td id="T_d946b_row0_col0" class="data row0 col0">Funny fact Nobody teaches volcanoes 2 erupt, tsunamis 2 arise, hurricanes 2 sway aroundn no 1 teaches hw 2 choose a wife Natural disasters just happens</td>
-<td id="T_d946b_row0_col1" class="data row0 col1">ham</td>
+<th id="T_91e4f_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">3245</th>
+<td id="T_91e4f_row0_col0" class="data row0 col0">Funny fact Nobody teaches volcanoes 2 erupt, tsunamis 2 arise, hurricanes 2 sway aroundn no 1 teaches hw 2 choose a wife Natural disasters just happens</td>
+<td id="T_91e4f_row0_col1" class="data row0 col1">ham</td>
 </tr>
 <tr class="even">
-<th id="T_d946b_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">944</th>
-<td id="T_d946b_row1_col0" class="data row1 col0">I sent my scores to sophas and i had to do secondary application for a few schools. I think if you are thinking of applying, do a research on cost also. Contact joke ogunrinde, her school is one me the less expensive ones</td>
-<td id="T_d946b_row1_col1" class="data row1 col1">ham</td>
+<th id="T_91e4f_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">944</th>
+<td id="T_91e4f_row1_col0" class="data row1 col0">I sent my scores to sophas and i had to do secondary application for a few schools. I think if you are thinking of applying, do a research on cost also. Contact joke ogunrinde, her school is one me the less expensive ones</td>
+<td id="T_91e4f_row1_col1" class="data row1 col1">ham</td>
 </tr>
 <tr class="odd">
-<th id="T_d946b_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">1044</th>
-<td id="T_d946b_row2_col0" class="data row2 col0">We know someone who you know that fancies you. Call 09058097218 to find out who. POBox 6, LS15HB 150p</td>
-<td id="T_d946b_row2_col1" class="data row2 col1">spam</td>
+<th id="T_91e4f_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">1044</th>
+<td id="T_91e4f_row2_col0" class="data row2 col0">We know someone who you know that fancies you. Call 09058097218 to find out who. POBox 6, LS15HB 150p</td>
+<td id="T_91e4f_row2_col1" class="data row2 col1">spam</td>
 </tr>
 <tr class="even">
-<th id="T_d946b_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">2484</th>
-<td id="T_d946b_row3_col0" class="data row3 col0">Only if you promise your getting out as SOON as you can. And you'll text me in the morning to let me know you made it in ok.</td>
-<td id="T_d946b_row3_col1" class="data row3 col1">ham</td>
+<th id="T_91e4f_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">2484</th>
+<td id="T_91e4f_row3_col0" class="data row3 col0">Only if you promise your getting out as SOON as you can. And you'll text me in the morning to let me know you made it in ok.</td>
+<td id="T_91e4f_row3_col1" class="data row3 col1">ham</td>
 </tr>
 </tbody>
 </table>
@@ -869,7 +869,7 @@ Note
 <p>Download the data from <a href="https://www.kaggle.com/uciml/indian-liver-patient-records">here</a>.</p>
 </div>
 </div>
-<div id="86996f4a-2365-40d7-b3d0-cb67f511ee31" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-tags="[&quot;hide-input&quot;]" data-execution_count="26">
+<div id="86996f4a-2365-40d7-b3d0-cb67f511ee31" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-tags="[&quot;hide-input&quot;]" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(DATA_DIR <span class="op">+</span> <span class="st">"indian_liver_patient.csv"</span>)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop(columns <span class="op">=</span> [<span class="st">"Gender"</span>])</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"Dataset"</span>] <span class="op">=</span> df[<span class="st">"Dataset"</span>].replace(<span class="dv">1</span>, <span class="st">"Disease"</span>)</span>
@@ -877,7 +877,7 @@ Note
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>df.rename(columns<span class="op">=</span>{<span class="st">"Dataset"</span>: <span class="st">"Target"</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>train_df, test_df <span class="op">=</span> train_test_split(df, test_size<span class="op">=</span><span class="dv">4</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>HTML(train_df.head().to_html(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="26">
+<div class="cell-output cell-output-display" data-execution_count="6">
 <table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
@@ -962,7 +962,7 @@ Note
 <section id="building-a-supervise-machine-learning-model" class="level5">
 <h5 class="anchored" data-anchor-id="building-a-supervise-machine-learning-model">Building a supervise machine learning model</h5>
 <p>Let’s train a supervised machine learning model with the input and output above.</p>
-<div id="e82be94f-e169-41e7-93a4-124f692c82d3" class="cell" data-execution_count="27">
+<div id="e82be94f-e169-41e7-93a4-124f692c82d3" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lightgbm.sklearn <span class="im">import</span> LGBMClassifier</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> train_df.drop(columns<span class="op">=</span>[<span class="st">"Target"</span>])</span>
@@ -971,7 +971,7 @@ Note
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>y_test <span class="op">=</span> test_df[<span class="st">"Target"</span>]</span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> LGBMClassifier(random_state<span class="op">=</span><span class="dv">123</span>, verbose<span class="op">=-</span><span class="dv">1</span>,  n_jobs<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>model.fit(X_train, y_train)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="27">
+<div class="cell-output cell-output-display" data-execution_count="7">
 <style>.sk-global {
   /* Definition of color scheme common for light and dark mode */
   --sklearn-color-text: #000;
@@ -1670,7 +1670,7 @@ a.param-doc-link::before {
   justify-content: center;
   margin-top: 0.5em;
 }
-</style><div id="sk-container-id-2" tabindex="0" class="sk-top-container sk-global"><div class="sk-text-repr-fallback"><pre>LGBMClassifier(n_jobs=1, random_state=123, verbose=-1)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-2" type="checkbox" checked=""><label for="sk-estimator-id-2" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>LGBMClassifier</div></div><div><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></div></label><div class="sk-toggleable__content fitted" data-param-prefix="">
+</style><div id="sk-container-id-1" tabindex="0" class="sk-top-container sk-global"><div class="sk-text-repr-fallback"><pre>LGBMClassifier(n_jobs=1, random_state=123, verbose=-1)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually sk-global" id="sk-estimator-id-1" type="checkbox" checked=""><label for="sk-estimator-id-1" class="sk-toggleable__label fitted sk-toggleable__label-arrow"><div><div>LGBMClassifier</div></div><div><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></div></label><div class="sk-toggleable__content fitted" data-param-prefix="">
         <div class="estimator-table">
             <details>
                 <summary>Parameters</summary>
@@ -1807,7 +1807,7 @@ a.param-doc-link::before {
 <tr class="default even">
 <td class="param"><span class="param-doc-link" style="text-decoration:none;">booster_</span></td>
 <td class="fitted-att-type">Booster</td>
-<td>&lt;lightgbm.bas...t 0x1389d8050&gt;</td>
+<td>&lt;lightgbm.bas...t 0x12226fd70&gt;</td>
 </tr>
 <tr class="default odd">
 <td class="param"><span class="param-doc-link" style="text-decoration:none;">classes_</span></td>
@@ -2044,7 +2044,7 @@ function forceTheme(elementId) {
     }
 }
 
-forceTheme('sk-container-id-2');</script>
+forceTheme('sk-container-id-1');</script>
 </div>
 </div>
 </section>
@@ -2053,9 +2053,9 @@ forceTheme('sk-container-id-2');</script>
 <ul>
 <li>Given features of new patients below we’ll use this model to predict whether these patients have the liver disease or not.</li>
 </ul>
-<div id="7b1496c4-4094-491a-8e0c-f76a8b4ce442" class="cell" data-execution_count="28">
+<div id="7b1496c4-4094-491a-8e0c-f76a8b4ce442" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>HTML(X_test.reset_index(drop<span class="op">=</span><span class="va">True</span>).to_html(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="28">
+<div class="cell-output cell-output-display" data-execution_count="8">
 <table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
@@ -2119,12 +2119,12 @@ forceTheme('sk-container-id-2');</script>
 </table>
 </div>
 </div>
-<div id="df5916f4-c4c1-4a9d-b3ab-db7ca5b01f56" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="29">
+<div id="df5916f4-c4c1-4a9d-b3ab-db7ca5b01f56" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>pred_df <span class="op">=</span> pd.DataFrame({<span class="st">"Predicted_target"</span>: model.predict(X_test).tolist()})</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>df_concat <span class="op">=</span> pd.concat([pred_df, X_test.reset_index(drop<span class="op">=</span><span class="va">True</span>)], axis<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>HTML(df_concat.to_html(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="29">
+<div class="cell-output cell-output-display" data-execution_count="9">
 <table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
@@ -2199,7 +2199,7 @@ forceTheme('sk-container-id-2');</script>
 <section id="example-2-predicting-the-label-of-a-given-image" class="level4">
 <h4 class="anchored" data-anchor-id="example-2-predicting-the-label-of-a-given-image">Example 2: Predicting the label of a given image</h4>
 <p>Suppose you want to predict the label of a given image using supervised machine learning. We are using a pre-trained model here to predict labels of new unseen images.</p>
-<div id="61d0d419-54e3-4265-bcda-864dcb956bcb" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="30">
+<div id="61d0d419-54e3-4265-bcda-864dcb956bcb" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> glob</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -2207,7 +2207,7 @@ forceTheme('sk-container-id-2');</script>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>images <span class="op">=</span> glob.glob(DATA_DIR <span class="op">+</span> <span class="st">"test_images/*.*"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="400756cf-2b43-46cf-ba54-f687e37ed2b0" class="cell" data-execution_count="31">
+<div id="400756cf-2b43-46cf-ba54-f687e37ed2b0" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> image_path <span class="kw">in</span> images:</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    image <span class="op">=</span> Image.<span class="bu">open</span>(image_path).convert(<span class="st">"RGB"</span>)</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -2286,7 +2286,7 @@ Greater Swiss Mountain dog              0.235
 <h4 class="anchored" data-anchor-id="example-3-text-classification-with-a-pretrained-language-model">Example 3: Text classification with a pretrained language model</h4>
 <p>A <strong>large language model (LLM)</strong> is trained on a very large collection of text and can be adapted or prompted for many language tasks. Instead of training a sentiment classifier from scratch on movie reviews, we can start with a pretrained model that has already been fine-tuned to classify text as positive or negative.</p>
 <p>Here, a Hugging Face <code>pipeline</code> handles tokenization, model inference, and conversion of the model output into a label and confidence score.</p>
-<div id="481fdad0-5006-4384-a0cb-0c5090b8133b" class="cell" data-execution_count="32">
+<div id="481fdad0-5006-4384-a0cb-0c5090b8133b" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> pipeline</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>sentiment_analyzer <span class="op">=</span> pipeline(</span>
@@ -2304,10 +2304,10 @@ Greater Swiss Mountain dog              0.235
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"e9e5ab13f3604d46bbde4dd04267b4c3","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"d2272bf41cbe4db294da596b98e2d89d","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="32">
+<div class="cell-output cell-output-display" data-execution_count="12">
 <pre><code>[{'label': 'NEGATIVE', 'score': 0.995707631111145},
  {'label': 'POSITIVE', 'score': 0.9992092251777649}]</code></pre>
 </div>
@@ -2329,7 +2329,7 @@ Greater Swiss Mountain dog              0.235
 <section id="going-beyond-the-models-original-labels-zero-shot-classification" class="level5">
 <h5 class="anchored" data-anchor-id="going-beyond-the-models-original-labels-zero-shot-classification">Going beyond the model’s original labels: zero-shot classification</h5>
 <p>The sentiment model above is restricted to the labels it was trained to predict. Suppose instead that we want to classify text using our own candidate emotion labels—without first providing labeled examples for this particular task. A pretrained model designed for <strong>zero-shot classification</strong> can score how well each candidate label fits the text.</p>
-<div id="fc98c6ce-0fa2-4645-94ae-5dd501a1d994" class="cell" data-execution_count="33">
+<div id="fc98c6ce-0fa2-4645-94ae-5dd501a1d994" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> pipeline</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>emotion_classifier <span class="op">=</span> pipeline(</span>
@@ -2342,18 +2342,18 @@ Greater Swiss Mountain dog              0.235
 <span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>emotion_classifier(text, candidate_labels)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"e176c2fe79be4a7ea6800733fcb4a1a8","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"ce03b2e0e6fc421e9834b163b3c47eb7","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="33">
+<div class="cell-output cell-output-display" data-execution_count="13">
 <pre><code>{'sequence': 'I submitted the assignment after weeks of work, and it finally passed every test.',
  'labels': ['surprise', 'joy', 'anger', 'fear', 'sadness', 'love'],
- 'scores': [0.4165930449962616,
-  0.3298921585083008,
-  0.08962558954954147,
-  0.06469517946243286,
-  0.05273403599858284,
-  0.04646006599068642]}</code></pre>
+ 'scores': [0.4165934920310974,
+  0.32989200949668884,
+  0.0896255373954773,
+  0.06469527631998062,
+  0.05273377522826195,
+  0.046459924429655075]}</code></pre>
 </div>
 </div>
 <p>The classifier returns all candidate labels ranked by score. Calling this <em>zero-shot</em> does not mean the model learned from no data: it was pretrained on substantial data, but it was not trained on labeled examples from this exact emotion-classification task.</p>
@@ -2377,13 +2377,13 @@ Note
 <p>Download the data from <a href="https://www.kaggle.com/harlfoxem/housesalesprediction">here</a>.</p>
 </div>
 </div>
-<div id="6b42804c-09df-4905-bab9-0ed09090cc32" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-tags="[&quot;hide-input&quot;]" data-execution_count="34">
+<div id="6b42804c-09df-4905-bab9-0ed09090cc32" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-tags="[&quot;hide-input&quot;]" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv( DATA_DIR <span class="op">+</span> <span class="st">"kc_house_data.csv"</span>)</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop(columns <span class="op">=</span> [<span class="st">"id"</span>, <span class="st">"date"</span>])</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>df.rename(columns<span class="op">=</span>{<span class="st">"price"</span>: <span class="st">"target"</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>train_df, test_df <span class="op">=</span> train_test_split(df, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">4</span>)</span>
 <span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>HTML(train_df.head().to_html(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="34">
+<div class="cell-output cell-output-display" data-execution_count="14">
 <table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
@@ -2518,7 +2518,7 @@ Note
 </table>
 </div>
 </div>
-<div id="3c7669ee-891e-40d3-9d47-7b4e9d9e25b4" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="35">
+<div id="3c7669ee-891e-40d3-9d47-7b4e9d9e25b4" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="15">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build a regression model</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lightgbm.sklearn <span class="im">import</span> LGBMRegressor</span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -2529,7 +2529,7 @@ Note
 <span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="co">#model = XGBRegressor()</span></span>
 <span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>model.fit(X_train, y_train)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="86257c76-3e64-4f1d-858b-3f9023f01773" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="36">
+<div id="86257c76-3e64-4f1d-858b-3f9023f01773" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="16">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Predict on unseen examples using the built model</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>pred_df <span class="op">=</span> pd.DataFrame(</span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># {"Predicted target": model.predict(X_test[0:4]).tolist(), "Actual price": y_test[0:4].tolist()}</span></span>
@@ -2537,7 +2537,7 @@ Note
 <span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>df_concat <span class="op">=</span> pd.concat([pred_df, X_test[<span class="dv">0</span>:<span class="dv">4</span>].reset_index(drop<span class="op">=</span><span class="va">True</span>)], axis<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>HTML(df_concat.to_html(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="36">
+<div class="cell-output cell-output-display" data-execution_count="16">
 <table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
@@ -2761,8 +2761,7 @@ Important
 <li>Recognizing which species of bird appears in a photograph</li>
 <li>Resolving a disagreement between two project teammates after hearing both perspectives</li>
 </ol>
-<p><br><br></p>
-<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout callout-style-default callout-note callout-titled" title="Suggested answers">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
