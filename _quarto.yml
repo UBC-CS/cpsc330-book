@@ -24,6 +24,7 @@ book:
       chapters:
         - book/02_terminology-baselines-decision-trees.ipynb
         - book/03_ml-fundamentals.ipynb
+        - book/04_kNNs-SVM-RBF.ipynb
 
     # Add the following parts when their first chapters are ready:
     # - Unsupervised Learning and Recommendation
