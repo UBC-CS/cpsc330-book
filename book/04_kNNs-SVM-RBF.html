@@ -264,6 +264,7 @@ window.Quarto = {
   <ul>
   <li><a href="#from-distance-to-rbf-similarity" id="toc-from-distance-to-rbf-similarity" class="nav-link" data-scroll-target="#from-distance-to-rbf-similarity">From distance to RBF similarity</a></li>
   <li><a href="#support-vectors" id="toc-support-vectors" class="nav-link" data-scroll-target="#support-vectors">Support vectors</a></li>
+  <li><a href="#optional-the-decision-function" id="toc-optional-the-decision-function" class="nav-link" data-scroll-target="#optional-the-decision-function">Optional: the decision function</a></li>
   <li><a href="#gamma-how-local-is-the-similarity" id="toc-gamma-how-local-is-the-similarity" class="nav-link" data-scroll-target="#gamma-how-local-is-the-similarity"><code>gamma</code>: how local is the similarity?</a></li>
   <li><a href="#c-how-costly-are-training-mistakes" id="toc-c-how-costly-are-training-mistakes" class="nav-link" data-scroll-target="#c-how-costly-are-training-mistakes"><code>C</code>: how costly are training mistakes?</a></li>
   <li><a href="#why-c-and-gamma-must-be-tuned-together" id="toc-why-c-and-gamma-must-be-tuned-together" class="nav-link" data-scroll-target="#why-c-and-gamma-must-be-tuned-together">Why <code>C</code> and <code>gamma</code> must be tuned together</a></li>
@@ -1604,13 +1605,13 @@ Exercise 4.2: Choosing a representation
 </section>
 <section id="rbf-support-vector-machines" class="level2">
 <h2 class="anchored" data-anchor-id="rbf-support-vector-machines">RBF support vector machines</h2>
-<p><span class="math inline">\(k\)</span>-NN gives every query a prediction by consulting nearby training examples directly. This produces an intuitive model, but it can create jagged boundaries and make prediction expensive. An <strong>RBF support vector machine</strong> is another similarity-based model: during fitting, it learns which training examples matter and how their influence should be combined.</p>
-<p>Our goal here is deliberately operational. We will not derive the SVM optimization problem or the kernel trick. We want enough intuition to use <code>SVC</code>, recognize support vectors, and reason about its two main hyperparameters, <code>gamma</code> and <code>C</code>.</p>
+<p><span class="math inline">\(k\)</span>-NN predicts by consulting nearby training examples directly and letting them vote. This produces an intuitive model, but it can create jagged boundaries and make prediction expensive. An <strong>RBF support vector machine (SVM)</strong> also uses similarity, but it learns a different kind of prediction rule. During fitting, it identifies training examples that are especially important for determining the decision boundary. These examples are called <strong>support vectors</strong>.</p>
+<p>Our goal here is deliberately operational. We will not derive the SVM optimization problem or the kernel trick. We want enough intuition to use scikit-learn’s support vector classifier (<a href="https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html"><code>SVC</code></a>) and regressor (<a href="https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html"><code>SVR</code></a>), recognize support vectors, and reason about the gamma and C hyperparameters of an RBF SVM.</p>
 <section id="from-distance-to-rbf-similarity" class="level3">
 <h3 class="anchored" data-anchor-id="from-distance-to-rbf-similarity">From distance to RBF similarity</h3>
-<p>The radial basis function (RBF) kernel converts distance into similarity. Two examples that are close have an RBF similarity near one; as their squared Euclidean distance grows, their similarity approaches zero. The RBF kernel is therefore a <strong>similarity function built from distance</strong>, not another distance metric.</p>
-<p>An RBF SVM prediction combines similarities to selected training examples, giving each selected example a learned amount of influence. These selected examples are called <strong>support vectors</strong>.</p>
-<p>It can be helpful to picture an RBF SVM as a smoother relative of <span class="math inline">\(k\)</span>-NN, but this is only an analogy. A <span class="math inline">\(k\)</span>-NN model finds neighbours and lets them vote at prediction time. During fitting, an SVM selects support vectors and learns how strongly they contribute to its predictions.</p>
+<p>The radial basis function (RBF) kernel converts distance into similarity. Two examples that are close have an RBF similarity near one. As their squared Euclidean distance grows, their similarity approaches zero. The RBF kernel is therefore a <strong>similarity function built from distance</strong>, not another distance metric.</p>
+<p>To classify a query, the fitted model measures its RBF similarity to the support vectors and combines their influences. Support vectors from the two classes push the prediction in different directions, and the resulting score determines the predicted class.</p>
+<p>It can be helpful to picture an RBF SVM as a smoother relative of <span class="math inline">\(k\)</span>-NN, but this is only an analogy. A <span class="math inline">\(k\)</span>-NN model selects neighbours and lets them vote at prediction time. An SVM selects support vectors and learns how strongly they contribute during fitting.</p>
 <div id="cell-42" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-30T01:33:06.241641Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-30T01:33:06.241545Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-30T01:33:08.253808Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-30T01:33:08.253403Z&quot;}}" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>knn_for_comparison <span class="op">=</span> KNeighborsClassifier(n_neighbors<span class="op">=</span>best_k)</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>svm_for_comparison <span class="op">=</span> SVC(kernel<span class="op">=</span><span class="st">"rbf"</span>, gamma<span class="op">=</span><span class="fl">0.01</span>)</span>
@@ -1642,7 +1643,8 @@ Exercise 4.2: Choosing a representation
 </section>
 <section id="support-vectors" class="level3">
 <h3 class="anchored" data-anchor-id="support-vectors">Support vectors</h3>
-<p>Whether a training example is a support vector is determined during <code>fit</code>. The highlighted examples below are the support vectors for this fitted model. Other training examples helped determine the solution during fitting, but they do not appear directly in the fitted prediction function.</p>
+<p>Support vectors are often training examples close to the decision boundary because such examples help determine exactly where the boundary should go. In the cities problem, a city far inside Canada tells us relatively little about the precise location of the Canada–USA boundary. Cities near the border, such as White Rock or Buffalo, are potentially much more informative.</p>
+<p>This is useful intuition rather than a complete definition. Difficult or misclassified examples can also be support vectors, and an SVM does not necessarily end up with only a small number of them. More precisely, support vectors are the training examples that contribute directly to the fitted decision function. Whether an example becomes a support vector is determined during <code>fit</code>. The highlighted examples below are the support vectors for this fitted model.</p>
 <div id="cell-44" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-30T01:33:08.255027Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-30T01:33:08.254969Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-30T01:33:08.475517Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-30T01:33:08.475003Z&quot;}}" data-execution_count="15">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.datasets <span class="im">import</span> make_blobs</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -1658,14 +1660,28 @@ Exercise 4.2: Choosing a representation
 </div>
 </div>
 </section>
+<section id="optional-the-decision-function" class="level3">
+<h3 class="anchored" data-anchor-id="optional-the-decision-function">Optional: the decision function</h3>
+<p>For binary classification, the preceding description can be written as</p>
+<p><span class="math display">\[
+f(x_{\text{new}}) = \sum_{i \in SV} \alpha_i y_i K(x_i, x_{\text{new}}) + b.
+\]</span></p>
+<p>Here <span class="math inline">\(x_i\)</span> is a support vector, <span class="math inline">\(y_i\)</span> indicates its class, <span class="math inline">\(\alpha_i\)</span> determines how strongly it contributes, <span class="math inline">\(K(x_i,x_{\text{new}})\)</span> measures its similarity to the query, and <span class="math inline">\(b\)</span> shifts the decision threshold. The sign of the resulting score determines the predicted class.</p>
+<p>You are not expected to calculate this function by hand. Its purpose is to make the main idea precise: an RBF SVM combines learned contributions from support vectors rather than taking a neighbour vote.</p>
+</section>
 <section id="gamma-how-local-is-the-similarity" class="level3">
 <h3 class="anchored" data-anchor-id="gamma-how-local-is-the-similarity"><code>gamma</code>: how local is the similarity?</h3>
-<p><code>gamma</code> controls how quickly RBF similarity fades with distance.</p>
+<p>The RBF similarity between a support vector <span class="math inline">\(x_i\)</span> and a query <span class="math inline">\(x_{\text{new}}\)</span> is</p>
+<p><span class="math display">\[
+K(x_i,x_{\text{new}}) = \exp\left(-\gamma \lVert x_i-x_{\text{new}} \rVert^2\right).
+\]</span></p>
+<p>The value is 1 when the two feature vectors are identical and approaches 0 as they move farther apart. You can imagine placing a smooth bump over each support vector. The bump is highest at the support vector and falls as we move away; the similarity is the height of the bump at the query.</p>
+<p><code>gamma</code> controls the width of these bumps:</p>
 <ul>
-<li>With a small <code>gamma</code>, a training example influences a broad region, usually producing a smoother boundary.</li>
-<li>With a large <code>gamma</code>, its influence is highly local, allowing a more detailed boundary.</li>
+<li>A small <code>gamma</code> creates wide bumps, so each support vector influences a broad region. This usually produces a smoother boundary.</li>
+<li>A large <code>gamma</code> creates narrow bumps, so each support vector has highly local influence. This allows a more detailed boundary.</li>
 </ul>
-<p>As a broad tendency, increasing <code>gamma</code> increases flexibility and can move the model from underfitting toward overfitting.</p>
+<p>As a broad tendency, increasing <code>gamma</code> increases flexibility and can move the model from underfitting toward overfitting. Because RBF similarity is calculated from distance, feature scaling affects these regions of influence.</p>
 <div id="cell-46" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-30T01:33:08.476583Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-30T01:33:08.476510Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-30T01:33:19.533922Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-30T01:33:19.533590Z&quot;}}" data-execution_count="16">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>gamma_values <span class="op">=</span> [<span class="fl">0.001</span>, <span class="fl">0.01</span>, <span class="fl">0.1</span>, <span class="fl">1.0</span>, <span class="fl">10.0</span>]</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>plot_svc_gamma(</span>
@@ -1688,8 +1704,8 @@ Exercise 4.2: Choosing a representation
 <h3 class="anchored" data-anchor-id="c-how-costly-are-training-mistakes"><code>C</code>: how costly are training mistakes?</h3>
 <p><code>C</code> controls how strongly fitting penalizes mistakes on the training data.</p>
 <ul>
-<li>A small <code>C</code> tolerates more training mistakes in favor of a smoother boundary.</li>
-<li>A large <code>C</code> puts more pressure on the model to fit the training examples, often producing a more detailed boundary.</li>
+<li>A small <code>C</code> tolerates more training mistakes, allowing a smoother boundary. If <code>C</code> is too small, the model may underfit.</li>
+<li>A large <code>C</code> puts more pressure on the model to classify difficult training examples correctly, often producing a more detailed boundary. If <code>C</code> is too large, the model may overfit.</li>
 </ul>
 <p>This is again a broad tendency rather than a guarantee about validation performance.</p>
 <div id="cell-48" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-30T01:33:19.535032Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-30T01:33:19.534974Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-30T01:33:27.764127Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-30T01:33:27.763838Z&quot;}}" data-execution_count="17">
@@ -1712,7 +1728,12 @@ Exercise 4.2: Choosing a representation
 </section>
 <section id="why-c-and-gamma-must-be-tuned-together" class="level3">
 <h3 class="anchored" data-anchor-id="why-c-and-gamma-must-be-tuned-together">Why <code>C</code> and <code>gamma</code> must be tuned together</h3>
-<p><code>C</code> and <code>gamma</code> affect different parts of the fitted rule, and their effects interact. For example, changing the penalty for mistakes may matter differently when every support vector has a broad influence than when each has an extremely local influence. We therefore cannot reliably tune one, freeze it, and then tune the other.</p>
+<p>The two hyperparameters answer different questions:</p>
+<ul>
+<li><code>gamma</code>: How far does each support vector’s influence extend?</li>
+<li><code>C</code>: How strongly should fitting try to avoid training mistakes?</li>
+</ul>
+<p>Their effects interact. Changing the penalty for mistakes can have a different effect when every support vector has broad influence than when each has highly local influence. We therefore cannot reliably tune one, freeze it, and then tune the other.</p>
 <p>A later chapter will introduce tools such as <code>GridSearchCV</code> and <code>RandomizedSearchCV</code> for evaluating combinations of hyperparameters. The same Golden Rule still applies: the search uses training and validation data, while the test set remains untouched until the complete workflow has been selected.</p>
 </section>
 <section id="comparing-the-two-models" class="level3">
@@ -1763,6 +1784,7 @@ Exercise 4.2: Choosing a representation
 <section id="classification-regression-and-text-data" class="level3">
 <h3 class="anchored" data-anchor-id="classification-regression-and-text-data">Classification, regression, and text data</h3>
 <p>Just as scikit-learn provides <code>KNeighborsClassifier</code> and <code>KNeighborsRegressor</code>, it provides <code>SVC</code> for classification and <code>SVR</code> for regression.</p>
+<p>RBF SVMs can learn nonlinear decision boundaries and often work well on appropriately preprocessed small- to medium-sized datasets. Fitting can become expensive as the number of examples grows, and the results are sensitive to feature scaling, <code>C</code>, and <code>gamma</code>.</p>
 <p>SVMs can also be effective with high-dimensional text representations. For large sparse text datasets, a linear SVM is often a more scalable baseline than an RBF SVM. We retain the RBF model here because it makes similarity visible and provides two interacting hyperparameters for practice. The next chapter will show how text and other non-numerical columns can be transformed as part of a complete modeling pipeline.</p>
 <div class="callout-question">
 <div class="exercise-title">
