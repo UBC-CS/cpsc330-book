@@ -293,15 +293,9 @@ window.Quarto = {
   </ul></li>
   <li><a href="#encoding-text-data" id="toc-encoding-text-data" class="nav-link" data-scroll-target="#encoding-text-data">Encoding text data</a>
   <ul>
-  <li><a href="#a-spam-classification-example" id="toc-a-spam-classification-example" class="nav-link" data-scroll-target="#a-spam-classification-example">A spam classification example</a></li>
-  <li><a href="#why-not-one-hot-encode-documents" id="toc-why-not-one-hot-encode-documents" class="nav-link" data-scroll-target="#why-not-one-hot-encode-documents">Why not one-hot encode documents?</a></li>
-  <li><a href="#the-bag-of-words-representation" id="toc-the-bag-of-words-representation" class="nav-link" data-scroll-target="#the-bag-of-words-representation">The bag-of-words representation</a></li>
-  <li><a href="#extracting-bag-of-words-features-with-scikit-learn" id="toc-extracting-bag-of-words-features-with-scikit-learn" class="nav-link" data-scroll-target="#extracting-bag-of-words-features-with-scikit-learn">Extracting bag-of-words features with <code>scikit-learn</code></a></li>
-  <li><a href="#why-sparse-matrices" id="toc-why-sparse-matrices" class="nav-link" data-scroll-target="#why-sparse-matrices">Why sparse matrices?</a></li>
-  <li><a href="#onehotencoder-and-sparse-features" id="toc-onehotencoder-and-sparse-features" class="nav-link" data-scroll-target="#onehotencoder-and-sparse-features"><code>OneHotEncoder</code> and sparse features</a></li>
-  <li><a href="#important-countvectorizer-hyperparameters" id="toc-important-countvectorizer-hyperparameters" class="nav-link" data-scroll-target="#important-countvectorizer-hyperparameters">Important <code>CountVectorizer</code> hyperparameters</a></li>
-  <li><a href="#text-preprocessing" id="toc-text-preprocessing" class="nav-link" data-scroll-target="#text-preprocessing">Text preprocessing</a></li>
-  <li><a href="#limitations-of-bag-of-words-features" id="toc-limitations-of-bag-of-words-features" class="nav-link" data-scroll-target="#limitations-of-bag-of-words-features">Limitations of bag-of-words features</a></li>
+  <li><a href="#from-messages-to-bag-of-words-features" id="toc-from-messages-to-bag-of-words-features" class="nav-link" data-scroll-target="#from-messages-to-bag-of-words-features">From messages to bag-of-words features</a></li>
+  <li><a href="#controlling-the-representation" id="toc-controlling-the-representation" class="nav-link" data-scroll-target="#controlling-the-representation">Controlling the representation</a></li>
+  <li><a href="#text-preprocessing-inside-a-pipeline" id="toc-text-preprocessing-inside-a-pipeline" class="nav-link" data-scroll-target="#text-preprocessing-inside-a-pipeline">Text preprocessing inside a pipeline</a></li>
   <li><a href="#exercise-6.2" id="toc-exercise-6.2" class="nav-link" data-scroll-target="#exercise-6.2">Exercise 6.2</a></li>
   </ul></li>
   <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
@@ -365,7 +359,7 @@ window.Quarto = {
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.svm <span class="im">import</span> SVC, SVR</span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>sys.path.append(<span class="st">"code"</span>)</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> utils <span class="im">import</span> mean_std_cross_val_scores</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> utils <span class="im">import</span> summarize_cross_validation</span>
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">"display.max_colwidth"</span>, <span class="dv">200</span>)</span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>DATA_DIR <span class="op">=</span> Path(<span class="st">"data"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -388,7 +382,7 @@ window.Quarto = {
 <p>This dataset contains only 21 invented examples. It is designed to make transformations easy to inspect, not to support conclusions about real students. The scores below are unstable demonstrations of an API and should not be interpreted as evidence that major, attendance, or any other feature determines student ability or quiz performance. A real educational prediction system would also raise serious questions about measurement, fairness, consent, and the consequences of errors that are outside the scope of this toy example.</p>
 </div>
 </div>
-<div id="cell-8" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.448482Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.448397Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.453683Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.453390Z&quot;}}" data-tags="[]" data-execution_count="2">
+<div id="cell-8" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.471675Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.471586Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.477528Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.477129Z&quot;}}" data-tags="[]" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(DATA_DIR <span class="op">/</span> <span class="st">"quiz2-grade-toy-col-transformer.csv"</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
@@ -906,7 +900,7 @@ memory usage: 1.9 KB</code></pre>
 </section>
 <section id="identify-the-transformations" class="level4">
 <h4 class="anchored" data-anchor-id="identify-the-transformations">Identify the transformations</h4>
-<div id="cell-17" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.476822Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.476778Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.479387Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.479105Z&quot;}}" data-execution_count="6">
+<div id="cell-17" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.500061Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.500019Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.502678Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.502375Z&quot;}}" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>X.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="6">
 <div>
@@ -1000,7 +994,7 @@ memory usage: 1.9 KB</code></pre>
 </div>
 </div>
 </div>
-<div id="cell-18" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.480266Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.480221Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.481675Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.481308Z&quot;}}" data-execution_count="7">
+<div id="cell-18" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.503580Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.503531Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.504979Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.504690Z&quot;}}" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>numeric_feats <span class="op">=</span> [<span class="st">"university_years"</span>, <span class="st">"lab1"</span>, <span class="st">"lab3"</span>, <span class="st">"lab4"</span>, <span class="st">"quiz1"</span>]  <span class="co"># apply scaling</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>categorical_feats <span class="op">=</span> [<span class="st">"major"</span>]  <span class="co"># apply one-hot encoding</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>passthrough_feats <span class="op">=</span> [<span class="st">"ml_experience"</span>]  <span class="co"># do not apply any transformation</span></span>
@@ -1015,7 +1009,7 @@ memory usage: 1.9 KB</code></pre>
 <section id="create-the-column-transformer" class="level4">
 <h4 class="anchored" data-anchor-id="create-the-column-transformer">Create the column transformer</h4>
 <p>The explicit <code>ColumnTransformer</code> constructor receives a list of <code>(name, transformer, columns)</code> tuples. The name lets us inspect or tune the fitted component later; the column list controls which part of the input the component receives. Columns omitted from this list are dropped by default.</p>
-<div id="cell-23" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.482716Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.482655Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.484106Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.483779Z&quot;}}" data-execution_count="8">
+<div id="cell-23" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.505983Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.505936Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.507332Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.507003Z&quot;}}" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ct <span class="op">=</span> ColumnTransformer(</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    [</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"scaling"</span>, StandardScaler(), numeric_feats),</span>
@@ -1027,7 +1021,7 @@ memory usage: 1.9 KB</code></pre>
 <section id="the-make_column_transformer-shorthand" class="level4">
 <h4 class="anchored" data-anchor-id="the-make_column_transformer-shorthand">The <code>make_column_transformer</code> shorthand</h4>
 <p>Just as <code>make_pipeline</code> provides a concise alternative to <code>Pipeline</code>, <code>make_column_transformer</code> lets us omit explicit component names. It generates names from the transformer classes, such as <code>standardscaler</code> and <code>onehotencoder</code>. We will generally use this shorthand when custom names would not make the code clearer.</p>
-<div id="cell-25" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.485023Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.484981Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.486403Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.486077Z&quot;}}" data-execution_count="9">
+<div id="cell-25" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.508197Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.508153Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.509458Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.509211Z&quot;}}" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>ct <span class="op">=</span> make_column_transformer(    </span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    (StandardScaler(), numeric_feats),  <span class="co"># scaling on numeric features</span></span>
@@ -2268,13 +2262,13 @@ forceTheme('sk-container-id-1');</script>
 </section>
 <section id="examine-the-transformed-data" class="level4">
 <h4 class="anchored" data-anchor-id="examine-the-transformed-data">Examine the transformed data</h4>
-<div id="cell-30" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.504539Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.504488Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.506089Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.505792Z&quot;}}" data-execution_count="12">
+<div id="cell-30" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.531044Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.530967Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.532607Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.532303Z&quot;}}" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(transformed[:<span class="dv">2</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="12">
 <pre><code>numpy.ndarray</code></pre>
 </div>
 </div>
-<div id="cell-31" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.506916Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.506874Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.509101Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.508823Z&quot;}}" data-execution_count="13">
+<div id="cell-31" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.533462Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.533411Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.535261Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.535038Z&quot;}}" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>transformed</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="13">
 <pre><code>array([[-0.09345386,  0.3589134 , -0.21733442,  0.36269995,  0.84002795,
@@ -2359,7 +2353,7 @@ Note
 <section id="view-the-transformed-data-as-a-dataframe" class="level4">
 <h4 class="anchored" data-anchor-id="view-the-transformed-data-as-a-dataframe">View the transformed data as a DataFrame</h4>
 <p>One-hot encoding changes the number of columns, so the original feature names no longer map directly to the transformed matrix. A fitted column transformer can report the output names with <code>get_feature_names_out</code>. We can use those names to construct a DataFrame for inspection.</p>
-<div id="cell-34" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.510200Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.510145Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.511880Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.511609Z&quot;}}" data-execution_count="14">
+<div id="cell-34" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.536295Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.536250Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.537885Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.537618Z&quot;}}" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>ct.named_transformers_</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="14">
 <pre><code>{'standardscaler': StandardScaler(),
@@ -2407,7 +2401,7 @@ Note
 </div>
 </div>
 <p>The generated names usually include the transformer name, original feature name, and—when relevant—the encoded category. For example, <code>onehotencoder__major_Computer Science</code> identifies the component, source column, and category.</p>
-<div id="cell-38" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.515102Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.515058Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.516616Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.516370Z&quot;}}" data-execution_count="16">
+<div id="cell-38" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.541248Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.541208Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.542789Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.542502Z&quot;}}" data-execution_count="16">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>column_names <span class="op">=</span> ct.get_feature_names_out()</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>column_names</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="16">
@@ -2823,7 +2817,7 @@ Note
 <section id="train-a-model-with-the-transformed-data" class="level4">
 <h4 class="anchored" data-anchor-id="train-a-model-with-the-transformed-data">Train a model with the transformed data</h4>
 <p>The column transformer handles feature preparation but does not make predictions. We place it before an estimator in a pipeline so that preprocessing and prediction behave as one fitted object.</p>
-<div id="cell-42" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.524322Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.524280Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.529480Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.529108Z&quot;}}" data-execution_count="18">
+<div id="cell-42" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.550494Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.550448Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.555624Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.555338Z&quot;}}" data-execution_count="18">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>pipe <span class="op">=</span> make_pipeline(ct, SVC())</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>pipe.fit(X, y)</span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>pipe.predict(X)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -2833,7 +2827,7 @@ Note
        'not A+', 'not A+', 'not A+', 'A+'], dtype=object)</code></pre>
 </div>
 </div>
-<div id="cell-43" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.530303Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.530254Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.540868Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.540473Z&quot;}}" data-execution_count="19">
+<div id="cell-43" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.556489Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.556440Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.567054Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.566777Z&quot;}}" data-execution_count="19">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>pipe</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="19">
 <style>.sk-global {
@@ -6622,7 +6616,7 @@ function forceTheme(elementId) {
 forceTheme('sk-container-id-3');</script>
 </div>
 </div>
-<div id="cell-53" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.549652Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.549604Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.551313Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.551046Z&quot;}}" data-execution_count="22">
+<div id="cell-53" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.575858Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.575813Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.577467Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.577197Z&quot;}}" data-execution_count="22">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(ct)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>ColumnTransformer(transformers=[('standardscaler', StandardScaler(),
@@ -6641,7 +6635,7 @@ forceTheme('sk-container-id-3');</script>
 <ul>
 <li>Recall that <code>lab2</code> has missing values.</li>
 </ul>
-<div id="cell-55" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.552184Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.552142Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.555090Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.554747Z&quot;}}" data-execution_count="23">
+<div id="cell-55" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.578307Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.578262Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.581174Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.580843Z&quot;}}" data-execution_count="23">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>X.head(<span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="23">
 <div>
@@ -6815,7 +6809,7 @@ forceTheme('sk-container-id-3');</script>
 <span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>drop_feats <span class="op">=</span> [<span class="st">"class_attendance"</span>, <span class="st">"enjoy_course"</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>A pipeline can serve as one branch of a column transformer. During fitting, the numeric branch learns imputation values, fills missing entries, and then learns scaling statistics from the imputed data. The order matters because <code>StandardScaler</code> receives the imputer’s output.</p>
-<div id="cell-59" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.558345Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.558299Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.559733Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.559445Z&quot;}}" data-execution_count="25">
+<div id="cell-59" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.584344Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.584280Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.585810Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.585474Z&quot;}}" data-execution_count="25">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>ct <span class="op">=</span> make_column_transformer(</span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>    (</span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>        make_pipeline(SimpleImputer(), StandardScaler()),</span>
@@ -6826,7 +6820,7 @@ forceTheme('sk-container-id-3');</script>
 <span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"drop"</span>, drop_feats),  <span class="co"># drop the drop features</span></span>
 <span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-60" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.560627Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.560555Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.565535Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.565165Z&quot;}}" data-execution_count="26">
+<div id="cell-60" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.586706Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.586660Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.591502Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.591228Z&quot;}}" data-execution_count="26">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>ct</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="26">
 <style>.sk-global {
@@ -8155,11 +8149,11 @@ function forceTheme(elementId) {
 forceTheme('sk-container-id-4');</script>
 </div>
 </div>
-<div id="cell-61" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.566376Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.566333Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.570073Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.569751Z&quot;}}" data-execution_count="27">
+<div id="cell-61" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.592481Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.592439Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.596364Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.595949Z&quot;}}" data-execution_count="27">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>X_transformed <span class="op">=</span> ct.fit_transform(X)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The outer column transformer still provides the names of all final features, including features produced by the nested numeric pipeline.</p>
-<div id="cell-63" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.570987Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.570944Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.572575Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.572302Z&quot;}}" data-execution_count="28">
+<div id="cell-63" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.597255Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.597211Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.598919Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.598595Z&quot;}}" data-execution_count="28">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>column_names <span class="op">=</span> ct.get_feature_names_out()</span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>column_names</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="28">
@@ -8686,7 +8680,7 @@ forceTheme('sk-container-id-4');</script>
 </div>
 </div>
 <p>First, consider what happens when we let <code>OrdinalEncoder</code> discover the categories automatically.</p>
-<div id="cell-71" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.584007Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.583967Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.586019Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.585693Z&quot;}}" data-execution_count="31">
+<div id="cell-71" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.610427Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.610376Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.612401Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.612114Z&quot;}}" data-execution_count="31">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>X_toy <span class="op">=</span> X[[<span class="st">"class_attendance"</span>]]</span>
 <span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>enc <span class="op">=</span> OrdinalEncoder()</span>
 <span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>enc.fit(X_toy)</span>
@@ -8779,7 +8773,7 @@ Length: 4, dtype: str</code></pre>
 </div>
 </div>
 <p>We then supply the categories from lowest to highest attendance.</p>
-<div id="cell-77" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.592543Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.592500Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.593845Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.593515Z&quot;}}" data-execution_count="34">
+<div id="cell-77" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.618961Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.618916Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.620211Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.619944Z&quot;}}" data-execution_count="34">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>class_attendance_levels <span class="op">=</span> [<span class="st">"Poor"</span>, <span class="st">"Average"</span>, <span class="st">"Good"</span>, <span class="st">"Excellent"</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -8796,7 +8790,7 @@ Note
 </div>
 </div>
 <p>An assertion checks that the supplied ordering contains exactly the categories observed in this dataset. In a real pipeline, we would also decide how to handle categories that might appear later.</p>
-<div id="cell-80" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.594795Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.594737Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.596070Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.595845Z&quot;}}" data-execution_count="35">
+<div id="cell-80" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.621125Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.621072Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.622407Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.622145Z&quot;}}" data-execution_count="35">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="bu">set</span>(class_attendance_levels) <span class="op">==</span> <span class="bu">set</span>(X_toy[<span class="st">"class_attendance"</span>].unique())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div id="cell-81" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="36">
@@ -8892,7 +8886,7 @@ Note
 </ul></li>
 </ul>
 <p>We can now add the representation—not the already transformed values—to the column transformer. The pipeline will fit a fresh ordinal encoder whenever the complete model is fit.</p>
-<div id="cell-85" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.600897Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.600857Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.603940Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.603609Z&quot;}}" data-execution_count="37">
+<div id="cell-85" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.627435Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.627389Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.630410Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.630151Z&quot;}}" data-execution_count="37">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>X</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="37">
 <div>
@@ -9194,7 +9188,7 @@ Note
 </div>
 </div>
 </div>
-<div id="cell-86" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.604765Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.604717Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.606081Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.605845Z&quot;}}" data-execution_count="38">
+<div id="cell-86" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.631281Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.631237Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.632627Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.632373Z&quot;}}" data-execution_count="38">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>numeric_feats <span class="op">=</span> [</span>
 <span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"university_years"</span>,</span>
 <span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"lab1"</span>,</span>
@@ -9223,7 +9217,7 @@ Note
 <span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"drop"</span>, drop_feats),  <span class="co"># drop the drop features</span></span>
 <span id="cb51-13"><a href="#cb51-13" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-88" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.609346Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.609301Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.614934Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.614655Z&quot;}}" data-execution_count="40">
+<div id="cell-88" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.635805Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.635765Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.641758Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.641478Z&quot;}}" data-execution_count="40">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>ct</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="40">
 <style>.sk-global {
@@ -11112,7 +11106,7 @@ forceTheme('sk-container-id-5');</script>
 <section id="dealing-with-unknown-categories" class="level3">
 <h3 class="anchored" data-anchor-id="dealing-with-unknown-categories">Dealing with unknown categories</h3>
 <p>We now place the column transformer and an SVM in a pipeline and evaluate the complete workflow with cross-validation. This reveals an issue that is easy to miss when we transform the full dataset in one step.</p>
-<div id="cell-95" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.630089Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.630040Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.631311Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.631056Z&quot;}}" data-execution_count="44">
+<div id="cell-95" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.657186Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.657143Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.658434Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.658162Z&quot;}}" data-execution_count="44">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>pipe <span class="op">=</span> make_pipeline(ct, SVC())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div id="cell-96" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="45">
@@ -11183,36 +11177,36 @@ ValueError: Found unknown categories ['Biology'] in column 0 during transform
 <tbody>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">0</th>
-<td>0.004598</td>
-<td>0.001944</td>
+<td>0.005233</td>
+<td>0.005581</td>
 <td>1.00</td>
 <td>0.937500</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">1</th>
-<td>0.003556</td>
-<td>0.003819</td>
+<td>0.004858</td>
+<td>0.002390</td>
 <td>1.00</td>
 <td>0.941176</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">2</th>
-<td>0.005612</td>
-<td>0.003165</td>
+<td>0.004822</td>
+<td>0.002931</td>
 <td>0.50</td>
 <td>1.000000</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">3</th>
-<td>0.005461</td>
-<td>0.002440</td>
+<td>0.004738</td>
+<td>0.002596</td>
 <td>0.75</td>
 <td>0.941176</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">4</th>
-<td>0.003974</td>
-<td>0.007315</td>
+<td>0.005151</td>
+<td>0.007473</td>
 <td>NaN</td>
 <td>1.000000</td>
 </tr>
@@ -11258,7 +11252,7 @@ Name: count, dtype: int64</code></pre>
 <span id="cb61-15"><a href="#cb61-15" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"drop"</span>, drop_feats),  <span class="co"># drop the drop features</span></span>
 <span id="cb61-16"><a href="#cb61-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-102" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.675230Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.675170Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.680657Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.680325Z&quot;}}" data-execution_count="48">
+<div id="cell-102" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.700533Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.700448Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.706177Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.705892Z&quot;}}" data-execution_count="48">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>ct</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="48">
 <style>.sk-global {
@@ -12707,7 +12701,7 @@ forceTheme('sk-container-id-6');</script>
 <div id="cell-103" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="49">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>pipe <span class="op">=</span> make_pipeline(ct, SVC())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-104" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.683538Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.683497Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.714155Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.713827Z&quot;}}" data-execution_count="50">
+<div id="cell-104" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.709154Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.709108Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.741298Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.740968Z&quot;}}" data-execution_count="50">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> cross_validate(pipe, X, y, cv<span class="op">=</span><span class="dv">5</span>, return_train_score<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(scores)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="50">
@@ -12727,36 +12721,36 @@ forceTheme('sk-container-id-6');</script>
 <tbody>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">0</th>
-<td>0.004773</td>
-<td>0.002144</td>
+<td>0.003972</td>
+<td>0.001941</td>
 <td>1.00</td>
 <td>0.937500</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">1</th>
-<td>0.003952</td>
-<td>0.001681</td>
+<td>0.003065</td>
+<td>0.001573</td>
 <td>1.00</td>
 <td>0.941176</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">2</th>
-<td>0.003396</td>
-<td>0.003513</td>
+<td>0.002795</td>
+<td>0.001475</td>
 <td>0.50</td>
 <td>1.000000</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">3</th>
-<td>0.003597</td>
-<td>0.001710</td>
+<td>0.002978</td>
+<td>0.001552</td>
 <td>0.75</td>
 <td>0.941176</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">4</th>
-<td>0.003517</td>
-<td>0.001533</td>
+<td>0.002786</td>
+<td>0.001447</td>
 <td>0.75</td>
 <td>1.000000</td>
 </tr>
@@ -12775,7 +12769,7 @@ forceTheme('sk-container-id-6');</script>
 <section id="categorical-features-with-two-possible-categories" class="level3">
 <h3 class="anchored" data-anchor-id="categorical-features-with-two-possible-categories">Categorical features with two possible categories</h3>
 <p>One-hot encoding a two-category feature normally creates two complementary columns. A single indicator contains the same information: knowing that one category is absent tells us that the other is present. <code>OneHotEncoder(drop="if_binary")</code> therefore emits one column for binary features while retaining all columns for features with more than two categories.</p>
-<div id="cell-109" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.715235Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.715183Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.716968Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.716687Z&quot;}}" data-execution_count="51">
+<div id="cell-109" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.742418Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.742368Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.744183Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.743913Z&quot;}}" data-execution_count="51">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>X[<span class="st">"enjoy_course"</span>].head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="51">
 <pre><code>0    yes
@@ -14517,7 +14511,7 @@ forceTheme('sk-container-id-7');</script>
 <div id="cell-114" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="56">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>pipe <span class="op">=</span> make_pipeline(ct, SVC())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-115" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.735377Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.735339Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.770755Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.770291Z&quot;}}" data-execution_count="57">
+<div id="cell-115" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.763164Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.763119Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.799144Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.798795Z&quot;}}" data-execution_count="57">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb72"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> cross_validate(pipe, X, y, cv<span class="op">=</span><span class="dv">5</span>, return_train_score<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(scores)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="57">
@@ -14537,36 +14531,36 @@ forceTheme('sk-container-id-7');</script>
 <tbody>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">0</th>
-<td>0.005655</td>
-<td>0.002224</td>
+<td>0.004404</td>
+<td>0.002022</td>
 <td>1.00</td>
 <td>1.000000</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">1</th>
-<td>0.003524</td>
-<td>0.003241</td>
+<td>0.005149</td>
+<td>0.003493</td>
 <td>1.00</td>
 <td>0.941176</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">2</th>
-<td>0.004243</td>
-<td>0.001943</td>
+<td>0.004031</td>
+<td>0.002151</td>
 <td>0.50</td>
 <td>1.000000</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">3</th>
-<td>0.006313</td>
-<td>0.004159</td>
+<td>0.003516</td>
+<td>0.001946</td>
 <td>1.00</td>
 <td>0.941176</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">4</th>
-<td>0.005543</td>
-<td>0.001934</td>
+<td>0.004876</td>
+<td>0.001862</td>
 <td>0.75</td>
 <td>1.000000</td>
 </tr>
@@ -14593,8 +14587,23 @@ forceTheme('sk-container-id-7');</script>
 </section>
 <section id="applying-columntransformer-to-the-california-housing-dataset" class="level2">
 <h2 class="anchored" data-anchor-id="applying-columntransformer-to-the-california-housing-dataset">Applying <code>ColumnTransformer</code> to the California housing dataset</h2>
-<p>The quiz dataset made every transformation visible, but its 21 invented rows are too small for meaningful model comparison. We now apply the same pattern to the larger California housing dataset from Chapter 5. The task is regression rather than classification, but the preprocessing structure is familiar: numeric columns need imputation and scaling, while <code>ocean_proximity</code> needs one-hot encoding.</p>
-<div id="cell-120" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="58">
+<p>The quiz dataset made every transformation visible, but its 21 invented rows are too small for meaningful model comparison. We now apply the same pattern to the larger <a href="https://www.kaggle.com/datasets/camnugent/california-housing-prices">California housing dataset</a>.</p>
+<p>The task is regression rather than classification, but the preprocessing structure is familiar: numeric columns need imputation and scaling, while <code>ocean_proximity</code> needs one-hot encoding.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Dataset source">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Dataset source
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>We use the <a href="https://www.kaggle.com/datasets/camnugent/california-housing-prices">California Housing Prices dataset published on Kaggle by Cam Nugent</a>. It is a modified version of data derived from the 1990 U.S. Census and associated with Pace and Barry (1997). This version was popularized by Aurélien Géron’s <em>Hands-On Machine Learning</em>.</p>
+<p>This is not exactly the same representation returned by scikit-learn’s <code>fetch_california_housing</code>. In particular, this version includes the categorical feature <code>ocean_proximity</code> and missing values in <code>total_bedrooms</code>, making it useful for demonstrating heterogeneous preprocessing with <code>ColumnTransformer</code>.</p>
+</div>
+</div>
+<div id="cell-121" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="58">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb73"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>housing_df <span class="op">=</span> pd.read_csv(DATA_DIR <span class="op">/</span> <span class="st">"housing.csv"</span>)</span>
 <span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>train_df, test_df <span class="op">=</span> train_test_split(housing_df, test_size<span class="op">=</span><span class="fl">0.1</span>, random_state<span class="op">=</span><span class="dv">123</span>)</span>
 <span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -14692,8 +14701,8 @@ forceTheme('sk-container-id-7');</script>
 </div>
 </div>
 <p>The rows describe geographic districts. Some columns are district summaries, such as median income or median housing age, while others are totals, such as rooms and population.</p>
-<p>Raw totals partly reflect how many households a district contains. Ratios such as rooms per household are easier to compare across districts and may be more directly related to the target, <code>median_house_value</code>. We create these features using values within each row, so no information is shared across examples.</p>
-<div id="cell-123" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-scrolled="true" data-execution_count="59">
+<p>The raw room and population counts partly measure the size of each census block group. For example, <code>total_rooms=4,000</code> means something different in a district with 500 households than in one with 2,000 households. Dividing these counts by the number of households gives district-level averages that are easier to compare across groups of different sizes. We therefore create two new features below: <code>rooms_per_household</code> and <code>population_per_household</code>. Keep in mind that these are aggregate ratios, not measurements of individual households, and that unusually small denominators can produce extreme values.</p>
+<div id="cell-124" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-scrolled="true" data-execution_count="59">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb74"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>train_df <span class="op">=</span> train_df.assign(</span>
 <span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>    rooms_per_household<span class="op">=</span>train_df[<span class="st">"total_rooms"</span>] <span class="op">/</span> train_df[<span class="st">"households"</span>]</span>
 <span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>)</span>
@@ -14715,7 +14724,7 @@ forceTheme('sk-container-id-7');</script>
 <span id="cb74-19"><a href="#cb74-19" aria-hidden="true" tabindex="-1"></a>    population_per_household<span class="op">=</span>test_df[<span class="st">"population"</span>] <span class="op">/</span> test_df[<span class="st">"households"</span>]</span>
 <span id="cb74-20"><a href="#cb74-20" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-124" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="60">
+<div id="cell-125" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="60">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb75"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>train_df.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="60">
 <div>
@@ -14827,7 +14836,7 @@ forceTheme('sk-container-id-7');</script>
 </div>
 </div>
 </div>
-<div id="cell-125" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.793144Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.793097Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.794875Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.794589Z&quot;}}" data-execution_count="61">
+<div id="cell-126" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.823891Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.823828Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.825723Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.825448Z&quot;}}" data-execution_count="61">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb76"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's keep both numeric and categorical columns in the data.</span></span>
 <span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> train_df.drop(columns<span class="op">=</span>[<span class="st">"median_house_value"</span>, <span class="st">"total_rooms"</span>, <span class="st">"total_bedrooms"</span>, <span class="st">"population"</span>])</span>
 <span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a>y_train <span class="op">=</span> train_df[<span class="st">"median_house_value"</span>]</span>
@@ -14835,7 +14844,7 @@ forceTheme('sk-container-id-7');</script>
 <span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a>X_test <span class="op">=</span> test_df.drop(columns<span class="op">=</span>[<span class="st">"median_house_value"</span>, <span class="st">"total_rooms"</span>, <span class="st">"total_bedrooms"</span>, <span class="st">"population"</span>])</span>
 <span id="cb76-6"><a href="#cb76-6" aria-hidden="true" tabindex="-1"></a>y_test <span class="op">=</span> test_df[<span class="st">"median_house_value"</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-127" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.795692Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.795643Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.798944Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.798670Z&quot;}}" data-execution_count="62">
+<div id="cell-128" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.826584Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.826538Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.830288Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.829941Z&quot;}}" data-execution_count="62">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb77"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>X_train.head(<span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="62">
 <div>
@@ -14983,7 +14992,7 @@ forceTheme('sk-container-id-7');</script>
 </div>
 </div>
 </div>
-<div id="cell-128" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="63">
+<div id="cell-129" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="63">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb78"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>X_train.columns</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="63">
 <pre><code>Index(['longitude', 'latitude', 'housing_median_age', 'households',
@@ -14992,7 +15001,7 @@ forceTheme('sk-container-id-7');</script>
       dtype='str')</code></pre>
 </div>
 </div>
-<div id="cell-129" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-execution_count="64">
+<div id="cell-130" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-execution_count="64">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb80"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify the categorical and numeric columns</span></span>
 <span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a>numeric_features <span class="op">=</span> [</span>
 <span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"longitude"</span>,</span>
@@ -15009,7 +15018,7 @@ forceTheme('sk-container-id-7');</script>
 <span id="cb80-14"><a href="#cb80-14" aria-hidden="true" tabindex="-1"></a>target <span class="op">=</span> <span class="st">"median_income"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>We create one numeric pipeline for median imputation followed by scaling, and one categorical transformer for one-hot encoding. <code>handle_unknown="ignore"</code> allows the fitted pipeline to process a test district whose category was absent from the training data.</p>
-<div id="cell-131" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-execution_count="65">
+<div id="cell-132" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-execution_count="65">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb81"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>X_train.info()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;class 'pandas.DataFrame'&gt;
@@ -15030,7 +15039,7 @@ dtypes: float64(8), str(1)
 memory usage: 1.4 MB</code></pre>
 </div>
 </div>
-<div id="cell-132" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.808050Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.807994Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.810449Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.810153Z&quot;}}" data-execution_count="66">
+<div id="cell-133" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.840920Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.840875Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.843390Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.843091Z&quot;}}" data-execution_count="66">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb83"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>X_train[<span class="st">"ocean_proximity"</span>].value_counts()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="66">
 <pre><code>ocean_proximity
@@ -15042,7 +15051,7 @@ ISLAND           5
 Name: count, dtype: int64</code></pre>
 </div>
 </div>
-<div id="cell-133" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="67">
+<div id="cell-134" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="67">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb85"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>numeric_transformer <span class="op">=</span> make_pipeline(SimpleImputer(strategy<span class="op">=</span><span class="st">"median"</span>), StandardScaler())</span>
 <span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a>categorical_transformer <span class="op">=</span> OneHotEncoder(handle_unknown<span class="op">=</span><span class="st">"ignore"</span>)</span>
 <span id="cb85-3"><a href="#cb85-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -15051,7 +15060,7 @@ Name: count, dtype: int64</code></pre>
 <span id="cb85-6"><a href="#cb85-6" aria-hidden="true" tabindex="-1"></a>    (categorical_transformer, categorical_features),</span>
 <span id="cb85-7"><a href="#cb85-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-134" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-execution_count="68">
+<div id="cell-135" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-execution_count="68">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb86"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a>preprocessor</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="68">
 <style>.sk-global {
@@ -16381,12 +16390,12 @@ function forceTheme(elementId) {
 forceTheme('sk-container-id-8');</script>
 </div>
 </div>
-<div id="cell-135" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="69">
+<div id="cell-136" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="69">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb87"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a>X_train_pp <span class="op">=</span> preprocessor.fit_transform(X_train)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Calling <code>fit</code> on the preprocessor fits every branch on its assigned training columns. Calling <code>transform</code> applies each fitted branch and concatenates their outputs. Inside cross-validation, a fresh preprocessor is fit for every training fold.</p>
 <p>We can get the new names of the columns that were generated by the one-hot encoding:</p>
-<div id="cell-138" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.832294Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.832248Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.838841Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.838511Z&quot;}}" data-execution_count="70">
+<div id="cell-139" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.866471Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.866422Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.873145Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.872838Z&quot;}}" data-execution_count="70">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb88"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a>preprocessor</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="70">
 <style>.sk-global {
@@ -18219,7 +18228,7 @@ function forceTheme(elementId) {
 forceTheme('sk-container-id-9');</script>
 </div>
 </div>
-<div id="cell-139" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.839777Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.839734Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.841404Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.841129Z&quot;}}" data-execution_count="71">
+<div id="cell-140" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.874057Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.874008Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.875759Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.875478Z&quot;}}" data-execution_count="71">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb89"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a>column_names <span class="op">=</span> preprocessor.get_feature_names_out()</span>
 <span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>column_names</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="71">
@@ -18236,7 +18245,7 @@ forceTheme('sk-container-id-9');</script>
 </div>
 </div>
 <p>For inspection, we combine the transformed values with the names reported by <code>get_feature_names_out</code>. The predictive pipeline itself can use the matrix directly.</p>
-<div id="cell-141" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-execution_count="72">
+<div id="cell-142" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-execution_count="72">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb91"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(X_train_pp, columns<span class="op">=</span>column_names)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="72">
 <div>
@@ -18445,45 +18454,58 @@ forceTheme('sk-container-id-9');</script>
 </div>
 </div>
 </div>
-<div id="cell-142" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="73">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb92"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a>results_dict <span class="op">=</span> {}</span>
+<div id="cell-143" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="73">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb92"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a>cv_summaries <span class="op">=</span> {}</span>
 <span id="cb92-2"><a href="#cb92-2" aria-hidden="true" tabindex="-1"></a>dummy <span class="op">=</span> DummyRegressor()</span>
-<span id="cb92-3"><a href="#cb92-3" aria-hidden="true" tabindex="-1"></a>results_dict[<span class="st">"dummy"</span>] <span class="op">=</span> mean_std_cross_val_scores(</span>
+<span id="cb92-3"><a href="#cb92-3" aria-hidden="true" tabindex="-1"></a>cv_summaries[<span class="st">"dummy"</span>] <span class="op">=</span> summarize_cross_validation(</span>
 <span id="cb92-4"><a href="#cb92-4" aria-hidden="true" tabindex="-1"></a>    dummy, X_train, y_train, return_train_score<span class="op">=</span><span class="va">True</span></span>
 <span id="cb92-5"><a href="#cb92-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb92-6"><a href="#cb92-6" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(results_dict).T</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb92-6"><a href="#cb92-6" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(cv_summaries).T.style.<span class="bu">format</span>(<span class="st">"</span><span class="sc">{:.3f}</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="73">
-<div>
+<style type="text/css">
+</style>
 
-
-<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<table id="T_49e91" class="caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">fit_time</th>
-<th data-quarto-table-cell-role="th">score_time</th>
-<th data-quarto-table-cell-role="th">test_score</th>
-<th data-quarto-table-cell-role="th">train_score</th>
+<th class="index_name level0" data-quarto-table-cell-role="th">measure</th>
+<th colspan="2" id="T_49e91_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">validation_score</th>
+<th colspan="2" id="T_49e91_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">train_score</th>
+<th colspan="2" id="T_49e91_level0_col4" class="col_heading level0 col4" data-quarto-table-cell-role="th">fit_time</th>
+<th colspan="2" id="T_49e91_level0_col6" class="col_heading level0 col6" data-quarto-table-cell-role="th">score_time</th>
+</tr>
+<tr class="even">
+<th class="index_name level1" data-quarto-table-cell-role="th">statistic</th>
+<th id="T_49e91_level1_col0" class="col_heading level1 col0" data-quarto-table-cell-role="th">mean</th>
+<th id="T_49e91_level1_col1" class="col_heading level1 col1" data-quarto-table-cell-role="th">std</th>
+<th id="T_49e91_level1_col2" class="col_heading level1 col2" data-quarto-table-cell-role="th">mean</th>
+<th id="T_49e91_level1_col3" class="col_heading level1 col3" data-quarto-table-cell-role="th">std</th>
+<th id="T_49e91_level1_col4" class="col_heading level1 col4" data-quarto-table-cell-role="th">mean</th>
+<th id="T_49e91_level1_col5" class="col_heading level1 col5" data-quarto-table-cell-role="th">std</th>
+<th id="T_49e91_level1_col6" class="col_heading level1 col6" data-quarto-table-cell-role="th">mean</th>
+<th id="T_49e91_level1_col7" class="col_heading level1 col7" data-quarto-table-cell-role="th">std</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">dummy</th>
-<td>0.001 (+/- 0.000)</td>
-<td>0.000 (+/- 0.000)</td>
-<td>-0.001 (+/- 0.001)</td>
-<td>0.000 (+/- 0.000)</td>
+<th id="T_49e91_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">dummy</th>
+<td id="T_49e91_row0_col0" class="data row0 col0">-0.001</td>
+<td id="T_49e91_row0_col1" class="data row0 col1">0.001</td>
+<td id="T_49e91_row0_col2" class="data row0 col2">0.000</td>
+<td id="T_49e91_row0_col3" class="data row0 col3">0.000</td>
+<td id="T_49e91_row0_col4" class="data row0 col4">0.001</td>
+<td id="T_49e91_row0_col5" class="data row0 col5">0.001</td>
+<td id="T_49e91_row0_col6" class="data row0 col6">0.000</td>
+<td id="T_49e91_row0_col7" class="data row0 col7">0.000</td>
 </tr>
 </tbody>
 </table>
-
 </div>
 </div>
-</div>
-<div id="cell-143" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-execution_count="74">
+<div id="cell-144" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-execution_count="74">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb93"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a>knn_pipe <span class="op">=</span> make_pipeline(preprocessor, KNeighborsRegressor())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-144" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.857696Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.857656Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:16.866504Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:16.866170Z&quot;}}" data-execution_count="75">
+<div id="cell-145" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.916906Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.916862Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:10:58.926228Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:10:58.925844Z&quot;}}" data-execution_count="75">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb94"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a>knn_pipe</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="75">
 <style>.sk-global {
@@ -20010,154 +20032,217 @@ function forceTheme(elementId) {
 forceTheme('sk-container-id-10');</script>
 </div>
 </div>
-<div id="cell-145" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:16.867270Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:16.867225Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:18.487894Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:18.487386Z&quot;}}" data-execution_count="76">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb95"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a>results_dict[<span class="st">"imp + scaling + ohe + KNN"</span>] <span class="op">=</span> mean_std_cross_val_scores(</span>
+<div id="cell-146" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:10:58.927159Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:10:58.927101Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:11:00.533116Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:11:00.532677Z&quot;}}" data-execution_count="76">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb95"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a>cv_summaries[<span class="st">"imp + scaling + ohe + KNN"</span>] <span class="op">=</span> summarize_cross_validation(</span>
 <span id="cb95-2"><a href="#cb95-2" aria-hidden="true" tabindex="-1"></a>    knn_pipe, X_train, y_train, return_train_score<span class="op">=</span><span class="va">True</span></span>
 <span id="cb95-3"><a href="#cb95-3" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-146" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:18.489042Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:18.488988Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:18.491714Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:18.491333Z&quot;}}" data-execution_count="77">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb96"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(results_dict).T</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="cell-147" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:11:00.534387Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:11:00.534330Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:11:00.537305Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:11:00.536928Z&quot;}}" data-execution_count="77">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb96"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(cv_summaries).T.style.<span class="bu">format</span>(<span class="st">"</span><span class="sc">{:.3f}</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="77">
-<div>
+<style type="text/css">
+</style>
 
-
-<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<table id="T_bac4a" class="caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">fit_time</th>
-<th data-quarto-table-cell-role="th">score_time</th>
-<th data-quarto-table-cell-role="th">test_score</th>
-<th data-quarto-table-cell-role="th">train_score</th>
+<th class="index_name level0" data-quarto-table-cell-role="th">measure</th>
+<th colspan="2" id="T_bac4a_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">validation_score</th>
+<th colspan="2" id="T_bac4a_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">train_score</th>
+<th colspan="2" id="T_bac4a_level0_col4" class="col_heading level0 col4" data-quarto-table-cell-role="th">fit_time</th>
+<th colspan="2" id="T_bac4a_level0_col6" class="col_heading level0 col6" data-quarto-table-cell-role="th">score_time</th>
+</tr>
+<tr class="even">
+<th class="index_name level1" data-quarto-table-cell-role="th">statistic</th>
+<th id="T_bac4a_level1_col0" class="col_heading level1 col0" data-quarto-table-cell-role="th">mean</th>
+<th id="T_bac4a_level1_col1" class="col_heading level1 col1" data-quarto-table-cell-role="th">std</th>
+<th id="T_bac4a_level1_col2" class="col_heading level1 col2" data-quarto-table-cell-role="th">mean</th>
+<th id="T_bac4a_level1_col3" class="col_heading level1 col3" data-quarto-table-cell-role="th">std</th>
+<th id="T_bac4a_level1_col4" class="col_heading level1 col4" data-quarto-table-cell-role="th">mean</th>
+<th id="T_bac4a_level1_col5" class="col_heading level1 col5" data-quarto-table-cell-role="th">std</th>
+<th id="T_bac4a_level1_col6" class="col_heading level1 col6" data-quarto-table-cell-role="th">mean</th>
+<th id="T_bac4a_level1_col7" class="col_heading level1 col7" data-quarto-table-cell-role="th">std</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">dummy</th>
-<td>0.001 (+/- 0.000)</td>
-<td>0.000 (+/- 0.000)</td>
-<td>-0.001 (+/- 0.001)</td>
-<td>0.000 (+/- 0.000)</td>
+<th id="T_bac4a_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">dummy</th>
+<td id="T_bac4a_row0_col0" class="data row0 col0">-0.001</td>
+<td id="T_bac4a_row0_col1" class="data row0 col1">0.001</td>
+<td id="T_bac4a_row0_col2" class="data row0 col2">0.000</td>
+<td id="T_bac4a_row0_col3" class="data row0 col3">0.000</td>
+<td id="T_bac4a_row0_col4" class="data row0 col4">0.001</td>
+<td id="T_bac4a_row0_col5" class="data row0 col5">0.001</td>
+<td id="T_bac4a_row0_col6" class="data row0 col6">0.000</td>
+<td id="T_bac4a_row0_col7" class="data row0 col7">0.000</td>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th">imp + scaling + ohe + KNN</th>
-<td>0.012 (+/- 0.002)</td>
-<td>0.068 (+/- 0.008)</td>
-<td>0.706 (+/- 0.015)</td>
-<td>0.806 (+/- 0.015)</td>
+<th id="T_bac4a_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">imp + scaling + ohe + KNN</th>
+<td id="T_bac4a_row1_col0" class="data row1 col0">0.706</td>
+<td id="T_bac4a_row1_col1" class="data row1 col1">0.015</td>
+<td id="T_bac4a_row1_col2" class="data row1 col2">0.806</td>
+<td id="T_bac4a_row1_col3" class="data row1 col3">0.015</td>
+<td id="T_bac4a_row1_col4" class="data row1 col4">0.013</td>
+<td id="T_bac4a_row1_col5" class="data row1 col5">0.001</td>
+<td id="T_bac4a_row1_col6" class="data row1 col6">0.072</td>
+<td id="T_bac4a_row1_col7" class="data row1 col7">0.009</td>
 </tr>
 </tbody>
 </table>
-
 </div>
 </div>
-</div>
-<div id="cell-147" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:18.492673Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:18.492617Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:58.073935Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:58.073129Z&quot;}}" data-execution_count="78">
+<div id="cell-148" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:11:00.538303Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:11:00.538259Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:11:40.357056Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:11:40.356636Z&quot;}}" data-execution_count="78">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb97"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a>svr_pipe <span class="op">=</span> make_pipeline(preprocessor, SVR())</span>
-<span id="cb97-2"><a href="#cb97-2" aria-hidden="true" tabindex="-1"></a>results_dict[<span class="st">"imp + scaling + ohe + SVR (default)"</span>] <span class="op">=</span> mean_std_cross_val_scores(</span>
+<span id="cb97-2"><a href="#cb97-2" aria-hidden="true" tabindex="-1"></a>cv_summaries[<span class="st">"imp + scaling + ohe + SVR (default)"</span>] <span class="op">=</span> summarize_cross_validation(</span>
 <span id="cb97-3"><a href="#cb97-3" aria-hidden="true" tabindex="-1"></a>    svr_pipe, X_train, y_train, return_train_score<span class="op">=</span><span class="va">True</span></span>
 <span id="cb97-4"><a href="#cb97-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-148" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:58.075105Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:58.075042Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:46:58.077964Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:46:58.077561Z&quot;}}" data-execution_count="79">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb98"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(results_dict).T</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="cell-149" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:11:40.358267Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:11:40.358195Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:11:40.361619Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:11:40.361078Z&quot;}}" data-execution_count="79">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb98"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(cv_summaries).T.style.<span class="bu">format</span>(<span class="st">"</span><span class="sc">{:.3f}</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="79">
-<div>
+<style type="text/css">
+</style>
 
-
-<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<table id="T_a4c86" class="caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">fit_time</th>
-<th data-quarto-table-cell-role="th">score_time</th>
-<th data-quarto-table-cell-role="th">test_score</th>
-<th data-quarto-table-cell-role="th">train_score</th>
+<th class="index_name level0" data-quarto-table-cell-role="th">measure</th>
+<th colspan="2" id="T_a4c86_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">validation_score</th>
+<th colspan="2" id="T_a4c86_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">train_score</th>
+<th colspan="2" id="T_a4c86_level0_col4" class="col_heading level0 col4" data-quarto-table-cell-role="th">fit_time</th>
+<th colspan="2" id="T_a4c86_level0_col6" class="col_heading level0 col6" data-quarto-table-cell-role="th">score_time</th>
+</tr>
+<tr class="even">
+<th class="index_name level1" data-quarto-table-cell-role="th">statistic</th>
+<th id="T_a4c86_level1_col0" class="col_heading level1 col0" data-quarto-table-cell-role="th">mean</th>
+<th id="T_a4c86_level1_col1" class="col_heading level1 col1" data-quarto-table-cell-role="th">std</th>
+<th id="T_a4c86_level1_col2" class="col_heading level1 col2" data-quarto-table-cell-role="th">mean</th>
+<th id="T_a4c86_level1_col3" class="col_heading level1 col3" data-quarto-table-cell-role="th">std</th>
+<th id="T_a4c86_level1_col4" class="col_heading level1 col4" data-quarto-table-cell-role="th">mean</th>
+<th id="T_a4c86_level1_col5" class="col_heading level1 col5" data-quarto-table-cell-role="th">std</th>
+<th id="T_a4c86_level1_col6" class="col_heading level1 col6" data-quarto-table-cell-role="th">mean</th>
+<th id="T_a4c86_level1_col7" class="col_heading level1 col7" data-quarto-table-cell-role="th">std</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">dummy</th>
-<td>0.001 (+/- 0.000)</td>
-<td>0.000 (+/- 0.000)</td>
-<td>-0.001 (+/- 0.001)</td>
-<td>0.000 (+/- 0.000)</td>
+<th id="T_a4c86_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">dummy</th>
+<td id="T_a4c86_row0_col0" class="data row0 col0">-0.001</td>
+<td id="T_a4c86_row0_col1" class="data row0 col1">0.001</td>
+<td id="T_a4c86_row0_col2" class="data row0 col2">0.000</td>
+<td id="T_a4c86_row0_col3" class="data row0 col3">0.000</td>
+<td id="T_a4c86_row0_col4" class="data row0 col4">0.001</td>
+<td id="T_a4c86_row0_col5" class="data row0 col5">0.001</td>
+<td id="T_a4c86_row0_col6" class="data row0 col6">0.000</td>
+<td id="T_a4c86_row0_col7" class="data row0 col7">0.000</td>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th">imp + scaling + ohe + KNN</th>
-<td>0.012 (+/- 0.002)</td>
-<td>0.068 (+/- 0.008)</td>
-<td>0.706 (+/- 0.015)</td>
-<td>0.806 (+/- 0.015)</td>
+<th id="T_a4c86_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">imp + scaling + ohe + KNN</th>
+<td id="T_a4c86_row1_col0" class="data row1 col0">0.706</td>
+<td id="T_a4c86_row1_col1" class="data row1 col1">0.015</td>
+<td id="T_a4c86_row1_col2" class="data row1 col2">0.806</td>
+<td id="T_a4c86_row1_col3" class="data row1 col3">0.015</td>
+<td id="T_a4c86_row1_col4" class="data row1 col4">0.013</td>
+<td id="T_a4c86_row1_col5" class="data row1 col5">0.001</td>
+<td id="T_a4c86_row1_col6" class="data row1 col6">0.072</td>
+<td id="T_a4c86_row1_col7" class="data row1 col7">0.009</td>
 </tr>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">imp + scaling + ohe + SVR (default)</th>
-<td>2.314 (+/- 0.020)</td>
-<td>1.115 (+/- 0.019)</td>
-<td>-0.049 (+/- 0.012)</td>
-<td>-0.048 (+/- 0.001)</td>
+<th id="T_a4c86_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">imp + scaling + ohe + SVR (default)</th>
+<td id="T_a4c86_row2_col0" class="data row2 col0">-0.049</td>
+<td id="T_a4c86_row2_col1" class="data row2 col1">0.012</td>
+<td id="T_a4c86_row2_col2" class="data row2 col2">-0.048</td>
+<td id="T_a4c86_row2_col3" class="data row2 col3">0.001</td>
+<td id="T_a4c86_row2_col4" class="data row2 col4">2.413</td>
+<td id="T_a4c86_row2_col5" class="data row2 col5">0.027</td>
+<td id="T_a4c86_row2_col6" class="data row2 col6">1.167</td>
+<td id="T_a4c86_row2_col7" class="data row2 col7">0.020</td>
 </tr>
 </tbody>
 </table>
-
-</div>
 </div>
 </div>
 <p>The default SVR performs poorly relative to the scale of this problem. This does not show that SVR is intrinsically unsuitable: its performance depends strongly on hyperparameters such as <code>C</code>.</p>
-<div id="cell-150" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:46:58.078866Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:46:58.078819Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:47:37.967521Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:47:37.967052Z&quot;}}" data-execution_count="80">
+<div id="cell-151" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:11:40.362763Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:11:40.362693Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:12:20.503884Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:12:20.503497Z&quot;}}" data-execution_count="80">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb99"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a>svr_C_pipe <span class="op">=</span> make_pipeline(preprocessor, SVR(C<span class="op">=</span><span class="dv">10000</span>))</span>
-<span id="cb99-2"><a href="#cb99-2" aria-hidden="true" tabindex="-1"></a>results_dict[<span class="st">"imp + scaling + ohe + SVR (C=10000)"</span>] <span class="op">=</span> mean_std_cross_val_scores(</span>
+<span id="cb99-2"><a href="#cb99-2" aria-hidden="true" tabindex="-1"></a>cv_summaries[<span class="st">"imp + scaling + ohe + SVR (C=10000)"</span>] <span class="op">=</span> summarize_cross_validation(</span>
 <span id="cb99-3"><a href="#cb99-3" aria-hidden="true" tabindex="-1"></a>    svr_C_pipe, X_train, y_train, return_train_score<span class="op">=</span><span class="va">True</span></span>
 <span id="cb99-4"><a href="#cb99-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-151" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:47:37.968636Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:47:37.968583Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:47:37.971233Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:47:37.970969Z&quot;}}" data-execution_count="81">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb100"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(results_dict).T</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="cell-152" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:12:20.505444Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:12:20.505380Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:12:20.508618Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:12:20.508235Z&quot;}}" data-execution_count="81">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb100"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(cv_summaries).T.style.<span class="bu">format</span>(<span class="st">"</span><span class="sc">{:.3f}</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="81">
-<div>
+<style type="text/css">
+</style>
 
-
-<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<table id="T_ba716" class="caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">fit_time</th>
-<th data-quarto-table-cell-role="th">score_time</th>
-<th data-quarto-table-cell-role="th">test_score</th>
-<th data-quarto-table-cell-role="th">train_score</th>
+<th class="index_name level0" data-quarto-table-cell-role="th">measure</th>
+<th colspan="2" id="T_ba716_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">validation_score</th>
+<th colspan="2" id="T_ba716_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">train_score</th>
+<th colspan="2" id="T_ba716_level0_col4" class="col_heading level0 col4" data-quarto-table-cell-role="th">fit_time</th>
+<th colspan="2" id="T_ba716_level0_col6" class="col_heading level0 col6" data-quarto-table-cell-role="th">score_time</th>
+</tr>
+<tr class="even">
+<th class="index_name level1" data-quarto-table-cell-role="th">statistic</th>
+<th id="T_ba716_level1_col0" class="col_heading level1 col0" data-quarto-table-cell-role="th">mean</th>
+<th id="T_ba716_level1_col1" class="col_heading level1 col1" data-quarto-table-cell-role="th">std</th>
+<th id="T_ba716_level1_col2" class="col_heading level1 col2" data-quarto-table-cell-role="th">mean</th>
+<th id="T_ba716_level1_col3" class="col_heading level1 col3" data-quarto-table-cell-role="th">std</th>
+<th id="T_ba716_level1_col4" class="col_heading level1 col4" data-quarto-table-cell-role="th">mean</th>
+<th id="T_ba716_level1_col5" class="col_heading level1 col5" data-quarto-table-cell-role="th">std</th>
+<th id="T_ba716_level1_col6" class="col_heading level1 col6" data-quarto-table-cell-role="th">mean</th>
+<th id="T_ba716_level1_col7" class="col_heading level1 col7" data-quarto-table-cell-role="th">std</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">dummy</th>
-<td>0.001 (+/- 0.000)</td>
-<td>0.000 (+/- 0.000)</td>
-<td>-0.001 (+/- 0.001)</td>
-<td>0.000 (+/- 0.000)</td>
+<th id="T_ba716_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">dummy</th>
+<td id="T_ba716_row0_col0" class="data row0 col0">-0.001</td>
+<td id="T_ba716_row0_col1" class="data row0 col1">0.001</td>
+<td id="T_ba716_row0_col2" class="data row0 col2">0.000</td>
+<td id="T_ba716_row0_col3" class="data row0 col3">0.000</td>
+<td id="T_ba716_row0_col4" class="data row0 col4">0.001</td>
+<td id="T_ba716_row0_col5" class="data row0 col5">0.001</td>
+<td id="T_ba716_row0_col6" class="data row0 col6">0.000</td>
+<td id="T_ba716_row0_col7" class="data row0 col7">0.000</td>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th">imp + scaling + ohe + KNN</th>
-<td>0.012 (+/- 0.002)</td>
-<td>0.068 (+/- 0.008)</td>
-<td>0.706 (+/- 0.015)</td>
-<td>0.806 (+/- 0.015)</td>
+<th id="T_ba716_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">imp + scaling + ohe + KNN</th>
+<td id="T_ba716_row1_col0" class="data row1 col0">0.706</td>
+<td id="T_ba716_row1_col1" class="data row1 col1">0.015</td>
+<td id="T_ba716_row1_col2" class="data row1 col2">0.806</td>
+<td id="T_ba716_row1_col3" class="data row1 col3">0.015</td>
+<td id="T_ba716_row1_col4" class="data row1 col4">0.013</td>
+<td id="T_ba716_row1_col5" class="data row1 col5">0.001</td>
+<td id="T_ba716_row1_col6" class="data row1 col6">0.072</td>
+<td id="T_ba716_row1_col7" class="data row1 col7">0.009</td>
 </tr>
 <tr class="odd">
-<th data-quarto-table-cell-role="th">imp + scaling + ohe + SVR (default)</th>
-<td>2.314 (+/- 0.020)</td>
-<td>1.115 (+/- 0.019)</td>
-<td>-0.049 (+/- 0.012)</td>
-<td>-0.048 (+/- 0.001)</td>
+<th id="T_ba716_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">imp + scaling + ohe + SVR (default)</th>
+<td id="T_ba716_row2_col0" class="data row2 col0">-0.049</td>
+<td id="T_ba716_row2_col1" class="data row2 col1">0.012</td>
+<td id="T_ba716_row2_col2" class="data row2 col2">-0.048</td>
+<td id="T_ba716_row2_col3" class="data row2 col3">0.001</td>
+<td id="T_ba716_row2_col4" class="data row2 col4">2.413</td>
+<td id="T_ba716_row2_col5" class="data row2 col5">0.027</td>
+<td id="T_ba716_row2_col6" class="data row2 col6">1.167</td>
+<td id="T_ba716_row2_col7" class="data row2 col7">0.020</td>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th">imp + scaling + ohe + SVR (C=10000)</th>
-<td>2.192 (+/- 0.029)</td>
-<td>1.161 (+/- 0.034)</td>
-<td>0.708 (+/- 0.011)</td>
-<td>0.713 (+/- 0.017)</td>
+<th id="T_ba716_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">imp + scaling + ohe + SVR (C=10000)</th>
+<td id="T_ba716_row3_col0" class="data row3 col0">0.708</td>
+<td id="T_ba716_row3_col1" class="data row3 col1">0.011</td>
+<td id="T_ba716_row3_col2" class="data row3 col2">0.713</td>
+<td id="T_ba716_row3_col3" class="data row3 col3">0.017</td>
+<td id="T_ba716_row3_col4" class="data row3 col4">2.240</td>
+<td id="T_ba716_row3_col5" class="data row3 col5">0.029</td>
+<td id="T_ba716_row3_col6" class="data row3 col6">1.160</td>
+<td id="T_ba716_row3_col7" class="data row3 col7">0.013</td>
 </tr>
 </tbody>
 </table>
-
-</div>
 </div>
 </div>
 <p>Increasing <code>C</code> improves these cross-validation scores, but trying one value does not constitute a systematic search. A later chapter develops a principled approach to hyperparameter optimization without using the test set.</p>
@@ -20178,7 +20263,10 @@ forceTheme('sk-container-id-10');</script>
 <section id="encoding-text-data" class="level2">
 <h2 class="anchored" data-anchor-id="encoding-text-data">Encoding text data</h2>
 <p>Text cannot enter the estimators we have used so far in its raw string form. We need a transformer that learns a vocabulary from the training documents and represents each document numerically. As with every learned preprocessing step, vocabulary construction must happen inside the training workflow.</p>
-<div id="cell-160" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;skip&quot;}}" data-execution_count="82">
+<section id="from-messages-to-bag-of-words-features" class="level3">
+<h3 class="anchored" data-anchor-id="from-messages-to-bag-of-words-features">From messages to bag-of-words features</h3>
+<p>Consider a small spam-classification dataset in which <code>sms</code> contains the message and <code>target</code> records whether it is spam. The message is neither a numeric measurement nor one value from a fixed categorical vocabulary.</p>
+<div id="cell-163" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;skip&quot;}}" data-execution_count="82">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb101"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a>toy_spam <span class="op">=</span> [</span>
 <span id="cb101-2"><a href="#cb101-2" aria-hidden="true" tabindex="-1"></a>    [</span>
 <span id="cb101-3"><a href="#cb101-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">"URGENT!! URGENT!! As a valued network customer you have been selected to receive a £900 prize reward!"</span>,</span>
@@ -20196,14 +20284,9 @@ forceTheme('sk-container-id-10');</script>
 <span id="cb101-15"><a href="#cb101-15" aria-hidden="true" tabindex="-1"></a>    ],</span>
 <span id="cb101-16"><a href="#cb101-16" aria-hidden="true" tabindex="-1"></a>    [<span class="st">"Congrats! I can't wait to see you!!"</span>, <span class="st">"non spam"</span>],</span>
 <span id="cb101-17"><a href="#cb101-17" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb101-18"><a href="#cb101-18" aria-hidden="true" tabindex="-1"></a>toy_df <span class="op">=</span> pd.DataFrame(toy_spam, columns<span class="op">=</span>[<span class="st">"sms"</span>, <span class="st">"target"</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<section id="a-spam-classification-example" class="level3">
-<h3 class="anchored" data-anchor-id="a-spam-classification-example">A spam classification example</h3>
-<p>Consider a small spam-classification dataset in which <code>sms</code> contains the message and <code>target</code> records whether it is spam. The message is neither a numeric measurement nor one value from a fixed categorical vocabulary.</p>
-<div id="cell-163" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-execution_count="83">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb102"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a>toy_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="83">
+<span id="cb101-18"><a href="#cb101-18" aria-hidden="true" tabindex="-1"></a>toy_df <span class="op">=</span> pd.DataFrame(toy_spam, columns<span class="op">=</span>[<span class="st">"sms"</span>, <span class="st">"target"</span>])</span>
+<span id="cb101-19"><a href="#cb101-19" aria-hidden="true" tabindex="-1"></a>toy_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="82">
 <div>
 
 
@@ -20252,15 +20335,13 @@ forceTheme('sk-container-id-10');</script>
 </div>
 </div>
 </div>
-</section>
-<section id="why-not-one-hot-encode-documents" class="level3">
-<h3 class="anchored" data-anchor-id="why-not-one-hot-encode-documents">Why not one-hot encode documents?</h3>
-<div id="cell-165" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-execution_count="84">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb103"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a><span class="co">### DO NOT DO THIS.</span></span>
-<span id="cb103-2"><a href="#cb103-2" aria-hidden="true" tabindex="-1"></a>enc <span class="op">=</span> OneHotEncoder(sparse_output<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb103-3"><a href="#cb103-3" aria-hidden="true" tabindex="-1"></a>transformed <span class="op">=</span> enc.fit_transform(toy_df[[<span class="st">"sms"</span>]])</span>
-<span id="cb103-4"><a href="#cb103-4" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(transformed, columns<span class="op">=</span>enc.categories_)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="84">
+<p>A natural first thought is to treat each message as a categorical value and one-hot encode it. The following deliberately inappropriate example shows why that representation does not generalize.</p>
+<div id="cell-165" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-execution_count="83">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb102"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a><span class="co">### DO NOT DO THIS.</span></span>
+<span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a>enc <span class="op">=</span> OneHotEncoder(sparse_output<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb102-3"><a href="#cb102-3" aria-hidden="true" tabindex="-1"></a>transformed <span class="op">=</span> enc.fit_transform(toy_df[[<span class="st">"sms"</span>]])</span>
+<span id="cb102-4"><a href="#cb102-4" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(transformed, columns<span class="op">=</span>enc.categories_)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="83">
 <div>
 
 
@@ -20339,16 +20420,10 @@ forceTheme('sk-container-id-10');</script>
 </div>
 <p>One-hot encoding complete messages treats each distinct message as an unrelated category. Because most messages occur only once, the resulting columns provide almost no reusable information for a new message. We need features based on smaller units that recur across documents.</p>
 <p>Representing language computationally is a central problem in natural language processing (NLP). Common representations include bag-of-words counts, TF–IDF features, and learned embeddings. We begin with bag-of-words because its features are concrete and easy to inspect.</p>
-</section>
-<section id="the-bag-of-words-representation" class="level3">
-<h3 class="anchored" data-anchor-id="the-bag-of-words-representation">The bag-of-words representation</h3>
-<p>A <strong>bag-of-words</strong> representation learns a vocabulary of tokens from the training documents, then represents each document by the count—or sometimes simply the presence—of each vocabulary token. The representation discards word order and most syntax: it records which words are in the bag, not how they are arranged.</p>
+<p>A <strong>bag-of-words</strong> representation instead learns a vocabulary of tokens from the training documents, then represents each document by the count—or sometimes simply the presence—of each vocabulary token. The representation discards word order and most syntax: it records which words are in the bag, not how they are arranged.</p>
 <p><img src="img/bag-of-words.png" class="img-fluid"></p>
 <p><a href="https://web.stanford.edu/~jurafsky/slp3/4.pdf">Source</a></p>
-</section>
-<section id="extracting-bag-of-words-features-with-scikit-learn" class="level3">
-<h3 class="anchored" data-anchor-id="extracting-bag-of-words-features-with-scikit-learn">Extracting bag-of-words features with <code>scikit-learn</code></h3>
-<p><code>CountVectorizer</code> converts a collection of documents into a document–term matrix. Each row is a document, each column is a vocabulary token learned during <code>fit</code>, and each entry counts how often that token occurs in the document.</p>
+<p><code>CountVectorizer</code> implements this representation in <code>scikit-learn</code>. It converts a collection of documents into a document–term matrix: each row is a document, each column is a vocabulary token learned during <code>fit</code>, and each entry counts how often that token occurs in the document.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -20362,14 +20437,14 @@ Note
 <p>In the natural language processing (NLP) community, a collection of text documents is called a <strong>corpus</strong> (plural: corpora).</p>
 </div>
 </div>
-<div id="cell-171" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="85">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb104"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a>vec <span class="op">=</span> CountVectorizer()</span>
-<span id="cb104-2"><a href="#cb104-2" aria-hidden="true" tabindex="-1"></a>X_counts <span class="op">=</span> vec.fit_transform(toy_df[<span class="st">"sms"</span>])</span>
-<span id="cb104-3"><a href="#cb104-3" aria-hidden="true" tabindex="-1"></a>bow_df <span class="op">=</span> pd.DataFrame(</span>
-<span id="cb104-4"><a href="#cb104-4" aria-hidden="true" tabindex="-1"></a>    X_counts.toarray(), columns<span class="op">=</span>vec.get_feature_names_out(), index<span class="op">=</span>toy_df[<span class="st">"sms"</span>]</span>
-<span id="cb104-5"><a href="#cb104-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb104-6"><a href="#cb104-6" aria-hidden="true" tabindex="-1"></a>bow_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="85">
+<div id="cell-171" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="84">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb103"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a>vec <span class="op">=</span> CountVectorizer()</span>
+<span id="cb103-2"><a href="#cb103-2" aria-hidden="true" tabindex="-1"></a>X_counts <span class="op">=</span> vec.fit_transform(toy_df[<span class="st">"sms"</span>])</span>
+<span id="cb103-3"><a href="#cb103-3" aria-hidden="true" tabindex="-1"></a>bow_df <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb103-4"><a href="#cb103-4" aria-hidden="true" tabindex="-1"></a>    X_counts.toarray(), columns<span class="op">=</span>vec.get_feature_names_out(), index<span class="op">=</span>toy_df[<span class="st">"sms"</span>]</span>
+<span id="cb103-5"><a href="#cb103-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb103-6"><a href="#cb103-6" aria-hidden="true" tabindex="-1"></a>bow_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="84">
 <div>
 
 
@@ -20576,9 +20651,9 @@ Note
 </div>
 </div>
 </div>
-<div id="cell-172" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:47:37.988156Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:47:37.988113Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:47:37.989613Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:47:37.989365Z&quot;}}" data-execution_count="86">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb105"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(toy_df[<span class="st">"sms"</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="86">
+<div id="cell-172" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:12:20.523569Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:12:20.523521Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:12:20.524973Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:12:20.524723Z&quot;}}" data-execution_count="85">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb104"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(toy_df[<span class="st">"sms"</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="85">
 <pre><code>pandas.Series</code></pre>
 </div>
 </div>
@@ -20595,35 +20670,24 @@ Important
 <p><code>CountVectorizer</code> expects a one-dimensional sequence of documents, so we pass a pandas Series rather than a one-column DataFrame. If a dataset has multiple text columns that should have separate vocabularies, each column needs its own vectorizer branch in a <code>ColumnTransformer</code>.</p>
 </div>
 </div>
-<div id="cell-174" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="87">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb107"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a>X_counts</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="87">
+<div id="cell-174" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="86">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb106"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb106-1"><a href="#cb106-1" aria-hidden="true" tabindex="-1"></a>X_counts</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="86">
 <pre><code>&lt;Compressed Sparse Row sparse matrix of dtype 'int64'
     with 71 stored elements and shape (6, 61)&gt;</code></pre>
 </div>
 </div>
-</section>
-<section id="why-sparse-matrices" class="level3">
-<h3 class="anchored" data-anchor-id="why-sparse-matrices">Why sparse matrices?</h3>
-<ul>
-<li>Most words do not appear in a given document.</li>
-<li>We get massive computational savings if we only store the nonzero elements.</li>
-<li>There is a bit of overhead, because we also need to store the locations:
-<ul>
-<li>e.g.&nbsp;“location (3,27): 1”.</li>
-</ul></li>
-<li>However, if the fraction of nonzero is small, this is a huge win.</li>
-</ul>
-<div id="cell-176" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="88">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb109"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb109-1"><a href="#cb109-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The total number of elements: "</span>, np.prod(X_counts.shape))</span>
-<span id="cb109-2"><a href="#cb109-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The number of non-zero elements: "</span>, X_counts.nnz)</span>
-<span id="cb109-3"><a href="#cb109-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(</span>
-<span id="cb109-4"><a href="#cb109-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Proportion of non-zero elements: </span><span class="sc">%0.4f</span><span class="st">"</span> <span class="op">%</span> (X_counts.nnz <span class="op">/</span> np.prod(X_counts.shape))</span>
-<span id="cb109-5"><a href="#cb109-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb109-6"><a href="#cb109-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(</span>
-<span id="cb109-7"><a href="#cb109-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"The value at cell 3,</span><span class="sc">%d</span><span class="st"> is: </span><span class="sc">%d</span><span class="st">"</span></span>
-<span id="cb109-8"><a href="#cb109-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">%</span> (vec.vocabulary_[<span class="st">"jackpot"</span>], X_counts[<span class="dv">3</span>, vec.vocabulary_[<span class="st">"jackpot"</span>]])</span>
-<span id="cb109-9"><a href="#cb109-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Most vocabulary words do not occur in any one document, so most entries in a document–term matrix are zero. <code>CountVectorizer</code> therefore returns a <strong>sparse matrix</strong>, which stores only nonzero values and their locations. Sparse storage has some bookkeeping overhead, but it can save substantial memory and computation when the fraction of nonzero entries is small.</p>
+<div id="cell-176" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="87">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb108"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The total number of elements: "</span>, np.prod(X_counts.shape))</span>
+<span id="cb108-2"><a href="#cb108-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"The number of non-zero elements: "</span>, X_counts.nnz)</span>
+<span id="cb108-3"><a href="#cb108-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(</span>
+<span id="cb108-4"><a href="#cb108-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Proportion of non-zero elements: </span><span class="sc">%0.4f</span><span class="st">"</span> <span class="op">%</span> (X_counts.nnz <span class="op">/</span> np.prod(X_counts.shape))</span>
+<span id="cb108-5"><a href="#cb108-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb108-6"><a href="#cb108-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(</span>
+<span id="cb108-7"><a href="#cb108-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"The value at cell 3,</span><span class="sc">%d</span><span class="st"> is: </span><span class="sc">%d</span><span class="st">"</span></span>
+<span id="cb108-8"><a href="#cb108-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">%</span> (vec.vocabulary_[<span class="st">"jackpot"</span>], X_counts[<span class="dv">3</span>, vec.vocabulary_[<span class="st">"jackpot"</span>]])</span>
+<span id="cb108-9"><a href="#cb108-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>The total number of elements:  366
 The number of non-zero elements:  71
@@ -20631,51 +20695,39 @@ Proportion of non-zero elements: 0.1940
 The value at cell 3,27 is: 1</code></pre>
 </div>
 </div>
-<p>Question for you - What would happen if you apply <code>StandardScaler</code> on sparse data?</p>
+<div class="callout-reflection">
+<p><code>StandardScaler</code> normally subtracts the mean of each feature. What would happen to a sparse matrix if centring turned most of its zeros into nonzero values?</p>
+</div>
+<p>Centring would destroy the matrix’s sparsity and could require far more memory. When scaling sparse features, use a method that preserves zeros; for <code>StandardScaler</code>, this means setting <code>with_mean=False</code>. Word-count features are not routinely standardized, however, and later chapters introduce transformations designed specifically for term counts.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="One-hot encoding can also produce sparse features">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>One-hot encoding can also produce sparse features
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>By default, <code>OneHotEncoder</code> returns a sparse matrix. This representation can save considerable memory when the encoded feature matrix contains many categories and therefore many zeros.</p>
+<p>For a small number of categories, a dense array is often more convenient and the memory difference is usually unimportant. Use <code>sparse_output=False</code> to request a dense result.</p>
+</div>
+</div>
 </section>
-<section id="onehotencoder-and-sparse-features" class="level3">
-<h3 class="anchored" data-anchor-id="onehotencoder-and-sparse-features"><code>OneHotEncoder</code> and sparse features</h3>
-<ul>
-<li>By default, <code>OneHotEncoder</code> also creates sparse features.</li>
-<li>You could set <code>sparse=False</code> to get a regular <code>numpy</code> array.</li>
-<li>If there are a huge number of categories, it may be beneficial to keep them sparse.</li>
-<li>For smaller number of categories, it doesn’t matter much.</li>
-</ul>
-</section>
-<section id="important-countvectorizer-hyperparameters" class="level3">
-<h3 class="anchored" data-anchor-id="important-countvectorizer-hyperparameters">Important <code>CountVectorizer</code> hyperparameters</h3>
-<ul>
-<li><code>binary</code>
-<ul>
-<li>whether to use absence/presence feature values or counts</li>
-</ul></li>
-<li><code>max_features</code>
-<ul>
-<li>only consider top <code>max_features</code> ordered by frequency in the corpus</li>
-</ul></li>
-<li><code>max_df</code>
-<ul>
-<li>ignore features which occur in more than <code>max_df</code> documents</li>
-</ul></li>
-<li><code>min_df</code>
-<ul>
-<li>ignore features which occur in less than <code>min_df</code> documents</li>
-</ul></li>
-<li><code>ngram_range</code>
-<ul>
-<li>consider word sequences in the given range</li>
-</ul></li>
-</ul>
-<p>Let’s look at all features, i.e., words (along with their frequencies).</p>
-<p>First, let’s explore, <code>CountVectorizer</code> with default parameters.</p>
-<div id="cell-182" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:47:37.995514Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:47:37.995469Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:47:37.999153Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:47:37.998824Z&quot;}}" data-execution_count="89">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb111"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a>vec <span class="op">=</span> CountVectorizer()</span>
-<span id="cb111-2"><a href="#cb111-2" aria-hidden="true" tabindex="-1"></a>X_counts <span class="op">=</span> vec.fit_transform(toy_df[<span class="st">"sms"</span>])</span>
-<span id="cb111-3"><a href="#cb111-3" aria-hidden="true" tabindex="-1"></a>bow_df <span class="op">=</span> pd.DataFrame(</span>
-<span id="cb111-4"><a href="#cb111-4" aria-hidden="true" tabindex="-1"></a>    X_counts.toarray(), columns<span class="op">=</span>vec.get_feature_names_out(), index<span class="op">=</span>toy_df[<span class="st">"sms"</span>]</span>
-<span id="cb111-5"><a href="#cb111-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb111-6"><a href="#cb111-6" aria-hidden="true" tabindex="-1"></a>bow_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="89">
+<section id="controlling-the-representation" class="level3">
+<h3 class="anchored" data-anchor-id="controlling-the-representation">Controlling the representation</h3>
+<p><code>CountVectorizer</code> exposes choices about both the vocabulary and the values stored in the matrix. <code>binary=True</code> records presence or absence instead of counts. <code>min_df</code> removes tokens that appear in too few documents, while <code>max_df</code> removes tokens that appear in too many. <code>max_features</code> limits the vocabulary size, and <code>ngram_range</code> allows sequences of adjacent words as well as individual words.</p>
+<p>These are modelling choices rather than generic cleanup settings: each one determines which distinctions the estimator can use.</p>
+<p>We begin with the default count representation so that each cell can be interpreted directly.</p>
+<p>With the default settings, repeated words receive counts greater than one.</p>
+<div id="cell-182" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:12:20.531044Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:12:20.531002Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:12:20.534642Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:12:20.534400Z&quot;}}" data-execution_count="88">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb110"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb110-1"><a href="#cb110-1" aria-hidden="true" tabindex="-1"></a>vec <span class="op">=</span> CountVectorizer()</span>
+<span id="cb110-2"><a href="#cb110-2" aria-hidden="true" tabindex="-1"></a>X_counts <span class="op">=</span> vec.fit_transform(toy_df[<span class="st">"sms"</span>])</span>
+<span id="cb110-3"><a href="#cb110-3" aria-hidden="true" tabindex="-1"></a>bow_df <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb110-4"><a href="#cb110-4" aria-hidden="true" tabindex="-1"></a>    X_counts.toarray(), columns<span class="op">=</span>vec.get_feature_names_out(), index<span class="op">=</span>toy_df[<span class="st">"sms"</span>]</span>
+<span id="cb110-5"><a href="#cb110-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb110-6"><a href="#cb110-6" aria-hidden="true" tabindex="-1"></a>bow_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="88">
 <div>
 
 
@@ -20883,21 +20935,21 @@ The value at cell 3,27 is: 1</code></pre>
 </div>
 </div>
 <p>Each cell displays the number of times a particular word occurs in that message. For example, the word ‘urgent’ appears twice in the first message, so the count is 2.</p>
-<div id="cell-184" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:47:38.000096Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:47:38.000046Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:47:38.001656Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:47:38.001326Z&quot;}}" data-execution_count="90">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb112"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb112-1"><a href="#cb112-1" aria-hidden="true" tabindex="-1"></a>bow_df.iloc[<span class="dv">0</span>][<span class="st">'urgent'</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="90">
+<div id="cell-184" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:12:20.535566Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:12:20.535523Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:12:20.537068Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:12:20.536792Z&quot;}}" data-execution_count="89">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb111"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a>bow_df.iloc[<span class="dv">0</span>][<span class="st">'urgent'</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="89">
 <pre><code>np.int64(2)</code></pre>
 </div>
 </div>
 <p>When we use <code>binary=True</code>, the representation uses presence/absence of words instead of word counts.</p>
-<div id="cell-186" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-execution_count="91">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb114"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb114-1"><a href="#cb114-1" aria-hidden="true" tabindex="-1"></a>vec_binary <span class="op">=</span> CountVectorizer(binary<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb114-2"><a href="#cb114-2" aria-hidden="true" tabindex="-1"></a>X_counts <span class="op">=</span> vec_binary.fit_transform(toy_df[<span class="st">"sms"</span>])</span>
-<span id="cb114-3"><a href="#cb114-3" aria-hidden="true" tabindex="-1"></a>bow_df <span class="op">=</span> pd.DataFrame(</span>
-<span id="cb114-4"><a href="#cb114-4" aria-hidden="true" tabindex="-1"></a>    X_counts.toarray(), columns<span class="op">=</span>vec_binary.get_feature_names_out(), index<span class="op">=</span>toy_df[<span class="st">"sms"</span>]</span>
-<span id="cb114-5"><a href="#cb114-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb114-6"><a href="#cb114-6" aria-hidden="true" tabindex="-1"></a>bow_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="91">
+<div id="cell-186" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-execution_count="90">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb113"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb113-1"><a href="#cb113-1" aria-hidden="true" tabindex="-1"></a>vec_binary <span class="op">=</span> CountVectorizer(binary<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb113-2"><a href="#cb113-2" aria-hidden="true" tabindex="-1"></a>X_counts <span class="op">=</span> vec_binary.fit_transform(toy_df[<span class="st">"sms"</span>])</span>
+<span id="cb113-3"><a href="#cb113-3" aria-hidden="true" tabindex="-1"></a>bow_df <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb113-4"><a href="#cb113-4" aria-hidden="true" tabindex="-1"></a>    X_counts.toarray(), columns<span class="op">=</span>vec_binary.get_feature_names_out(), index<span class="op">=</span>toy_df[<span class="st">"sms"</span>]</span>
+<span id="cb113-5"><a href="#cb113-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb113-6"><a href="#cb113-6" aria-hidden="true" tabindex="-1"></a>bow_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="90">
 <div>
 
 
@@ -21105,21 +21157,21 @@ The value at cell 3,27 is: 1</code></pre>
 </div>
 </div>
 <p>Now each cell displays whether a particular word occurs in that message. For example, the word ‘urgent’ appears twice in the first message, so the representation is 1.</p>
-<div id="cell-188" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:47:38.007192Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:47:38.007150Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:47:38.008670Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:47:38.008396Z&quot;}}" data-execution_count="92">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb115"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb115-1"><a href="#cb115-1" aria-hidden="true" tabindex="-1"></a>bow_df.iloc[<span class="dv">0</span>][<span class="st">'urgent'</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="92">
+<div id="cell-188" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:12:20.542423Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:12:20.542378Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:12:20.543970Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:12:20.543681Z&quot;}}" data-execution_count="91">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb114"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb114-1"><a href="#cb114-1" aria-hidden="true" tabindex="-1"></a>bow_df.iloc[<span class="dv">0</span>][<span class="st">'urgent'</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="91">
 <pre><code>np.int64(1)</code></pre>
 </div>
 </div>
-<p>We can control the size of X (the number of features) using <code>max_features</code>.</p>
-<div id="cell-190" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-execution_count="93">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb117"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a>vec8 <span class="op">=</span> CountVectorizer(max_features<span class="op">=</span><span class="dv">8</span>)</span>
-<span id="cb117-2"><a href="#cb117-2" aria-hidden="true" tabindex="-1"></a>X_counts <span class="op">=</span> vec8.fit_transform(toy_df[<span class="st">"sms"</span>])</span>
-<span id="cb117-3"><a href="#cb117-3" aria-hidden="true" tabindex="-1"></a>bow_df <span class="op">=</span> pd.DataFrame(</span>
-<span id="cb117-4"><a href="#cb117-4" aria-hidden="true" tabindex="-1"></a>    X_counts.toarray(), columns<span class="op">=</span>vec8.get_feature_names_out(), index<span class="op">=</span>toy_df[<span class="st">"sms"</span>]</span>
-<span id="cb117-5"><a href="#cb117-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb117-6"><a href="#cb117-6" aria-hidden="true" tabindex="-1"></a>bow_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="93">
+<p>We can limit the number of columns in the feature matrix using <code>max_features</code>. On a real corpus, this can control memory use and remove very low-ranked vocabulary terms.</p>
+<div id="cell-190" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-execution_count="92">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb116"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb116-1"><a href="#cb116-1" aria-hidden="true" tabindex="-1"></a>vec8 <span class="op">=</span> CountVectorizer(max_features<span class="op">=</span><span class="dv">8</span>)</span>
+<span id="cb116-2"><a href="#cb116-2" aria-hidden="true" tabindex="-1"></a>X_counts <span class="op">=</span> vec8.fit_transform(toy_df[<span class="st">"sms"</span>])</span>
+<span id="cb116-3"><a href="#cb116-3" aria-hidden="true" tabindex="-1"></a>bow_df <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb116-4"><a href="#cb116-4" aria-hidden="true" tabindex="-1"></a>    X_counts.toarray(), columns<span class="op">=</span>vec8.get_feature_names_out(), index<span class="op">=</span>toy_df[<span class="st">"sms"</span>]</span>
+<span id="cb116-5"><a href="#cb116-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb116-6"><a href="#cb116-6" aria-hidden="true" tabindex="-1"></a>bow_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="92">
 <div>
 
 
@@ -21221,28 +21273,31 @@ The value at cell 3,27 is: 1</code></pre>
 </div>
 </div>
 </div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
+<div class="callout callout-style-default callout-note callout-titled" title="Interaction between `binary` and `max_features`">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Note
+<span class="screen-reader-only">Note</span>Interaction between <code>binary</code> and <code>max_features</code>
 </div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>When <code>binary=True</code> and <code>max_features</code> is set, the selected vocabulary can differ from the vocabulary selected with raw counts. Binarization occurs before features are ranked, so ranking is based on the number of documents containing a token rather than its total frequency. This is a useful reminder to verify the precise behaviour of interacting hyperparameters rather than infer it from their names.</p>
 </div>
 </div>
-<div id="cell-192" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;skip&quot;}}" data-execution_count="94">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb118"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb118-1"><a href="#cb118-1" aria-hidden="true" tabindex="-1"></a>vec8 <span class="op">=</span> CountVectorizer(max_features<span class="op">=</span><span class="dv">8</span>)</span>
-<span id="cb118-2"><a href="#cb118-2" aria-hidden="true" tabindex="-1"></a>X_counts <span class="op">=</span> vec8.fit_transform(toy_df[<span class="st">"sms"</span>])</span>
-<span id="cb118-3"><a href="#cb118-3" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(</span>
-<span id="cb118-4"><a href="#cb118-4" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span>X_counts.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">0</span>).tolist()[<span class="dv">0</span>],</span>
-<span id="cb118-5"><a href="#cb118-5" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span>vec8.get_feature_names_out(),</span>
-<span id="cb118-6"><a href="#cb118-6" aria-hidden="true" tabindex="-1"></a>    columns<span class="op">=</span>[<span class="st">"counts"</span>],</span>
-<span id="cb118-7"><a href="#cb118-7" aria-hidden="true" tabindex="-1"></a>).sort_values(<span class="st">"counts"</span>, ascending<span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="94">
+</div>
+<div id="cell-192" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;skip&quot;}}" data-execution_count="93">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb117"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a>vec8 <span class="op">=</span> CountVectorizer(max_features<span class="op">=</span><span class="dv">8</span>)</span>
+<span id="cb117-2"><a href="#cb117-2" aria-hidden="true" tabindex="-1"></a>X_counts <span class="op">=</span> vec8.fit_transform(toy_df[<span class="st">"sms"</span>])</span>
+<span id="cb117-3"><a href="#cb117-3" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(</span>
+<span id="cb117-4"><a href="#cb117-4" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span>X_counts.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">0</span>).tolist()[<span class="dv">0</span>],</span>
+<span id="cb117-5"><a href="#cb117-5" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span>vec8.get_feature_names_out(),</span>
+<span id="cb117-6"><a href="#cb117-6" aria-hidden="true" tabindex="-1"></a>    columns<span class="op">=</span>[<span class="st">"counts"</span>],</span>
+<span id="cb117-7"><a href="#cb117-7" aria-hidden="true" tabindex="-1"></a>).sort_values(<span class="st">"counts"</span>, ascending<span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="93">
 <div>
 
 
@@ -21292,15 +21347,15 @@ Note
 </div>
 </div>
 </div>
-<div id="cell-193" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;skip&quot;}}" data-execution_count="95">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb119"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb119-1"><a href="#cb119-1" aria-hidden="true" tabindex="-1"></a>vec8_binary <span class="op">=</span> CountVectorizer(binary<span class="op">=</span><span class="va">True</span>, max_features<span class="op">=</span><span class="dv">8</span>)</span>
-<span id="cb119-2"><a href="#cb119-2" aria-hidden="true" tabindex="-1"></a>X_counts <span class="op">=</span> vec8_binary.fit_transform(toy_df[<span class="st">"sms"</span>])</span>
-<span id="cb119-3"><a href="#cb119-3" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(</span>
-<span id="cb119-4"><a href="#cb119-4" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span>X_counts.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">0</span>).tolist()[<span class="dv">0</span>],</span>
-<span id="cb119-5"><a href="#cb119-5" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span>vec8_binary.get_feature_names_out(),</span>
-<span id="cb119-6"><a href="#cb119-6" aria-hidden="true" tabindex="-1"></a>    columns<span class="op">=</span>[<span class="st">"counts"</span>],</span>
-<span id="cb119-7"><a href="#cb119-7" aria-hidden="true" tabindex="-1"></a>).sort_values(<span class="st">"counts"</span>, ascending<span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="95">
+<div id="cell-193" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;skip&quot;}}" data-execution_count="94">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb118"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb118-1"><a href="#cb118-1" aria-hidden="true" tabindex="-1"></a>vec8_binary <span class="op">=</span> CountVectorizer(binary<span class="op">=</span><span class="va">True</span>, max_features<span class="op">=</span><span class="dv">8</span>)</span>
+<span id="cb118-2"><a href="#cb118-2" aria-hidden="true" tabindex="-1"></a>X_counts <span class="op">=</span> vec8_binary.fit_transform(toy_df[<span class="st">"sms"</span>])</span>
+<span id="cb118-3"><a href="#cb118-3" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(</span>
+<span id="cb118-4"><a href="#cb118-4" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span>X_counts.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">0</span>).tolist()[<span class="dv">0</span>],</span>
+<span id="cb118-5"><a href="#cb118-5" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span>vec8_binary.get_feature_names_out(),</span>
+<span id="cb118-6"><a href="#cb118-6" aria-hidden="true" tabindex="-1"></a>    columns<span class="op">=</span>[<span class="st">"counts"</span>],</span>
+<span id="cb118-7"><a href="#cb118-7" aria-hidden="true" tabindex="-1"></a>).sort_values(<span class="st">"counts"</span>, ascending<span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="94">
 <div>
 
 
@@ -21350,16 +21405,17 @@ Note
 </div>
 </div>
 </div>
+<p>Before counting, <code>CountVectorizer</code> converts text to lowercase by default and uses a token pattern that keeps tokens containing at least two word characters. This excludes most punctuation and single-character tokens. These defaults also determine which distinctions the representation preserves and should be reconsidered when they do not suit the application.</p>
 </section>
-<section id="text-preprocessing" class="level3">
-<h3 class="anchored" data-anchor-id="text-preprocessing">Text preprocessing</h3>
-<p><code>CountVectorizer</code> performs several operations before counting. By default it converts text to lowercase and uses a token pattern that keeps tokens containing at least two word characters, which excludes most punctuation and single-character tokens. These defaults are modelling choices: they determine which distinctions the representation preserves.</p>
-<div id="cell-195" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="96">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb120"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb120-1"><a href="#cb120-1" aria-hidden="true" tabindex="-1"></a>pipe <span class="op">=</span> make_pipeline(CountVectorizer(), SVC())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="text-preprocessing-inside-a-pipeline" class="level3">
+<h3 class="anchored" data-anchor-id="text-preprocessing-inside-a-pipeline">Text preprocessing inside a pipeline</h3>
+<p>The vectorizer should be part of the predictive pipeline rather than fitted on the complete dataset in advance. Its vocabulary is learned from data, so it must obey the same fold boundaries as every other fitted transformation.</p>
+<div id="cell-195" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="95">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb119"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb119-1"><a href="#cb119-1" aria-hidden="true" tabindex="-1"></a>pipe <span class="op">=</span> make_pipeline(CountVectorizer(), SVC())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-196" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:47:38.022049Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:47:38.021990Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:47:38.028685Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:47:38.028371Z&quot;}}" data-execution_count="97">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb121"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb121-1"><a href="#cb121-1" aria-hidden="true" tabindex="-1"></a>pipe.fit(toy_df[<span class="st">"sms"</span>], toy_df[<span class="st">"target"</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="97">
+<div id="cell-196" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:12:20.557744Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:12:20.557702Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:12:20.566895Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:12:20.566564Z&quot;}}" data-execution_count="96">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb120"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb120-1"><a href="#cb120-1" aria-hidden="true" tabindex="-1"></a>pipe.fit(toy_df[<span class="st">"sms"</span>], toy_df[<span class="st">"target"</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="96">
 <style>.sk-global {
   /* Definition of color scheme common for light and dark mode */
   --sklearn-color-text: #000;
@@ -23112,17 +23168,15 @@ function forceTheme(elementId) {
 forceTheme('sk-container-id-11');</script>
 </div>
 </div>
-<div id="cell-197" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T02:47:38.029680Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T02:47:38.029634Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T02:47:38.031590Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T02:47:38.031284Z&quot;}}" data-execution_count="98">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb122"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb122-1"><a href="#cb122-1" aria-hidden="true" tabindex="-1"></a>pipe.predict(toy_df[<span class="st">"sms"</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="98">
+<div id="cell-197" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T16:12:20.567821Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T16:12:20.567781Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T16:12:20.569578Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T16:12:20.569332Z&quot;}}" data-execution_count="97">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb121"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb121-1"><a href="#cb121-1" aria-hidden="true" tabindex="-1"></a>pipe.predict(toy_df[<span class="st">"sms"</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="97">
 <pre><code>array(['spam', 'non spam', 'non spam', 'spam', 'spam', 'non spam'],
       dtype=object)</code></pre>
 </div>
 </div>
-</section>
-<section id="limitations-of-bag-of-words-features" class="level3">
-<h3 class="anchored" data-anchor-id="limitations-of-bag-of-words-features">Limitations of bag-of-words features</h3>
-<p>Bag-of-words discards word order, syntax, and much of compositional meaning. For example, it has difficulty distinguishing phrases containing the same words in different arrangements. Despite these limitations, word occurrence patterns can provide strong signals for tasks such as spam filtering. Later chapters introduce representations that preserve more information about context and meaning.</p>
+<p>When the pipeline is fit, <code>CountVectorizer</code> learns a vocabulary from the training documents and the SVM learns from the resulting columns. During cross-validation, each fold may therefore learn a slightly different vocabulary. A word found only in a validation, test, or deployment document is ignored rather than creating a new column or raising an error. This keeps the feature space consistent with the data used to fit the estimator.</p>
+<p>Bag-of-words still discards word order, syntax, and much of compositional meaning. For example, it has difficulty distinguishing phrases containing the same words in different arrangements. Despite these limitations, word occurrence patterns can provide strong signals for tasks such as spam filtering. Bag-of-words is therefore a useful baseline, not a complete representation of language; later chapters introduce representations that preserve more context and meaning.</p>
 </section>
 <section id="exercise-6.2" class="level3">
 <h3 class="anchored" data-anchor-id="exercise-6.2">Exercise 6.2</h3>
