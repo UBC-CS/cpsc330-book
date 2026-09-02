@@ -203,7 +203,7 @@ window.Quarto = {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../learning-objectives.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Detailed Course Learning Objectives</span></a>
+ <span class="menu-text">Detailed Learning Objectives</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -233,6 +233,16 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../book/04_kNNs-SVM-RBF.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 4: Similarity-Based Models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/05_preprocessing-pipelines.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 5: Preprocessing and Pipelines</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/06_column-transformer-text-feats.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 6: Column Transformers and Text Features</span></a>
   </div>
 </li>
       </ul>
@@ -323,25 +333,27 @@ window.Quarto = {
 </section>
 <p><strong>Imports</strong></p>
 <div id="05be1ee9-5aa2-4b6c-9b20-ccb6d482a60a" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;skip&quot;}}" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>sys.path.append(os.path.join(os.path.abspath(<span class="st">"."</span>), <span class="st">"code"</span>))</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> HTML, display</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> CountVectorizer</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> make_pipeline</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> img_classify <span class="im">import</span> classify_image</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">"font.size"</span>] <span class="op">=</span> <span class="dv">16</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">"display.max_colwidth"</span>, <span class="dv">200</span>)</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>sys.path.append(os.path.join(os.path.abspath(<span class="st">"."</span>), <span class="st">"code"</span>))</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> HTML, display</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> CountVectorizer</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> make_pipeline</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> img_classify <span class="im">import</span> classify_image</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">"font.size"</span>] <span class="op">=</span> <span class="dv">16</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">"display.max_colwidth"</span>, <span class="dv">200</span>)</span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>DATA_DIR <span class="op">=</span> <span class="st">'data/'</span> </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>DATA_DIR <span class="op">=</span> Path(<span class="st">"data"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><br><br></p>
 <p><strong>Meet Eva, a fictitious student</strong></p>
@@ -690,7 +702,7 @@ Note
 <section id="training-a-supervised-machine-learning-model-with-x-and-y" class="level4">
 <h4 class="anchored" data-anchor-id="training-a-supervised-machine-learning-model-with-x-and-y">Training a supervised machine learning model with <span class="math inline">\(X\)</span> and <span class="math inline">\(y\)</span></h4>
 <div id="f4511fed-6251-4301-9217-240723c2075e" class="cell" data-tags="[&quot;hide-input&quot;]" data-execution_count="2">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>sms_df <span class="op">=</span> pd.read_csv(DATA_DIR <span class="op">+</span> <span class="st">"spam.csv"</span>, encoding<span class="op">=</span><span class="st">"latin-1"</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>sms_df <span class="op">=</span> pd.read_csv(DATA_DIR <span class="op">/</span> <span class="st">"spam.csv"</span>, encoding<span class="op">=</span><span class="st">"latin-1"</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>sms_df <span class="op">=</span> sms_df.drop(columns <span class="op">=</span> [<span class="st">"Unnamed: 2"</span>, <span class="st">"Unnamed: 3"</span>, <span class="st">"Unnamed: 4"</span>])</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>sms_df <span class="op">=</span> sms_df.rename(columns<span class="op">=</span>{<span class="st">"v1"</span>: <span class="st">"target"</span>, <span class="st">"v2"</span>: <span class="st">"sms"</span>})</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>train_df, test_df <span class="op">=</span> train_test_split(sms_df, test_size<span class="op">=</span><span class="fl">0.10</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
@@ -795,39 +807,39 @@ Note
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>pred_df.style.set_properties(<span class="op">**</span>{<span class="st">"text-align"</span>: <span class="st">"left"</span>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="5">
 <style type="text/css">
-#T_91e4f_row0_col0, #T_91e4f_row0_col1, #T_91e4f_row1_col0, #T_91e4f_row1_col1, #T_91e4f_row2_col0, #T_91e4f_row2_col1, #T_91e4f_row3_col0, #T_91e4f_row3_col1 {
+#T_8495c_row0_col0, #T_8495c_row0_col1, #T_8495c_row1_col0, #T_8495c_row1_col1, #T_8495c_row2_col0, #T_8495c_row2_col1, #T_8495c_row3_col0, #T_8495c_row3_col1 {
   text-align: left;
 }
 </style>
 
-<table id="T_91e4f" class="caption-top table table-sm table-striped small">
+<table id="T_8495c" class="caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
 <th class="blank level0" data-quarto-table-cell-role="th">&nbsp;</th>
-<th id="T_91e4f_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">sms</th>
-<th id="T_91e4f_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">spam_predictions</th>
+<th id="T_8495c_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">sms</th>
+<th id="T_8495c_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">spam_predictions</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<th id="T_91e4f_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">3245</th>
-<td id="T_91e4f_row0_col0" class="data row0 col0">Funny fact Nobody teaches volcanoes 2 erupt, tsunamis 2 arise, hurricanes 2 sway aroundn no 1 teaches hw 2 choose a wife Natural disasters just happens</td>
-<td id="T_91e4f_row0_col1" class="data row0 col1">ham</td>
+<th id="T_8495c_level0_row0" class="row_heading level0 row0" data-quarto-table-cell-role="th">3245</th>
+<td id="T_8495c_row0_col0" class="data row0 col0">Funny fact Nobody teaches volcanoes 2 erupt, tsunamis 2 arise, hurricanes 2 sway aroundn no 1 teaches hw 2 choose a wife Natural disasters just happens</td>
+<td id="T_8495c_row0_col1" class="data row0 col1">ham</td>
 </tr>
 <tr class="even">
-<th id="T_91e4f_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">944</th>
-<td id="T_91e4f_row1_col0" class="data row1 col0">I sent my scores to sophas and i had to do secondary application for a few schools. I think if you are thinking of applying, do a research on cost also. Contact joke ogunrinde, her school is one me the less expensive ones</td>
-<td id="T_91e4f_row1_col1" class="data row1 col1">ham</td>
+<th id="T_8495c_level0_row1" class="row_heading level0 row1" data-quarto-table-cell-role="th">944</th>
+<td id="T_8495c_row1_col0" class="data row1 col0">I sent my scores to sophas and i had to do secondary application for a few schools. I think if you are thinking of applying, do a research on cost also. Contact joke ogunrinde, her school is one me the less expensive ones</td>
+<td id="T_8495c_row1_col1" class="data row1 col1">ham</td>
 </tr>
 <tr class="odd">
-<th id="T_91e4f_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">1044</th>
-<td id="T_91e4f_row2_col0" class="data row2 col0">We know someone who you know that fancies you. Call 09058097218 to find out who. POBox 6, LS15HB 150p</td>
-<td id="T_91e4f_row2_col1" class="data row2 col1">spam</td>
+<th id="T_8495c_level0_row2" class="row_heading level0 row2" data-quarto-table-cell-role="th">1044</th>
+<td id="T_8495c_row2_col0" class="data row2 col0">We know someone who you know that fancies you. Call 09058097218 to find out who. POBox 6, LS15HB 150p</td>
+<td id="T_8495c_row2_col1" class="data row2 col1">spam</td>
 </tr>
 <tr class="even">
-<th id="T_91e4f_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">2484</th>
-<td id="T_91e4f_row3_col0" class="data row3 col0">Only if you promise your getting out as SOON as you can. And you'll text me in the morning to let me know you made it in ok.</td>
-<td id="T_91e4f_row3_col1" class="data row3 col1">ham</td>
+<th id="T_8495c_level0_row3" class="row_heading level0 row3" data-quarto-table-cell-role="th">2484</th>
+<td id="T_8495c_row3_col0" class="data row3 col0">Only if you promise your getting out as SOON as you can. And you'll text me in the morning to let me know you made it in ok.</td>
+<td id="T_8495c_row3_col1" class="data row3 col1">ham</td>
 </tr>
 </tbody>
 </table>
@@ -880,7 +892,7 @@ Note
 </div>
 </div>
 <div id="86996f4a-2365-40d7-b3d0-cb67f511ee31" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-tags="[&quot;hide-input&quot;]" data-execution_count="6">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(DATA_DIR <span class="op">+</span> <span class="st">"indian_liver_patient.csv"</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(DATA_DIR <span class="op">/</span> <span class="st">"indian_liver_patient.csv"</span>)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop(columns <span class="op">=</span> [<span class="st">"Gender"</span>])</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"Dataset"</span>] <span class="op">=</span> df[<span class="st">"Dataset"</span>].replace(<span class="dv">1</span>, <span class="st">"Disease"</span>)</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"Dataset"</span>] <span class="op">=</span> df[<span class="st">"Dataset"</span>].replace(<span class="dv">2</span>, <span class="st">"No Disease"</span>)</span>
@@ -1817,7 +1829,7 @@ a.param-doc-link::before {
 <tr class="default even">
 <td class="param"><span class="param-doc-link" style="text-decoration:none;">booster_</span></td>
 <td class="fitted-att-type">Booster</td>
-<td>&lt;lightgbm.bas...t 0x12226fd70&gt;</td>
+<td>&lt;lightgbm.bas...t 0x1245d3fe0&gt;</td>
 </tr>
 <tr class="default odd">
 <td class="param"><span class="param-doc-link" style="text-decoration:none;">classes_</span></td>
@@ -2210,12 +2222,10 @@ forceTheme('sk-container-id-1');</script>
 <h4 class="anchored" data-anchor-id="example-2-predicting-the-label-of-a-given-image">Example 2: Predicting the label of a given image</h4>
 <p>Suppose you want to predict the label of a given image using supervised machine learning. We are using a pre-trained model here to predict labels of new unseen images.</p>
 <div id="61d0d419-54e3-4265-bcda-864dcb956bcb" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="10">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> glob</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> Image</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>images <span class="op">=</span> glob.glob(DATA_DIR <span class="op">+</span> <span class="st">"test_images/*.*"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> Image</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>images <span class="op">=</span> <span class="bu">list</span>((DATA_DIR <span class="op">/</span> <span class="st">"test_images"</span>).glob(<span class="st">"*.*"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div id="400756cf-2b43-46cf-ba54-f687e37ed2b0" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> image_path <span class="kw">in</span> images:</span>
@@ -2314,7 +2324,7 @@ Greater Swiss Mountain dog              0.235
 </div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"d2272bf41cbe4db294da596b98e2d89d","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"3731f7c5d16848b5bcd4d0151c24733b","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display" data-execution_count="12">
@@ -2352,7 +2362,7 @@ Greater Swiss Mountain dog              0.235
 <span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>emotion_classifier(text, candidate_labels)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"ce03b2e0e6fc421e9834b163b3c47eb7","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"89cf0ade0c834ccc8f31f43c0849055c","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 <div class="cell-output cell-output-display" data-execution_count="13">
@@ -2388,7 +2398,7 @@ Note
 </div>
 </div>
 <div id="6b42804c-09df-4905-bab9-0ed09090cc32" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-tags="[&quot;hide-input&quot;]" data-execution_count="14">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv( DATA_DIR <span class="op">+</span> <span class="st">"kc_house_data.csv"</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(DATA_DIR <span class="op">/</span> <span class="st">"kc_house_data.csv"</span>)</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop(columns <span class="op">=</span> [<span class="st">"id"</span>, <span class="st">"date"</span>])</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>df.rename(columns<span class="op">=</span>{<span class="st">"price"</span>: <span class="st">"target"</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>train_df, test_df <span class="op">=</span> train_test_split(df, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">4</span>)</span>
@@ -3214,8 +3224,8 @@ Important
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../learning-objectives.html" class="pagination-link" aria-label="Detailed Course Learning Objectives">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Detailed Course Learning Objectives</span>
+      <a href="../learning-objectives.html" class="pagination-link" aria-label="Detailed Learning Objectives">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Detailed Learning Objectives</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
