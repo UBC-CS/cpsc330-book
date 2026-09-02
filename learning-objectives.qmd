@@ -1,4 +1,4 @@
-# Detailed Course Learning Objectives {.unnumbered}
+# Detailed Learning Objectives {.unnumbered}
 
 CPSC 330 is designed for students from a range of backgrounds, including Computer Science and Statistics. It provides a gentle introduction to machine learning while emphasizing the practical judgment required to use machine learning responsibly. The objectives below expand the five broad goals introduced in the preface.
 
