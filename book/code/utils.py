@@ -46,31 +46,42 @@ def cross_validate_std(*args, **kwargs):
         res_mean["std_train_score"] = res["train_score"].std()
     return res_mean
 
-def mean_std_cross_val_scores(model, X_train, y_train, **kwargs):
-    """
-    Returns mean and std of cross validation
+def summarize_cross_validation(model, X, y, **kwargs):
+    """Run cross-validation and summarize each returned quantity.
 
     Parameters
     ----------
-    model :
-        scikit-learn model
-    X_train : numpy array or pandas DataFrame
-        X in the training data
-    y_train :
-        y in the training data
+    model : estimator
+        A scikit-learn predictive estimator or pipeline.
+    X : array-like
+        Feature data.
+    y : array-like
+        Target data.
+    **kwargs
+        Additional arguments passed to `sklearn.model_selection.cross_validate`.
 
     Returns
     ----------
-        pandas Series with mean scores from cross_validation
+    pandas.Series
+        A numeric Series with one entry for each (measure, statistic)
+        pair. Measures are ordered with validation and training scores
+        first, followed by fitting and scoring times.
     """
 
-    scores = cross_validate(model, X_train, y_train, **kwargs)
+    results = pd.DataFrame(cross_validate(model, X, y, **kwargs))
+    summary = (
+        results.agg(["mean", "std"])
+        .T.rename(index={"test_score": "validation_score"})
+        .rename_axis("measure")
+    )
 
-    mean_scores = pd.DataFrame(scores).mean()
-    std_scores = pd.DataFrame(scores).std()
-    out_col = []
+    preferred_order = [
+        "validation_score",
+        "train_score",
+        "fit_time",
+        "score_time",
+    ]
+    ordered_measures = [name for name in preferred_order if name in summary.index]
+    ordered_measures.extend(name for name in summary.index if name not in ordered_measures)
 
-    for i in range(len(mean_scores)):
-        out_col.append((f"%0.3f (+/- %0.3f)" % (mean_scores.iloc[i], std_scores.iloc[i])))
-
-    return pd.Series(data=out_col, index=mean_scores.index)
+    return summary.loc[ordered_measures].stack().rename_axis(["measure", "statistic"])
