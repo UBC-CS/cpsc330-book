@@ -27,6 +27,7 @@ book:
         - book/04_kNNs-SVM-RBF.ipynb
         - book/05_preprocessing-pipelines.ipynb
         - book/06_column-transformer-text-feats.ipynb
+        - book/07_linear-models.ipynb
 
     # Add the following parts when their first chapters are ready:
     # - Unsupervised Learning and Recommendation
