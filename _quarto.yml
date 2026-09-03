@@ -30,8 +30,11 @@ book:
         - book/07_linear-models.ipynb
 
     # Add the following parts when their first chapters are ready:
-    # - Unsupervised Learning and Recommendation
+    - part: Unsupervised Learning and Recommendation
+      chapters:
+        - book/15_K-Means.ipynb
     # - Working with Different Data Types
+        
     # - Responsible Machine Learning in Practice
 
 format:
