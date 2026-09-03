@@ -83,7 +83,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-6a71f793ee48e4dc57c931f3509d12e8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-a220972fa267516723a03c2fb8475964.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -2553,9 +2553,13 @@ forceTheme('sk-container-id-1');</script>
 </section>
 <section id="summary" class="level2">
 <h2 class="anchored" data-anchor-id="summary">Summary</h2>
-<p>Preprocessing changes raw features into a representation suitable for a model. Scaling prevents the numerical units of a feature from dominating distance-based models. Imputation supplies values where observations are missing. Ordinal encoding represents genuinely ordered categories, while one-hot encoding avoids imposing an arbitrary order on nominal categories. Each choice encodes assumptions about the data and should be guided by the model, the feature meanings, and the applied problem.</p>
-<p>Transformers learn from data through <code>fit</code> and apply what they learned through <code>transform</code>. Because fitting a transformer uses information, preprocessing must obey the Golden Rule. Fit transformations only on the relevant training data, including the training portion of each cross-validation fold. A <code>scikit-learn</code> pipeline packages preprocessing and prediction into one estimator, making the correct fold-by-fold workflow straightforward and reducing opportunities for leakage.</p>
-<p>A simple pipeline applies the same sequence to all its input features. In the next chapter, we will use <code>ColumnTransformer</code> to give different feature types different preprocessing steps.</p>
+<ul>
+<li>Preprocessing transforms raw features into a representation a model can use.</li>
+<li>Scaling prevents numerical units from dominating distance-based models, while imputation handles missing values.</li>
+<li>Ordinal encoding represents meaningfully ordered categories; one-hot encoding avoids imposing order on nominal categories.</li>
+<li>Fit every transformer using only the available training data, including the training portion of each cross-validation fold.</li>
+<li>A <code>scikit-learn</code> pipeline keeps preprocessing and prediction together, making leakage less likely.</li>
+</ul>
 
 
 

@@ -83,7 +83,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-6a71f793ee48e4dc57c931f3509d12e8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-a220972fa267516723a03c2fb8475964.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -23207,9 +23207,14 @@ cross_validate(pipe, X_train, y_train)</code></pre>
 </section>
 <section id="summary" class="level2">
 <h2 class="anchored" data-anchor-id="summary">Summary</h2>
-<p><code>ColumnTransformer</code> lets one workflow apply different preprocessing operations to different feature groups. Each branch can contain a single transformer, a pipeline of several transformations, <code>"passthrough"</code>, or <code>"drop"</code>. Placing the column transformer inside a pipeline ensures that imputation values, scaling statistics, category sets, and vocabularies are learned independently within each cross-validation training fold.</p>
-<p>The transformation should reflect the meaning of the feature. Numeric measurements may need imputation and scaling; nominal categories often use one-hot encoding; ordinal categories require an explicit meaningful order; and already suitable columns can pass through unchanged. <code>handle_unknown="ignore"</code> prevents unseen nominal categories from causing an error, while <code>drop="if_binary"</code> represents a two-category feature with one indicator. Both options encode choices whose consequences should be understood.</p>
-<p>Raw text needs a learned numeric representation. <code>CountVectorizer</code> constructs bag-of-words features by learning a training vocabulary and counting its tokens in each document. The resulting matrices are usually sparse, and hyperparameters such as <code>max_features</code>, <code>min_df</code>, <code>max_df</code>, <code>binary</code>, and <code>ngram_range</code> control what information the representation retains.</p>
+<ul>
+<li><code>ColumnTransformer</code> applies different preprocessing operations to different feature groups and combines their outputs.</li>
+<li>Placing the column transformer inside a pipeline ensures that preprocessing is learned separately within each cross-validation training fold.</li>
+<li>Transformations should reflect feature meaning: numeric, nominal, ordinal, binary, and text features may need different representations.</li>
+<li>Options such as <code>handle_unknown="ignore"</code> and <code>drop="if_binary"</code> solve practical encoding problems but still encode modelling choices.</li>
+<li><code>CountVectorizer</code> learns a training vocabulary and represents documents using sparse bag-of-words features.</li>
+<li>Vectorizer hyperparameters determine which textual information the resulting representation retains.</li>
+</ul>
 
 
 
