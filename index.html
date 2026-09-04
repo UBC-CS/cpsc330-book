@@ -240,7 +240,8 @@ window.Quarto = {
   <ul>
   <li><a href="#preface" id="toc-preface" class="nav-link active" data-scroll-target="#preface">Preface</a>
   <ul>
-  <li><a href="#the-goal-of-the-course" id="toc-the-goal-of-the-course" class="nav-link" data-scroll-target="#the-goal-of-the-course">The goal of the course</a></li>
+  <li><a href="#who-this-book-is-for" id="toc-who-this-book-is-for" class="nav-link" data-scroll-target="#who-this-book-is-for">Who this book is for</a></li>
+  <li><a href="#the-goal-of-this-book" id="toc-the-goal-of-this-book" class="nav-link" data-scroll-target="#the-goal-of-this-book">The goal of this book</a></li>
   <li><a href="#how-to-use-this-book" id="toc-how-to-use-this-book" class="nav-link" data-scroll-target="#how-to-use-this-book">How to use this book</a></li>
   <li><a href="#about-cpsc-330" id="toc-about-cpsc-330" class="nav-link" data-scroll-target="#about-cpsc-330">About CPSC 330</a></li>
   <li><a href="#acknowledgments" id="toc-acknowledgments" class="nav-link" data-scroll-target="#acknowledgments">Acknowledgments</a></li>
@@ -278,12 +279,17 @@ window.Quarto = {
 <section id="preface" class="level1 unnumbered">
 <h1 class="unnumbered">Preface</h1>
 <p>CPSC 330 is an applied machine learning course offered by the Department of Computer Science at the University of British Columbia.</p>
-<p>This book grew out of materials developed for the course and are intended to provide a practical introduction to machine learning. The emphasis is on building intuition, using machine learning tools effectively, and developing good practices for model selection, evaluation, and interpretation. The book is designed to be independent of any particular offering of CPSC 330. Individual course offerings may differ in scheduling, assessments, exercises, and some topics, while this book serves as a common reference for the core material.</p>
+<p>This book grew out of materials developed for the course and is intended to provide a practical introduction to machine learning. The emphasis is on building intuition, using machine learning tools effectively, and developing good practices for model selection, evaluation, and interpretation. The book is designed to be independent of any particular offering of CPSC 330. Individual course offerings may differ in scheduling, assessments, exercises, and some topics, while this book serves as a common reference for the core material.</p>
 <p>The examples primarily use Python and the <code>scikit-learn</code> ecosystem, along with other libraries for working with modern pretrained models.</p>
-<section id="the-goal-of-the-course" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="the-goal-of-the-course">The goal of the course</h2>
-<p>AI systems can look like black boxes: a real-world problem and some data go in, and a prediction or decision comes out. In this course, we will open that box. Our goal is not simply to train models, but to learn how to approach messy problems thoughtfully from beginning to end.</p>
-<p>By the end of the course, given a real-world problem, you should be able to:</p>
+<section id="who-this-book-is-for" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="who-this-book-is-for">Who this book is for</h2>
+<p>This book is intended for readers from a wide range of backgrounds who want a practical introduction to machine learning. You do not need prior experience with machine learning, and the book does not assume a strong mathematics or statistics background. When mathematical ideas are useful, we introduce them through intuition and concrete examples before adding technical detail.</p>
+<p>The main prerequisite is basic Python programming. You should be comfortable reading and writing short Python programs and working with common data structures such as lists, dictionaries, and arrays. Familiarity with tools such as NumPy and pandas is helpful, but the book introduces the machine learning tools it uses as they are needed.</p>
+</section>
+<section id="the-goal-of-this-book" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="the-goal-of-this-book">The goal of this book</h2>
+<p>AI systems can look like black boxes: a real-world problem and some data go in, and a prediction or decision comes out. In this book, we will open that box. Our goal is not simply to train models, but to learn how to approach messy problems thoughtfully from beginning to end.</p>
+<p>After working through this book, given a real-world problem, you should be able to:</p>
 <ol type="1">
 <li><strong>Frame the problem:</strong> decide whether machine learning is an appropriate approach.</li>
 <li><strong>Choose the ingredients:</strong> identify suitable data, representations, and modeling methods.</li>
@@ -291,7 +297,7 @@ window.Quarto = {
 <li><strong>Recognize limitations:</strong> identify uncertainty, failure modes, and possible harms.</li>
 <li><strong>Communicate responsibly:</strong> explain the evidence and limitations clearly enough for others to make informed decisions.</li>
 </ol>
-<p>These broad goals are developed through the <a href="./learning-objectives.html">detailed course learning objectives</a>.</p>
+<p>These broad goals are developed through the <a href="./learning-objectives.html">detailed learning objectives</a>.</p>
 </section>
 <section id="how-to-use-this-book" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="how-to-use-this-book">How to use this book</h2>
@@ -315,7 +321,7 @@ window.Quarto = {
 <h2 class="unnumbered anchored" data-anchor-id="license">License</h2>
 <section id="instructional-material" class="level3">
 <h3 class="anchored" data-anchor-id="instructional-material">Instructional Material</h3>
-<p>All instructional material in the <code>cpsc330</code> repository is made available under the <strong>Attribution 4.0 International</strong> (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>).</p>
+<p>All instructional material in this book and the corresponding repository is made available under the <strong>Attribution 4.0 International</strong> (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>).</p>
 <p>This is a human-readable summary of (and not a substitute for) the <a href="https://creativecommons.org/licenses/by/4.0/legalcode">license</a>.</p>
 <p>You are free:</p>
 <ul>
@@ -337,7 +343,7 @@ window.Quarto = {
 </section>
 <section id="software" class="level3">
 <h3 class="anchored" data-anchor-id="software">Software</h3>
-<p>Except where otherwise noted, the example programs and other software provided in the <code>cpsc330</code> repository are made available under the MIT license.</p>
+<p>Except where otherwise noted, the example programs and other software provided in this book and the corresponding repository are made available under the MIT license.</p>
 <p>MIT License</p>
 <p>Copyright (c) 2024 Varada Kolhatkar and Mike Gelbart</p>
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
