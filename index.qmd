@@ -2,15 +2,21 @@
 
 CPSC 330 is an applied machine learning course offered by the Department of Computer Science at the University of British Columbia.
 
-This book grew out of materials developed for the course and are intended to provide a practical introduction to machine learning. The emphasis is on building intuition, using machine learning tools effectively, and developing good practices for model selection, evaluation, and interpretation. The book is designed to be independent of any particular offering of CPSC 330. Individual course offerings may differ in scheduling, assessments, exercises, and some topics, while this book serves as a common reference for the core material.
+This book grew out of materials developed for the course and is intended to provide a practical introduction to machine learning. The emphasis is on building intuition, using machine learning tools effectively, and developing good practices for model selection, evaluation, and interpretation. The book is designed to be independent of any particular offering of CPSC 330. Individual course offerings may differ in scheduling, assessments, exercises, and some topics, while this book serves as a common reference for the core material.
 
 The examples primarily use Python and the `scikit-learn` ecosystem, along with other libraries for working with modern pretrained models.
 
-## The goal of the course {.unnumbered}
+## Who this book is for {.unnumbered}
 
-AI systems can look like black boxes: a real-world problem and some data go in, and a prediction or decision comes out. In this course, we will open that box. Our goal is not simply to train models, but to learn how to approach messy problems thoughtfully from beginning to end.
+This book is intended for readers from a wide range of backgrounds who want a practical introduction to machine learning. You do not need prior experience with machine learning, and the book does not assume a strong mathematics or statistics background. When mathematical ideas are useful, we introduce them through intuition and concrete examples before adding technical detail.
 
-By the end of the course, given a real-world problem, you should be able to:
+The main prerequisite is basic Python programming. You should be comfortable reading and writing short Python programs and working with common data structures such as lists, dictionaries, and arrays. Familiarity with tools such as NumPy and pandas is helpful, but the book introduces the machine learning tools it uses as they are needed.
+
+## The goal of this book {.unnumbered}
+
+AI systems can look like black boxes: a real-world problem and some data go in, and a prediction or decision comes out. In this book, we will open that box. Our goal is not simply to train models, but to learn how to approach messy problems thoughtfully from beginning to end.
+
+After working through this book, given a real-world problem, you should be able to:
 
 1. **Frame the problem:** decide whether machine learning is an appropriate approach.
 2. **Choose the ingredients:** identify suitable data, representations, and modeling methods.
@@ -19,7 +25,7 @@ By the end of the course, given a real-world problem, you should be able to:
 5. **Communicate responsibly:** explain the evidence and limitations clearly enough for others to make informed decisions.
 
 These broad goals are developed through the
-[detailed course learning objectives](learning-objectives.qmd).
+[detailed learning objectives](learning-objectives.qmd).
 
 ## How to use this book {.unnumbered}
 
@@ -49,7 +55,7 @@ Over the years, several instructors (Giulia Toti, Firas Moosvi, Mehrdad Oveisi, 
 
 ### Instructional Material
 
-All instructional material in the `cpsc330` repository is made available under the **Attribution 4.0 International** ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)). 
+All instructional material in this book and the corresponding repository is made available under the **Attribution 4.0 International** ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)). 
 
 This is a human-readable summary of (and not a substitute for) the [license](https://creativecommons.org/licenses/by/4.0/legalcode).
 
@@ -88,7 +94,7 @@ Notices:
 ### Software
 
 Except where otherwise noted, the example programs and other software
-provided in the `cpsc330` repository are made available under the
+provided in this book and the corresponding repository are made available under the
 MIT license.
 
 MIT License
