@@ -32,7 +32,7 @@ book:
     # Add the following parts when their first chapters are ready:
     - part: Unsupervised Learning and Recommendation
       chapters:
-        - book/15_K-Means.ipynb
+        - book/14_K-Means.ipynb
     # - Working with Different Data Types
         
     # - Responsible Machine Learning in Practice
