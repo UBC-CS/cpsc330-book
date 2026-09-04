@@ -1,0 +1,2332 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Chapter 17: Natural Language Processing – CPSC 330: Applied Machine Learning</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../book/14_K-Means.html" rel="prev">
+<link href="../book/img/UBC-CS-logo.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-a220972fa267516723a03c2fb8475964.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">CPSC 330: Applied Machine Learning</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/17_natural-language-processing.html">Working with Different Data Types</a></li><li class="breadcrumb-item"><a href="../book/17_natural-language-processing.html"><span class="chapter-title">Chapter 17: Natural Language Processing</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../book/img/UBC-CS-logo.png" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../book/img/UBC-CS-logo.png" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../learning-objectives.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Detailed Learning Objectives</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/01_intro.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 1: Course Introduction</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Foundations and Supervised Learning</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/02_terminology-baselines-decision-trees.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 2: From Data to a First Model</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/03_ml-fundamentals.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 3: Machine Learning Fundamentals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/04_kNNs-SVM-RBF.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 4: Similarity-Based Models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/05_preprocessing-pipelines.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 5: Preprocessing and Pipelines</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/06_column-transformer-text-feats.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 6: Column Transformers and Text Features</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/07_linear-models.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 7: Linear Models</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Unsupervised Learning and Recommendation</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/14_K-Means.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 15: K-Means Clustering</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Working with Different Data Types</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/17_natural-language-processing.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Chapter 17: Natural Language Processing</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#learning-outcomes" id="toc-learning-outcomes" class="nav-link active" data-scroll-target="#learning-outcomes">Learning outcomes</a></li>
+  <li><a href="#what-is-natural-language-processing" id="toc-what-is-natural-language-processing" class="nav-link" data-scroll-target="#what-is-natural-language-processing">What is natural language processing?</a>
+  <ul>
+  <li><a href="#why-is-language-difficult" id="toc-why-is-language-difficult" class="nav-link" data-scroll-target="#why-is-language-difficult">Why is language difficult?</a></li>
+  <li><a href="#context-changes-meaning" id="toc-context-changes-meaning" class="nav-link" data-scroll-target="#context-changes-meaning">Context changes meaning</a></li>
+  <li><a href="#from-language-to-numbers" id="toc-from-language-to-numbers" class="nav-link" data-scroll-target="#from-language-to-numbers">From language to numbers</a></li>
+  </ul></li>
+  <li><a href="#representing-text" id="toc-representing-text" class="nav-link" data-scroll-target="#representing-text">Representing text</a>
+  <ul>
+  <li><a href="#sparse-representations-bag-of-words-and-tfidf" id="toc-sparse-representations-bag-of-words-and-tfidf" class="nav-link" data-scroll-target="#sparse-representations-bag-of-words-and-tfidf">Sparse representations: bag-of-words and TF–IDF</a>
+  <ul class="collapse">
+  <li><a href="#a-campus-survival-catalog" id="toc-a-campus-survival-catalog" class="nav-link" data-scroll-target="#a-campus-survival-catalog">A campus-survival catalog</a></li>
+  <li><a href="#bag-of-words-in-code" id="toc-bag-of-words-in-code" class="nav-link" data-scroll-target="#bag-of-words-in-code">Bag-of-words in code</a></li>
+  <li><a href="#tfidf-in-code" id="toc-tfidf-in-code" class="nav-link" data-scroll-target="#tfidf-in-code">TF–IDF in code</a></li>
+  </ul></li>
+  <li><a href="#dense-representations-word-embeddings" id="toc-dense-representations-word-embeddings" class="nav-link" data-scroll-target="#dense-representations-word-embeddings">Dense representations: word embeddings</a>
+  <ul class="collapse">
+  <li><a href="#exploring-pretrained-word2vec-embeddings" id="toc-exploring-pretrained-word2vec-embeddings" class="nav-link" data-scroll-target="#exploring-pretrained-word2vec-embeddings">Exploring pretrained word2vec embeddings</a></li>
+  <li><a href="#analogies-as-vector-arithmetic" id="toc-analogies-as-vector-arithmetic" class="nav-link" data-scroll-target="#analogies-as-vector-arithmetic">Analogies as vector arithmetic</a></li>
+  <li><a href="#embeddings-also-encode-bias" id="toc-embeddings-also-encode-bias" class="nav-link" data-scroll-target="#embeddings-also-encode-bias">Embeddings also encode bias</a></li>
+  <li><a href="#exercise-17.1-interpreting-word-embeddings" id="toc-exercise-17.1-interpreting-word-embeddings" class="nav-link" data-scroll-target="#exercise-17.1-interpreting-word-embeddings">Exercise 17.1: Interpreting word embeddings</a></li>
+  </ul></li>
+  <li><a href="#from-word-embeddings-to-sentence-or-text-embeddings" id="toc-from-word-embeddings-to-sentence-or-text-embeddings" class="nav-link" data-scroll-target="#from-word-embeddings-to-sentence-or-text-embeddings">From word embeddings to sentence or text embeddings</a>
+  <ul class="collapse">
+  <li><a href="#comparing-embeddings-with-cosine-similarity" id="toc-comparing-embeddings-with-cosine-similarity" class="nav-link" data-scroll-target="#comparing-embeddings-with-cosine-similarity">Comparing embeddings with cosine similarity</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#information-retrieval" id="toc-information-retrieval" class="nav-link" data-scroll-target="#information-retrieval">Information retrieval</a>
+  <ul>
+  <li><a href="#sparse-retrieval-with-tfidf" id="toc-sparse-retrieval-with-tfidf" class="nav-link" data-scroll-target="#sparse-retrieval-with-tfidf">Sparse retrieval with TF–IDF</a></li>
+  <li><a href="#dense-retrieval-with-a-pretrained-embedding-model" id="toc-dense-retrieval-with-a-pretrained-embedding-model" class="nav-link" data-scroll-target="#dense-retrieval-with-a-pretrained-embedding-model">Dense retrieval with a pretrained embedding model</a></li>
+  <li><a href="#evaluating-retrieval" id="toc-evaluating-retrieval" class="nav-link" data-scroll-target="#evaluating-retrieval">Evaluating retrieval</a></li>
+  <li><a href="#exercise-17.2-compare-retrieval-methods" id="toc-exercise-17.2-compare-retrieval-methods" class="nav-link" data-scroll-target="#exercise-17.2-compare-retrieval-methods">Exercise 17.2: Compare retrieval methods</a></li>
+  </ul></li>
+  <li><a href="#language-models-and-llms" id="toc-language-models-and-llms" class="nav-link" data-scroll-target="#language-models-and-llms">Language models and LLMs</a>
+  <ul>
+  <li><a href="#what-did-you-just-do" id="toc-what-did-you-just-do" class="nav-link" data-scroll-target="#what-did-you-just-do">What did you just do?</a></li>
+  <li><a href="#from-language-models-to-llms" id="toc-from-language-models-to-llms" class="nav-link" data-scroll-target="#from-language-models-to-llms">From language models to LLMs</a></li>
+  <li><a href="#prompting-helpsbut-cannot-supply-missing-knowledge" id="toc-prompting-helpsbut-cannot-supply-missing-knowledge" class="nav-link" data-scroll-target="#prompting-helpsbut-cannot-supply-missing-knowledge">Prompting helps—but cannot supply missing knowledge</a></li>
+  </ul></li>
+  <li><a href="#retrieval-augmented-generation" id="toc-retrieval-augmented-generation" class="nav-link" data-scroll-target="#retrieval-augmented-generation">Retrieval-augmented generation</a>
+  <ul>
+  <li><a href="#step-1-split-documents-into-chunks" id="toc-step-1-split-documents-into-chunks" class="nav-link" data-scroll-target="#step-1-split-documents-into-chunks">Step 1: Split documents into chunks</a></li>
+  <li><a href="#step-2-embed-and-store-the-chunks" id="toc-step-2-embed-and-store-the-chunks" class="nav-link" data-scroll-target="#step-2-embed-and-store-the-chunks">Step 2: Embed and store the chunks</a></li>
+  <li><a href="#step-3-construct-an-augmented-prompt" id="toc-step-3-construct-an-augmented-prompt" class="nav-link" data-scroll-target="#step-3-construct-an-augmented-prompt">Step 3: Construct an augmented prompt</a></li>
+  <li><a href="#step-4-generate-an-answer" id="toc-step-4-generate-an-answer" class="nav-link" data-scroll-target="#step-4-generate-an-answer">Step 4: Generate an answer</a>
+  <ul class="collapse">
+  <li><a href="#optional-replace-the-generator-with-qwen" id="toc-optional-replace-the-generator-with-qwen" class="nav-link" data-scroll-target="#optional-replace-the-generator-with-qwen">Optional: replace the generator with Qwen</a></li>
+  </ul></li>
+  <li><a href="#the-complete-pipeline" id="toc-the-complete-pipeline" class="nav-link" data-scroll-target="#the-complete-pipeline">The complete pipeline</a></li>
+  <li><a href="#evaluating-and-improving-a-rag-pipeline" id="toc-evaluating-and-improving-a-rag-pipeline" class="nav-link" data-scroll-target="#evaluating-and-improving-a-rag-pipeline">Evaluating and improving a RAG pipeline</a>
+  <ul class="collapse">
+  <li><a href="#important-design-choices" id="toc-important-design-choices" class="nav-link" data-scroll-target="#important-design-choices">Important design choices</a></li>
+  <li><a href="#risks-and-limitations" id="toc-risks-and-limitations" class="nav-link" data-scroll-target="#risks-and-limitations">Risks and limitations</a></li>
+  <li><a href="#exercise-17.3-diagnose-a-failed-answer" id="toc-exercise-17.3-diagnose-a-failed-answer" class="nav-link" data-scroll-target="#exercise-17.3-diagnose-a-failed-answer">Exercise 17.3: Diagnose a failed answer</a></li>
+  <li><a href="#exercise-17.4-extend-the-pipeline" id="toc-exercise-17.4-extend-the-pipeline" class="nav-link" data-scroll-target="#exercise-17.4-extend-the-pipeline">Exercise 17.4: Extend the pipeline</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/17_natural-language-processing.html">Working with Different Data Types</a></li><li class="breadcrumb-item"><a href="../book/17_natural-language-processing.html"><span class="chapter-title">Chapter 17: Natural Language Processing</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-title">Chapter 17: Natural Language Processing</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="learning-outcomes" class="level2 unnumbered callout-lo">
+<h2 class="unnumbered anchored" data-anchor-id="learning-outcomes">Learning outcomes</h2>
+<p>By the end of this chapter, you should be able to:</p>
+<ul>
+<li>Explain why ambiguity, context, and vocabulary mismatch make language difficult to represent computationally.</li>
+<li>Construct bag-of-words and TF–IDF representations and interpret what information they preserve and discard.</li>
+<li>Use pretrained word embeddings to explore similarity and analogies, and explain how social biases can be encoded in their geometry.</li>
+<li>Compare sparse and dense retrieval and use text embeddings with cosine similarity to rank documents for a query.</li>
+<li>Explain next-token prediction intuitively and distinguish pretraining, post-training, and prompting.</li>
+<li>Explain why prompting cannot supply missing knowledge and how retrieval-augmented generation (RAG) addresses this limitation.</li>
+<li>Implement and inspect a basic RAG pipeline, and diagnose failures in its retrieval, context, generation, or knowledge base.</li>
+</ul>
+</section>
+<p><strong>Imports</strong></p>
+<div id="chapter17-03" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> CountVectorizer, TfidfVectorizer</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics.pairwise <span class="im">import</span> cosine_similarity</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">"display.max_colwidth"</span>, <span class="dv">120</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="what-is-natural-language-processing" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-natural-language-processing">What is natural language processing?</h2>
+<p>Before arriving at this page today, you may already have interacted with several systems that process language. Perhaps your phone completed a sentence, an email service filtered spam, a search engine interpreted a query, or a chatbot answered a question. These tools feel quite different, but they all face the same basic challenge: <strong>how can a computer do something useful with human language?</strong></p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img src="img/gmail-spam-example.png" class="img-fluid" alt="An email interface marking a message as spam"></p>
+<p>A spam filter classifies incoming messages.</p>
+</div><div class="column" style="width:50%;">
+<p><img src="img/voice-assistant-ex.png" class="img-fluid" alt="A language model assigns a higher probability to I have read this book than to the similar-sounding eye have red this book"></p>
+<p>A language model helps a speech recognizer choose the more plausible sequence of words.</p>
+</div>
+</div>
+<p><strong>Natural language processing (NLP)</strong> is the area of artificial intelligence concerned with analyzing and generating human language. NLP applications include search, translation, sentiment analysis, document classification, summarization, speech recognition, information extraction, and conversational assistants.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/WhatisNLP.png" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="Examples of natural language processing tasks" width="600"></p>
+</figure>
+</div>
+<p>At first, this might sound like a matter of programming enough vocabulary and grammar rules. Language, however, rarely follows a tidy collection of rules.</p>
+<section id="why-is-language-difficult" class="level3">
+<h3 class="anchored" data-anchor-id="why-is-language-difficult">Why is language difficult?</h3>
+<p>Consider the following sentence. To what does <em>it</em> refer?</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/referential_ambiguity.png" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="A conversation illustrating that a pronoun can have an ambiguous referent" width="750"></p>
+</figure>
+</div>
+<p>A human reader looks beyond the pronoun. We use the surrounding conversation, common sense, and knowledge of the world. Even then, we sometimes need to ask for clarification.</p>
+<p>Ambiguity is not limited to pronouns. Consider these genuine-style <a href="https://www.ling.upenn.edu/~beatrice/humor/headlines.html">ambiguous newspaper headlines</a>:</p>
+<blockquote class="blockquote">
+<p>KICKING BABY CONSIDERED TO BE HEALTHY</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>MILK DRINKERS ARE TURNING TO POWDER</p>
+</blockquote>
+<p>Why are they funny? In the first headline, <em>kicking</em> can describe the baby or an action performed on the baby. In the second, <em>turning to</em> can mean <em>choosing</em> or <em>transforming into</em>. The intended meanings are ordinary; the unintended interpretations are surprising.</p>
+<p>The words themselves have not changed. What changes is how we connect them.</p>
+</section>
+<section id="context-changes-meaning" class="level3">
+<h3 class="anchored" data-anchor-id="context-changes-meaning">Context changes meaning</h3>
+<p>What would you put in each blank?</p>
+<blockquote class="blockquote">
+<p>I went to the bank to deposit some ________.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>I sat on the bank of the ________.</p>
+</blockquote>
+<p>The nearby words make <em>bank</em> mean different things. Language also permits the reverse problem: two sentences can express similar ideas with few words in common. <em>The assignment deadline passed while I was ill</em> and <em>I was sick when my homework was due</em> are likely asking about the same policy. A useful NLP system needs to handle both exact wording and paraphrases.</p>
+<p>This observation will matter throughout the chapter. Search based only on matching words may miss a relevant passage, while a model that focuses only on broad similarity may overlook an important exact term.</p>
+</section>
+<section id="from-language-to-numbers" class="level3">
+<h3 class="anchored" data-anchor-id="from-language-to-numbers">From language to numbers</h3>
+<p>Machine learning models operate on numbers, not directly on words. Before a model can classify, retrieve, or generate text, the system must decide how to represent language numerically. That representation determines which similarities and differences the model can notice.</p>
+<p>No representation captures every aspect of meaning. The right question is therefore not “Does the computer truly understand this sentence?” but “Does this representation retain the information needed for our task?” We begin with representations based on word counts and then move to embeddings designed to capture some aspects of meaning.</p>
+</section>
+</section>
+<section id="representing-text" class="level2">
+<h2 class="anchored" data-anchor-id="representing-text">Representing text</h2>
+<section id="sparse-representations-bag-of-words-and-tfidf" class="level3">
+<h3 class="anchored" data-anchor-id="sparse-representations-bag-of-words-and-tfidf">Sparse representations: bag-of-words and TF–IDF</h3>
+<p>In Chapter 6, we used <strong>bag-of-words</strong> features to represent a document by the words it contains. There is one feature for each term in the vocabulary, and the feature value records how often that term occurs. Because a document contains only a small fraction of the full vocabulary, most values are zero. Bag-of-words is therefore called a <strong>sparse representation</strong>.</p>
+<p>We will explore sparse and dense representations using a small campus-survival store. It gives us queries that depend on ordinary meaning, such as <em>I want to study without hearing the conversation at the next table</em>, as well as queries containing exact specifications or model numbers, such as <em>20,000 mAh</em> and <em>HUB-7X</em>.</p>
+<section id="a-campus-survival-catalog" class="level4">
+<h4 class="anchored" data-anchor-id="a-campus-survival-catalog">A campus-survival catalog</h4>
+<p>Each row below is a document that a shopping search system might return. Most rows describe products that could be useful to university students. The collection also contains two informational articles. These distractors will help us see the difference between matching related words and identifying what a shopper probably wants.</p>
+<p>The Sony headphones are included as a familiar example, not as a product endorsement. The noise-cancellation and battery-life details come from the <a href="https://www.sony.com/electronics/support/wireless-headphones-bluetooth-headphones/wh-1000xm6/specifications">manufacturer’s specifications</a>.</p>
+<div id="chapter17-07" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>products <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    [</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"C001"</span>, <span class="st">"Sony WH-1000XM6 headphones"</span>, <span class="st">"Over-ear wireless headphones with active noise cancellation and up to 30 hours of battery life. Useful for studying in noisy spaces."</span>),</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"C002"</span>, <span class="st">"Pocket power bank"</span>, <span class="st">"Portable 20,000 mAh battery with two USB-C ports. Recharges mobile devices several times when wall power is unavailable."</span>),</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"C003"</span>, <span class="st">"Waterproof laptop backpack"</span>, <span class="st">"Rain-resistant backpack with sealed zippers and a padded compartment for a 16-inch laptop. Keeps electronics and notes dry during wet commutes."</span>),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"C004"</span>, <span class="st">"Sunrise alarm clock"</span>, <span class="st">"Gradually brightens the room before the alarm sounds. Designed to make waking up on dark winter mornings easier."</span>),</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"C005"</span>, <span class="st">"Ergonomic keyboard"</span>, <span class="st">"Split keyboard with a padded wrist rest. Designed to reduce wrist strain during long typing and programming sessions."</span>),</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"C006"</span>, <span class="st">"Laptop stand"</span>, <span class="st">"Raises a laptop screen to eye level and folds flat for carrying. An external keyboard is recommended for prolonged use."</span>),</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"C007"</span>, <span class="st">"USB-C hub"</span>, <span class="st">"The HUB-7X adds HDMI, Ethernet, an SD-card reader, and three USB ports to laptops with limited connections."</span>),</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"C008"</span>, <span class="st">"Insulated travel mug"</span>, <span class="st">"Leak-resistant 500 mL mug that keeps coffee hot for eight hours. Fits standard campus cup holders."</span>),</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"C009"</span>, <span class="st">"Pomodoro timer"</span>, <span class="st">"Distraction-free timer with 25- and 50-minute study modes. It does not connect to a phone."</span>),</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"C010"</span>, <span class="st">"Bike-light set"</span>, <span class="st">"Rechargeable front and rear bicycle lights with weather-resistant housings. Improves visibility when commuting after dark."</span>),</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"C011"</span>, <span class="st">"Mini rice cooker"</span>, <span class="st">"Compact rice cooker suitable for a dormitory kitchen. Makes two servings and switches automatically to warming mode."</span>),</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"C012"</span>, <span class="st">"White-noise machine"</span>, <span class="st">"Produces fan, rain, and ambient sounds without playing music. Intended for sleep or concentration."</span>),</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"C013"</span>, <span class="st">"Study-skills article"</span>, <span class="st">"An article describing ways to concentrate in a busy library."</span>),</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"C014"</span>, <span class="st">"Vancouver weather guide"</span>, <span class="st">"An article about preparing for wet and dark winter commutes in Vancouver."</span>),</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    ],</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    columns<span class="op">=</span>[<span class="st">"product_id"</span>, <span class="st">"title"</span>, <span class="st">"text"</span>],</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>products[<span class="st">"item_type"</span>] <span class="op">=</span> np.where(</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    products[<span class="st">"title"</span>].<span class="bu">str</span>.contains(<span class="st">"article|guide"</span>, case<span class="op">=</span><span class="va">False</span>),</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">"article"</span>,</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">"product"</span>,</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>products</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">product_id</th>
+<th data-quarto-table-cell-role="th">title</th>
+<th data-quarto-table-cell-role="th">text</th>
+<th data-quarto-table-cell-role="th">item_type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>C001</td>
+<td>Sony WH-1000XM6 headphones</td>
+<td>Over-ear wireless headphones with active noise cancellation and up to 30 hours of battery life. Useful for studying ...</td>
+<td>product</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>C002</td>
+<td>Pocket power bank</td>
+<td>Portable 20,000 mAh battery with two USB-C ports. Recharges mobile devices several times when wall power is unavaila...</td>
+<td>product</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>C003</td>
+<td>Waterproof laptop backpack</td>
+<td>Rain-resistant backpack with sealed zippers and a padded compartment for a 16-inch laptop. Keeps electronics and not...</td>
+<td>product</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>C004</td>
+<td>Sunrise alarm clock</td>
+<td>Gradually brightens the room before the alarm sounds. Designed to make waking up on dark winter mornings easier.</td>
+<td>product</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>C005</td>
+<td>Ergonomic keyboard</td>
+<td>Split keyboard with a padded wrist rest. Designed to reduce wrist strain during long typing and programming sessions.</td>
+<td>product</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>C006</td>
+<td>Laptop stand</td>
+<td>Raises a laptop screen to eye level and folds flat for carrying. An external keyboard is recommended for prolonged use.</td>
+<td>product</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>C007</td>
+<td>USB-C hub</td>
+<td>The HUB-7X adds HDMI, Ethernet, an SD-card reader, and three USB ports to laptops with limited connections.</td>
+<td>product</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>C008</td>
+<td>Insulated travel mug</td>
+<td>Leak-resistant 500 mL mug that keeps coffee hot for eight hours. Fits standard campus cup holders.</td>
+<td>product</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>C009</td>
+<td>Pomodoro timer</td>
+<td>Distraction-free timer with 25- and 50-minute study modes. It does not connect to a phone.</td>
+<td>product</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>C010</td>
+<td>Bike-light set</td>
+<td>Rechargeable front and rear bicycle lights with weather-resistant housings. Improves visibility when commuting after...</td>
+<td>product</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>C011</td>
+<td>Mini rice cooker</td>
+<td>Compact rice cooker suitable for a dormitory kitchen. Makes two servings and switches automatically to warming mode.</td>
+<td>product</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>C012</td>
+<td>White-noise machine</td>
+<td>Produces fan, rain, and ambient sounds without playing music. Intended for sleep or concentration.</td>
+<td>product</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>C013</td>
+<td>Study-skills article</td>
+<td>An article describing ways to concentrate in a busy library.</td>
+<td>article</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>C014</td>
+<td>Vancouver weather guide</td>
+<td>An article about preparing for wet and dark winter commutes in Vancouver.</td>
+<td>article</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="bag-of-words-in-code" class="level4">
+<h4 class="anchored" data-anchor-id="bag-of-words-in-code">Bag-of-words in code</h4>
+<p><code>CountVectorizer</code> learns the vocabulary and creates the count matrix. The rows represent products and the columns represent terms.</p>
+<div id="chapter17-bow-code" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>bow <span class="op">=</span> CountVectorizer()</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>product_bow <span class="op">=</span> bow.fit_transform(products[<span class="st">"text"</span>])</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Shape:"</span>, product_bow.shape)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Number of nonzero entries:"</span>, product_bow.nnz)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>selected_terms <span class="op">=</span> [<span class="st">"battery"</span>, <span class="st">"laptop"</span>, <span class="st">"rain"</span>, <span class="st">"study"</span>, <span class="st">"usb"</span>, <span class="st">"wrist"</span>]</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    product_bow.toarray(),</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span>products[<span class="st">"title"</span>],</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    columns<span class="op">=</span>bow.get_feature_names_out(),</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>)[selected_terms]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Shape: (14, 173)
+Number of nonzero entries: 231</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">battery</th>
+<th data-quarto-table-cell-role="th">laptop</th>
+<th data-quarto-table-cell-role="th">rain</th>
+<th data-quarto-table-cell-role="th">study</th>
+<th data-quarto-table-cell-role="th">usb</th>
+<th data-quarto-table-cell-role="th">wrist</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">title</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Sony WH-1000XM6 headphones</th>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Pocket power bank</th>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Waterproof laptop backpack</th>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Sunrise alarm clock</th>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Ergonomic keyboard</th>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Laptop stand</th>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">USB-C hub</th>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Insulated travel mug</th>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Pomodoro timer</th>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Bike-light set</th>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Mini rice cooker</th>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">White-noise machine</th>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Study-skills article</th>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Vancouver weather guide</th>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The table makes both the strength and limitation of bag-of-words visible. It preserves exact terms such as <code>usb</code> and <code>battery</code>, which can be useful when a query names a specification. However, it treats <code>rain</code> in the waterproof-backpack description and <code>rain</code> in the white-noise-machine description as the same feature. One refers to weather protection and the other to a sound, but the count matrix does not represent that difference in meaning.</p>
+<p>We have not removed stop words. Preprocessing must be chosen for the application rather than applied mechanically.</p>
+</section>
+<section id="tfidf-in-code" class="level4">
+<h4 class="anchored" data-anchor-id="tfidf-in-code">TF–IDF in code</h4>
+<p>Raw counts can give too much influence to terms that appear throughout a collection. <strong>Term frequency–inverse document frequency (TF–IDF)</strong> gives more weight to a term when it occurs in a particular document but is uncommon across the collection. In simplified form,</p>
+<p><span class="math display">\[\operatorname{tfidf}(t,d)=\operatorname{tf}(t,d)\log\left(\frac{N}{\operatorname{df}(t)}\right)\]</span></p>
+<p>where <span class="math inline">\(\operatorname{tf}(t,d)\)</span> measures the frequency of term <span class="math inline">\(t\)</span> in document <span class="math inline">\(d\)</span>, <span class="math inline">\(\operatorname{df}(t)\)</span> is the number of documents containing the term, and <span class="math inline">\(N\)</span> is the number of documents. Scikit-learn uses a smoothed version and normalizes each resulting document vector.</p>
+<div id="chapter17-tfidf-code" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>tfidf <span class="op">=</span> TfidfVectorizer()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>product_tfidf <span class="op">=</span> tfidf.fit_transform(products[<span class="st">"text"</span>])</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>tfidf_table <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    product_tfidf.toarray(),</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span>products[<span class="st">"title"</span>],</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    columns<span class="op">=</span>tfidf.get_feature_names_out(),</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>tfidf_table.loc[</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    [<span class="st">"Sony WH-1000XM6 headphones"</span>, <span class="st">"White-noise machine"</span>, <span class="st">"Study-skills article"</span>],</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    [<span class="st">"concentrate"</span>, <span class="st">"concentration"</span>, <span class="st">"library"</span>, <span class="st">"noise"</span>, <span class="st">"study"</span>, <span class="st">"studying"</span>],</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>].<span class="bu">round</span>(<span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">concentrate</th>
+<th data-quarto-table-cell-role="th">concentration</th>
+<th data-quarto-table-cell-role="th">library</th>
+<th data-quarto-table-cell-role="th">noise</th>
+<th data-quarto-table-cell-role="th">study</th>
+<th data-quarto-table-cell-role="th">studying</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">title</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Sony WH-1000XM6 headphones</th>
+<td>0.00</td>
+<td>0.00</td>
+<td>0.00</td>
+<td>0.24</td>
+<td>0.0</td>
+<td>0.24</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">White-noise machine</th>
+<td>0.00</td>
+<td>0.29</td>
+<td>0.00</td>
+<td>0.00</td>
+<td>0.0</td>
+<td>0.00</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Study-skills article</th>
+<td>0.38</td>
+<td>0.00</td>
+<td>0.38</td>
+<td>0.00</td>
+<td>0.0</td>
+<td>0.00</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>TF–IDF changes the weights, but it is still a lexical representation: words must match vocabulary terms. It does not know that <em>concentrate</em> and <em>concentration</em> are related, or that <em>not hearing a nearby conversation</em> may call for noise-cancelling headphones. This is the <strong>vocabulary mismatch problem</strong>.</p>
+</section>
+</section>
+<section id="dense-representations-word-embeddings" class="level3">
+<h3 class="anchored" data-anchor-id="dense-representations-word-embeddings">Dense representations: word embeddings</h3>
+<p>A bag-of-words vocabulary gives <em>happy</em> and <em>joyful</em> separate coordinates. Nothing in those coordinates tells a model that the words are related. <strong>Word embeddings</strong> take a different approach: they represent each word with a short, dense vector and try to place words used in similar contexts near one another.</p>
+<p>This idea is often summarized by the <strong>distributional hypothesis</strong>:</p>
+<blockquote class="blockquote">
+<p>You shall know a word by the company it keeps. — J. R. Firth, 1957</p>
+</blockquote>
+<p>Suppose you did not know the word <em>glorp</em>, but repeatedly saw sentences such as <em>The movie was glorp and moving</em>, <em>What a delightful, glorp story</em>, and <em>We loved the glorp ending</em>. The surrounding words provide clues about how <em>glorp</em> is being used. Word-embedding algorithms learn from this kind of co-occurrence at a much larger scale.</p>
+<p><strong>word2vec</strong> is a family of algorithms for learning word embeddings by predicting words from their surrounding context, or surrounding words from a target word. We will not study its training algorithm here. Instead, we will explore what a pretrained word2vec model learned.</p>
+<section id="exploring-pretrained-word2vec-embeddings" class="level4">
+<h4 class="anchored" data-anchor-id="exploring-pretrained-word2vec-embeddings">Exploring pretrained word2vec embeddings</h4>
+<p>The following examples use vectors from the historical <code>word2vec-google-news-300</code> model, which was trained on roughly 100 billion words from Google News. The complete model contains about three million words and phrases and requires more than 1.5 GB of storage. To keep the chapter reproducible, this repository contains a 410-word subset chosen for the demonstrations below. It contains the original 300-dimensional vectors, but it is not a general-purpose vocabulary.</p>
+<p>Phrases in this vocabulary use underscores, as in <code>computer_programmer</code>. Because these embeddings were learned from news text rather than written by hand, their geometry reflects statistical patterns in that corpus.</p>
+<div id="chapter17-08c" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> gensim.models <span class="im">import</span> KeyedVectors</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>word_vectors <span class="op">=</span> KeyedVectors.load(<span class="st">"data/google-news-word2vec-subset.kv"</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Vocabulary in course subset: </span><span class="sc">{</span><span class="bu">len</span>(word_vectors)<span class="sc">:,}</span><span class="ss"> words and phrases"</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Dimensions per word: </span><span class="sc">{</span>word_vectors<span class="sc">.</span>vector_size<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>word_vectors[<span class="st">"UBC"</span>][:<span class="dv">10</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Vocabulary in course subset: 410 words and phrases
+Dimensions per word: 300</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<pre><code>array([-0.3828125 , -0.18066406,  0.10644531,  0.4296875 ,  0.21582031,
+       -0.10693359,  0.13476562, -0.08740234, -0.14648438, -0.09619141],
+      dtype=float32)</code></pre>
+</div>
+</div>
+<p>The vector for <code>UBC</code> contains 300 numbers. Unlike a bag-of-words vector, it is short and mostly nonzero. A single coordinate is not meant to have a label such as <em>university-ness</em>. Relationships emerge from the vector as a whole.</p>
+<p>One way to explore those relationships is to ask for the vectors with the largest cosine similarity.</p>
+<div id="chapter17-08e" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>word_vectors.most_similar(<span class="st">"UBC"</span>, topn<span class="op">=</span><span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<pre><code>[('UVic', 0.788647472858429),
+ ('SFU', 0.7588528394699097),
+ ('Simon_Fraser', 0.7356574535369873),
+ ('UFV', 0.6880435943603516),
+ ('VIU', 0.6778583526611328)]</code></pre>
+</div>
+</div>
+<p>The nearby vectors represent universities and related institutions rather than dictionary synonyms for <code>UBC</code>. They are close because they occurred in similar news contexts. The nearest neighbours would change if we trained word2vec on medical notes, novels, or social-media posts.</p>
+<p>We can also compare selected pairs directly.</p>
+<div id="chapter17-08g" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>word_pairs <span class="op">=</span> [(<span class="st">"Canada"</span>, <span class="st">"hockey"</span>), (<span class="st">"Japan"</span>, <span class="st">"hockey"</span>)]</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    [</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"word 1"</span>: first, <span class="st">"word 2"</span>: second,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>         <span class="st">"cosine similarity"</span>: word_vectors.similarity(first, second)}</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> first, second <span class="kw">in</span> word_pairs</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">word 1</th>
+<th data-quarto-table-cell-role="th">word 2</th>
+<th data-quarto-table-cell-role="th">cosine similarity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>Canada</td>
+<td>hockey</td>
+<td>0.276101</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>Japan</td>
+<td>hockey</td>
+<td>0.001963</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="analogies-as-vector-arithmetic" class="level4">
+<h4 class="anchored" data-anchor-id="analogies-as-vector-arithmetic">Analogies as vector arithmetic</h4>
+<p>Some relationships correspond approximately to directions in the embedding space. The classic example asks us to subtract the vector for <em>man</em> from <em>king</em>, then add the vector for <em>woman</em>:</p>
+<p><span class="math display">\[
+v(\text{king}) - v(\text{man}) + v(\text{woman}).
+\]</span></p>
+<div id="fig-king-queen-analogy" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A vector diagram showing that the arrow from man to woman is approximately parallel to the arrow from king to queen" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-king-queen-analogy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/king-queen-ex-illustration.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%" alt="A vector diagram showing that the arrow from man to woman is approximately parallel to the arrow from king to queen">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-king-queen-analogy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.1: A schematic illustration of the king–queen analogy. The displacement from man to woman is approximately parallel to the displacement from king to queen.
+</figcaption>
+</figure>
+</div>
+<p><em>Screenshot source: <a href="https://www.youtube.com/watch?v=wjZofJX0v4M&amp;t=802s">3Blue1Brown</a>.</em></p>
+<p>The picture is a two-dimensional illustration of the relationship. The Google News vectors actually have 300 dimensions, so we cannot display their full geometry directly. The important idea is the direction: the displacement from <em>man</em> to <em>woman</em> is approximately similar to the displacement from <em>king</em> to <em>queen</em>.</p>
+<p>We then find the word vector nearest to the result. The helper below expresses the question as “word 1 is to word 2 as word 3 is to what?”</p>
+<div id="chapter17-08i" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> analogy(word1, word2, word3, model<span class="op">=</span>word_vectors):</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    result, similarity <span class="op">=</span> model.most_similar(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>        positive<span class="op">=</span>[word2, word3], negative<span class="op">=</span>[word1], topn<span class="op">=</span><span class="dv">1</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    )[<span class="dv">0</span>]</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {<span class="st">"result"</span>: result, <span class="st">"cosine similarity"</span>: similarity}</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>analogy(<span class="st">"man"</span>, <span class="st">"king"</span>, <span class="st">"woman"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<pre><code>{'result': 'queen', 'cosine similarity': 0.7118191719055176}</code></pre>
+</div>
+</div>
+<div id="chapter17-08j" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>analogy(<span class="st">"Montreal"</span>, <span class="st">"Canadiens"</span>, <span class="st">"Vancouver"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<pre><code>{'result': 'Canucks', 'cosine similarity': 0.8213266134262085}</code></pre>
+</div>
+</div>
+<p>These examples are striking, but they do not demonstrate human-like reasoning. They show that some regularities in the training corpus became approximately linear relationships among vectors. Other analogy questions produce unstable, irrelevant, or nonsensical results.</p>
+</section>
+<section id="embeddings-also-encode-bias" class="level4">
+<h4 class="anchored" data-anchor-id="embeddings-also-encode-bias">Embeddings also encode bias</h4>
+<p>Learned associations are not always desirable. Before running the next cell, predict its result. What occupational relationship might the model infer?</p>
+<div id="chapter17-08m" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>analogy(<span class="st">"man"</span>, <span class="st">"computer_programmer"</span>, <span class="st">"woman"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<pre><code>{'result': 'homemaker', 'cosine similarity': 0.5627118945121765}</code></pre>
+</div>
+</div>
+<p>The result, <code>homemaker</code>, reflects a gender stereotype in the news corpus and the model trained from it. It does <strong>not</strong> tell us that homemaking is the female equivalent of computer programming. The model has compressed patterns from its training data, including unequal representation and harmful social associations, into its geometry.</p>
+<p>This example comes from an older embedding model and is unusually easy to expose with vector arithmetic. Some later models use data filtering or bias-mitigation methods, but we should not conclude that modern embeddings are bias-free. Bias can be subtle, depends on how a model is used, and must be evaluated in the context of the application.</p>
+</section>
+<section id="exercise-17.1-interpreting-word-embeddings" class="level4">
+<h4 class="anchored" data-anchor-id="exercise-17.1-interpreting-word-embeddings">Exercise 17.1: Interpreting word embeddings</h4>
+<p>For each claim below, decide whether the preceding demonstrations provide sufficient evidence. Explain your reasoning.</p>
+<ol type="1">
+<li>Words with high cosine similarity are synonyms.</li>
+<li>An analogy result reveals a true relationship between the concepts.</li>
+<li>Removing one known gender analogy would make the embedding unbiased.</li>
+<li>Nearest neighbours learned from Google News will necessarily be the most useful neighbours in another domain.</li>
+</ol>
+</section>
+</section>
+<section id="from-word-embeddings-to-sentence-or-text-embeddings" class="level3">
+<h3 class="anchored" data-anchor-id="from-word-embeddings-to-sentence-or-text-embeddings">From word embeddings to sentence or text embeddings</h3>
+<p>Traditional word2vec gives each vocabulary item one vector. The word <em>bank</em> therefore has the same representation in <em>bank account</em> and <em>river bank</em>. It also does not directly give us one vector for a new sentence or document. Averaging its word vectors is possible, but doing so loses word order and often loses important context.</p>
+<p>For information retrieval, we want to compare a user’s query with sentences, passages, or documents. Modern <strong>text-embedding models</strong> map each complete piece of text to a dense vector. Texts expressing similar meanings tend to receive similar vectors even when they use different words.</p>
+<p>These embeddings remain imperfect. They can miss specialized terminology, subtle negation, or important contextual distinctions, and they can reproduce biases in their training data. We should treat similarity as a useful model output, not as proof that two texts mean the same thing.</p>
+<section id="comparing-embeddings-with-cosine-similarity" class="level4">
+<h4 class="anchored" data-anchor-id="comparing-embeddings-with-cosine-similarity">Comparing embeddings with cosine similarity</h4>
+<p>To use embeddings for search, we need to compare vectors. A common measure is <strong>cosine similarity</strong>:</p>
+<p><span class="math display">\[
+\operatorname{cosine\_similarity}(a,b)
+= \frac{a \cdot b}{\lVert a \rVert_2\lVert b \rVert_2}.
+\]</span></p>
+<p>Cosine similarity compares the directions of two vectors rather than their magnitudes. Larger values indicate greater similarity. For the embedding models used here, we rank documents from the largest cosine similarity to the smallest.</p>
+<p>The value is meaningful only relative to the model and corpus. A score of 0.7 is not a 70% probability that a document is relevant.</p>
+</section>
+</section>
+</section>
+<section id="information-retrieval" class="level2">
+<h2 class="anchored" data-anchor-id="information-retrieval">Information retrieval</h2>
+<p><strong>Information retrieval</strong> (IR) is the task of finding useful items in a collection in response to a query. Unlike a classifier, which predicts a label, a retrieval system returns a ranked list. Several results may be useful, and relevance depends partly on what the user intends.</p>
+<div id="fig-information-retrieval-pipeline" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Documents pass through document processing into a document index. A query passes through query processing into a query vector. A search component compares them using dense, keyword, or hybrid search and returns a ranked list of documents." data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-information-retrieval-pipeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/IR.jpeg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%" alt="Documents pass through document processing into a document index. A query passes through query processing into a query vector. A search component compares them using dense, keyword, or hybrid search and returns a ranked list of documents.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-information-retrieval-pipeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.2: The main components of an information-retrieval system. Documents are processed and indexed ahead of time; a query is processed at search time and compared with the index to produce a ranked list.
+</figcaption>
+</figure>
+</div>
+<p>Consider these queries for our campus-survival catalog:</p>
+<ul>
+<li><em>Every outlet is occupied and my phone is at 2%.</em></li>
+<li><em>I want to study without hearing the conversation at the next table.</em></li>
+<li><em>My wrists get sore after a full day of coding.</em></li>
+<li><em>20,000 mAh battery</em></li>
+<li><em>HUB-7X</em></li>
+<li><em>HUB-7Y</em></li>
+</ul>
+<p>Which queries require understanding related meanings? Which contain specifications or identifiers that should match exactly? A useful search system often needs both abilities.</p>
+<p>The main components are a <strong>document collection</strong>, a user’s <strong>query</strong>, a <strong>scoring function</strong>, and a <strong>ranking</strong> of the top-<span class="math inline">\(k\)</span> documents. We will compare sparse retrieval, which emphasizes matching terms, with dense retrieval, which uses text embeddings to capture some semantic similarity.</p>
+<section id="sparse-retrieval-with-tfidf" class="level3">
+<h3 class="anchored" data-anchor-id="sparse-retrieval-with-tfidf">Sparse retrieval with TF–IDF</h3>
+<p>We already fitted the TF–IDF vectorizer on the catalog descriptions. At query time, we transform a new query using the same fitted vocabulary, compare it with every document vector, and rank the entries by cosine similarity.</p>
+<p>First consider a query containing an exact product identifier.</p>
+<div id="chapter17-13" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sparse_retrieve(query, k<span class="op">=</span><span class="dv">3</span>):</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    query_tfidf <span class="op">=</span> tfidf.transform([query])</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> cosine_similarity(query_tfidf, product_tfidf).ravel()</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    top_indices <span class="op">=</span> np.argsort(scores)[::<span class="op">-</span><span class="dv">1</span>][:k]</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> products.iloc[top_indices].copy()</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    results[<span class="st">"score"</span>] <span class="op">=</span> scores[top_indices]</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> results[[<span class="st">"product_id"</span>, <span class="st">"title"</span>, <span class="st">"score"</span>, <span class="st">"text"</span>]]</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>sparse_retrieve(<span class="st">"HUB-7X"</span>, k<span class="op">=</span><span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">product_id</th>
+<th data-quarto-table-cell-role="th">title</th>
+<th data-quarto-table-cell-role="th">score</th>
+<th data-quarto-table-cell-role="th">text</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>C007</td>
+<td>USB-C hub</td>
+<td>0.359633</td>
+<td>The HUB-7X adds HDMI, Ethernet, an SD-card reader, and three USB ports to laptops with limited connections.</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>C014</td>
+<td>Vancouver weather guide</td>
+<td>0.000000</td>
+<td>An article about preparing for wet and dark winter commutes in Vancouver.</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>C013</td>
+<td>Study-skills article</td>
+<td>0.000000</td>
+<td>An article describing ways to concentrate in a busy library.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The identifier <code>HUB-7X</code> points directly to the USB-C hub. Exact lexical matching is precisely what we want here. Now consider a need expressed using words that do not occur in the relevant product description.</p>
+<div id="chapter17-15" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>semantic_query <span class="op">=</span> <span class="st">"How can I avoid hearing people talk while I study?"</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>sparse_retrieve(semantic_query, k<span class="op">=</span><span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">product_id</th>
+<th data-quarto-table-cell-role="th">title</th>
+<th data-quarto-table-cell-role="th">score</th>
+<th data-quarto-table-cell-role="th">text</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>C009</td>
+<td>Pomodoro timer</td>
+<td>0.269859</td>
+<td>Distraction-free timer with 25- and 50-minute study modes. It does not connect to a phone.</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>C014</td>
+<td>Vancouver weather guide</td>
+<td>0.000000</td>
+<td>An article about preparing for wet and dark winter commutes in Vancouver.</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>C013</td>
+<td>Study-skills article</td>
+<td>0.000000</td>
+<td>An article describing ways to concentrate in a busy library.</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>C012</td>
+<td>White-noise machine</td>
+<td>0.000000</td>
+<td>Produces fan, rain, and ambient sounds without playing music. Intended for sleep or concentration.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The headphones are designed for this situation, but the query never says <em>headphones</em>, <em>noise</em>, or <em>cancellation</em>. TF–IDF instead emphasizes the exact word <em>study</em> and misses the relationship between <em>avoid hearing people talk</em> and noise cancellation. A nonzero score indicates shared vocabulary, not necessarily relevance.</p>
+</section>
+<section id="dense-retrieval-with-a-pretrained-embedding-model" class="level3">
+<h3 class="anchored" data-anchor-id="dense-retrieval-with-a-pretrained-embedding-model">Dense retrieval with a pretrained embedding model</h3>
+<p>Dense retrieval embeds each complete product description and the query into the same vector space. This allows differently worded texts to receive similar vectors. We use a pretrained sentence-embedding model rather than training one on our tiny catalog.</p>
+<p>The model-dependent cells in this chapter are not re-executed when the book is rendered; the saved outputs are displayed instead. This avoids downloading models during a documentation build. Run the cells locally to reproduce or modify the examples.</p>
+<div id="chapter17-18" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sentence_transformers <span class="im">import</span> SentenceTransformer</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>embedding_model <span class="op">=</span> SentenceTransformer(<span class="st">"all-MiniLM-L6-v2"</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>product_embeddings <span class="op">=</span> embedding_model.encode(</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    products[<span class="st">"text"</span>].tolist(), normalize_embeddings<span class="op">=</span><span class="va">True</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>product_embeddings.shape</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"390b5638161e4694a5bd5192e56879ce","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<pre><code>(14, 384)</code></pre>
+</div>
+</div>
+<p>The model produces one 384-dimensional dense vector for each catalog entry. Because we requested normalized vectors, their dot products are equal to their cosine similarities.</p>
+<div id="chapter17-20" class="cell" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dense_retrieve(query, k<span class="op">=</span><span class="dv">3</span>):</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    query_embedding <span class="op">=</span> embedding_model.encode([query], normalize_embeddings<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> cosine_similarity(query_embedding, product_embeddings).ravel()</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    top_indices <span class="op">=</span> np.argsort(scores)[::<span class="op">-</span><span class="dv">1</span>][:k]</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> products.iloc[top_indices].copy()</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    results[<span class="st">"score"</span>] <span class="op">=</span> scores[top_indices]</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> results[[<span class="st">"product_id"</span>, <span class="st">"title"</span>, <span class="st">"score"</span>, <span class="st">"text"</span>]]</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>dense_retrieve(semantic_query, k<span class="op">=</span><span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">product_id</th>
+<th data-quarto-table-cell-role="th">title</th>
+<th data-quarto-table-cell-role="th">score</th>
+<th data-quarto-table-cell-role="th">text</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>C001</td>
+<td>Sony WH-1000XM6 headphones</td>
+<td>0.321432</td>
+<td>Over-ear wireless headphones with active noise cancellation and up to 30 hours of battery life. Useful for studying ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">12</th>
+<td>C013</td>
+<td>Study-skills article</td>
+<td>0.320502</td>
+<td>An article describing ways to concentrate in a busy library.</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>C009</td>
+<td>Pomodoro timer</td>
+<td>0.293729</td>
+<td>Distraction-free timer with 25- and 50-minute study modes. It does not connect to a phone.</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>C004</td>
+<td>Sunrise alarm clock</td>
+<td>0.205969</td>
+<td>Gradually brightens the room before the alarm sounds. Designed to make waking up on dark winter mornings easier.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Compare this ranking with the TF–IDF results. Dense retrieval ranks the noise-cancelling headphones first by connecting <em>avoid hearing people talk</em> with active noise cancellation, even though the wording differs. It still returns broadly related study products, because an embedding model estimates textual similarity rather than knowing the user’s intent with certainty.</p>
+<div id="fig-sparse-vs-dense" class="quarto-float quarto-figure quarto-figure-center anchored" alt="On the left, sparse retrieval tokenizes a query and matches its sparse vector against an inverted index built from document word counts. On the right, dense retrieval encodes the query and documents and matches the query vector against a vectorized index. Both return a ranked list." data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sparse-vs-dense-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/sparse-vs-dense.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%" alt="On the left, sparse retrieval tokenizes a query and matches its sparse vector against an inverted index built from document word counts. On the right, dense retrieval encodes the query and documents and matches the query vector against a vectorized index. Both return a ranked list.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sparse-vs-dense-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.3: Sparse and dense retrieval both produce a ranked list, but they represent and index text differently.
+</figcaption>
+</figure>
+</div>
+<p><em>Source: adapted from Figure 1 in <a href="https://arxiv.org/pdf/2208.09257"><em>Ultron: An Ultimate Retriever on Corpus with a Model-based Indexer</em></a>.</em></p>
+<p>The two approaches share the same goal but use different representations. A sparse system stores term occurrences in an <strong>inverted index</strong>, while a dense system stores learned vectors in a <strong>vector index</strong>.</p>
+<p>The result is always a ranking, not a guarantee of relevance. In a larger system, embeddings would normally be computed once and stored in a vector index. The index speeds up search but does not change the basic operation: find vectors close to the query vector.</p>
+</section>
+<section id="evaluating-retrieval" class="level3">
+<h3 class="anchored" data-anchor-id="evaluating-retrieval">Evaluating retrieval</h3>
+<p>A few appealing search results are not enough to establish that a retriever works. We evaluate it on a representative set of queries with <strong>relevance judgments</strong> indicating which documents should count as relevant. Common ranking metrics include <strong>precision@<span class="math inline">\(k\)</span></strong> (how many of the first <span class="math inline">\(k\)</span> results are relevant), <strong>recall@<span class="math inline">\(k\)</span></strong> (how many of the relevant documents appear among the first <span class="math inline">\(k\)</span> results), <strong>mean reciprocal rank (MRR)</strong> (how early the first relevant result appears), and <strong>normalized discounted cumulative gain (NDCG)</strong> (whether highly relevant results appear near the top). Which metric matters most depends on the application.</p>
+</section>
+<section id="exercise-17.2-compare-retrieval-methods" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-17.2-compare-retrieval-methods">Exercise 17.2: Compare retrieval methods</h3>
+<p>Before running the retrievers, predict which method is likely to work better for each query. Then run both methods and explain their rankings.</p>
+<ol type="1">
+<li><code>HUB-7X</code></li>
+<li><code>I keep checking social media whenever I use my phone as a study timer.</code></li>
+<li><code>Getting out of bed for an 8 a.m. class is impossible in December.</code></li>
+<li><code>HUB-7Y</code></li>
+</ol>
+<p>Identify where exact word overlap helps, where a paraphrase creates vocabulary mismatch, and how each system behaves when the requested model number is absent from the catalog.</p>
+</section>
+</section>
+<section id="language-models-and-llms" class="level2">
+<h2 class="anchored" data-anchor-id="language-models-and-llms">Language models and LLMs</h2>
+<div class="callout callout-style-default callout-tip callout-titled" title="Activity: Become a language model">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Activity: Become a language model
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For each context, suggest several possible next words and assign rough probabilities. Your probabilities for each row should add to 1.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Context</th>
+<th>Possible next words and probabilities</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><em>Too much …</em></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><em>Peanut butter and …</em></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><em>The capital of Canada is …</em></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><em>I sat on the bank of the …</em></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Where did you assign high probability to one word? Where were several continuations plausible?</p>
+</div>
+</div>
+<section id="what-did-you-just-do" class="level3">
+<h3 class="anchored" data-anchor-id="what-did-you-just-do">What did you just do?</h3>
+<p>You acted like a <strong>language model</strong>: you used the preceding context to assign probabilities to possible continuations. A language model does this with <strong>tokens</strong>, which may be complete words, parts of words, punctuation, or other units. We can summarize its task as</p>
+<p><span class="math display">\[
+P(\text{next token} \mid \text{context}).
+\]</span></p>
+<p>There is not always one correct next token. A model estimates a distribution and uses it to choose a continuation. Repeating this process one token at a time produces text. Models that predict plausible sequences can also support applications such as transcription, translation, and summarization.</p>
+<p>The basic idea predates modern neural networks. In 1948, Claude Shannon described language probabilistically and constructed increasingly realistic approximations to English. He later studied how well people could predict upcoming characters. Modern language models pursue the same broad idea at a vastly larger scale: learn regularities in language by predicting what comes next.</p>
+</section>
+<section id="from-language-models-to-llms" class="level3">
+<h3 class="anchored" data-anchor-id="from-language-models-to-llms">From language models to LLMs</h3>
+<p>A <strong>large language model (LLM)</strong> is a language model implemented with a large neural network and trained on a large collection of data. During <strong>pretraining</strong>, it learns to predict tokens from text. Many models then undergo <strong>post-training</strong>, including methods such as instruction tuning and preference-based training, to make their responses more useful. Reinforcement learning from human feedback (RLHF) is one possible post-training method; not every LLM uses the same recipe.</p>
+<p>We do not need to study the internal neural-network architecture to build a RAG pipeline. For our purposes, an LLM accepts a prompt and generates text:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>generated_text <span class="op">=</span> language_model(prompt)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="prompting-helpsbut-cannot-supply-missing-knowledge" class="level3">
+<h3 class="anchored" data-anchor-id="prompting-helpsbut-cannot-supply-missing-knowledge">Prompting helps—but cannot supply missing knowledge</h3>
+<p>Compare these prompts:</p>
+<blockquote class="blockquote">
+<p><strong>Prompt A:</strong> Recommend gear for my commute.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p><strong>Prompt B:</strong> I cycle home after evening labs in Vancouver rain and carry a laptop. Recommend exactly two products and explain briefly how each addresses my needs.</p>
+</blockquote>
+<p>If you have access to an LLM, try both. Which prompt produces a more relevant and appropriately formatted response? Does either response make unsupported assumptions? Prompt B communicates the situation, constraints, and requested output more clearly, so it will often elicit a better response.</p>
+<p>The model’s <strong>weights remain unchanged</strong> when we improve a prompt. We are not training it; we are eliciting different behaviour from the same model. Better instructions therefore cannot provide knowledge that the model lacks, such as the current contents of a private product catalog. A model’s parameters are not a dependable database, and its answers can be outdated or unsupported.</p>
+<p>We can place additional information in the model’s context, but inserting an entire document collection is usually impractical and irrelevant text can be distracting. Instead, we can retrieve a small amount of relevant evidence and add it to the prompt before generation. This motivates <strong>retrieval-augmented generation</strong>.</p>
+</section>
+</section>
+<section id="retrieval-augmented-generation" class="level2">
+<h2 class="anchored" data-anchor-id="retrieval-augmented-generation">Retrieval-augmented generation</h2>
+<p><strong>Retrieval-augmented generation (RAG)</strong> combines an information-retrieval system with a generative language model:</p>
+<ol type="1">
+<li><strong>Retrieve:</strong> find text chunks relevant to the user’s query.</li>
+<li><strong>Augment:</strong> place those chunks, the query, and instructions in a prompt.</li>
+<li><strong>Generate:</strong> ask a language model to answer from the supplied context.</li>
+</ol>
+<div id="fig-rag-bike-example" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A user asks which two products would help with a rainy bicycle commute after an evening lab while carrying a laptop. A retriever selects relevant documents from an indexed corpus. The documents and query enter a prompt, and an LLM generates the recommendations waterproof laptop backpack and bike-light set." data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-rag-bike-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/RAG-bike-ex.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%" alt="A user asks which two products would help with a rainy bicycle commute after an evening lab while carrying a laptop. A retriever selects relevant documents from an indexed corpus. The documents and query enter a prompt, and an LLM generates the recommendations waterproof laptop backpack and bike-light set.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rag-bike-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.4: A RAG pipeline retrieves catalog documents relevant to a rainy evening bicycle commute and supplies them to an LLM, which recommends a waterproof laptop backpack and bike-light set.
+</figcaption>
+</figure>
+</div>
+<p>RAG lets an application use material that was not part of the language model’s training data. It can make answers easier to update and support with sources. It does not guarantee correctness: the retriever can miss necessary evidence, and the generator can ignore or misrepresent retrieved evidence.</p>
+<section id="step-1-split-documents-into-chunks" class="level3">
+<h3 class="anchored" data-anchor-id="step-1-split-documents-into-chunks">Step 1: Split documents into chunks</h3>
+<p>Long documents are commonly divided into smaller <strong>chunks</strong> before they are embedded. Small chunks can isolate a precise passage, but they may omit context needed to interpret it. Large chunks retain more context, but they may mix several topics and consume more of the model’s context window. Overlap can preserve text near a boundary at the cost of storing repeated content.</p>
+<p>Each catalog description is already a short, natural chunk, so the function below leaves these entries intact. The same code would split longer descriptions. Production systems often use token-aware or structure-aware splitting so headings, sentences, and paragraphs are not broken arbitrarily.</p>
+<div id="chapter17-30" class="cell" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> split_into_chunks(text, chunk_size<span class="op">=</span><span class="dv">50</span>, overlap<span class="op">=</span><span class="dv">10</span>):</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> overlap <span class="op">&gt;=</span> chunk_size:</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"overlap must be smaller than chunk_size"</span>)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    words <span class="op">=</span> text.split()</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    step <span class="op">=</span> chunk_size <span class="op">-</span> overlap</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [<span class="st">" "</span>.join(words[start : start <span class="op">+</span> chunk_size])</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> start <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, <span class="bu">len</span>(words), step)]</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>chunk_records <span class="op">=</span> []</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> product <span class="kw">in</span> products.itertuples(index<span class="op">=</span><span class="va">False</span>):</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> chunk_number, chunk_text <span class="kw">in</span> <span class="bu">enumerate</span>(split_into_chunks(product.text)):</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>        chunk_records.append(</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>            {</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>                <span class="st">"chunk_id"</span>: <span class="ss">f"</span><span class="sc">{</span>product<span class="sc">.</span>product_id<span class="sc">}</span><span class="ss">-</span><span class="sc">{</span>chunk_number<span class="sc">}</span><span class="ss">"</span>,</span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>                <span class="st">"product_id"</span>: product.product_id,</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>                <span class="st">"title"</span>: product.title,</span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>                <span class="st">"item_type"</span>: product.item_type,</span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>                <span class="st">"text"</span>: chunk_text,</span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>chunks <span class="op">=</span> pd.DataFrame(chunk_records)</span>
+<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a>chunks</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">chunk_id</th>
+<th data-quarto-table-cell-role="th">product_id</th>
+<th data-quarto-table-cell-role="th">title</th>
+<th data-quarto-table-cell-role="th">item_type</th>
+<th data-quarto-table-cell-role="th">text</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>C001-0</td>
+<td>C001</td>
+<td>Sony WH-1000XM6 headphones</td>
+<td>product</td>
+<td>Over-ear wireless headphones with active noise cancellation and up to 30 hours of battery life. Useful for studying ...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>C002-0</td>
+<td>C002</td>
+<td>Pocket power bank</td>
+<td>product</td>
+<td>Portable 20,000 mAh battery with two USB-C ports. Recharges mobile devices several times when wall power is unavaila...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>C003-0</td>
+<td>C003</td>
+<td>Waterproof laptop backpack</td>
+<td>product</td>
+<td>Rain-resistant backpack with sealed zippers and a padded compartment for a 16-inch laptop. Keeps electronics and not...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>C004-0</td>
+<td>C004</td>
+<td>Sunrise alarm clock</td>
+<td>product</td>
+<td>Gradually brightens the room before the alarm sounds. Designed to make waking up on dark winter mornings easier.</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>C005-0</td>
+<td>C005</td>
+<td>Ergonomic keyboard</td>
+<td>product</td>
+<td>Split keyboard with a padded wrist rest. Designed to reduce wrist strain during long typing and programming sessions.</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>C006-0</td>
+<td>C006</td>
+<td>Laptop stand</td>
+<td>product</td>
+<td>Raises a laptop screen to eye level and folds flat for carrying. An external keyboard is recommended for prolonged use.</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>C007-0</td>
+<td>C007</td>
+<td>USB-C hub</td>
+<td>product</td>
+<td>The HUB-7X adds HDMI, Ethernet, an SD-card reader, and three USB ports to laptops with limited connections.</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>C008-0</td>
+<td>C008</td>
+<td>Insulated travel mug</td>
+<td>product</td>
+<td>Leak-resistant 500 mL mug that keeps coffee hot for eight hours. Fits standard campus cup holders.</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>C009-0</td>
+<td>C009</td>
+<td>Pomodoro timer</td>
+<td>product</td>
+<td>Distraction-free timer with 25- and 50-minute study modes. It does not connect to a phone.</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>C010-0</td>
+<td>C010</td>
+<td>Bike-light set</td>
+<td>product</td>
+<td>Rechargeable front and rear bicycle lights with weather-resistant housings. Improves visibility when commuting after...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>C011-0</td>
+<td>C011</td>
+<td>Mini rice cooker</td>
+<td>product</td>
+<td>Compact rice cooker suitable for a dormitory kitchen. Makes two servings and switches automatically to warming mode.</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>C012-0</td>
+<td>C012</td>
+<td>White-noise machine</td>
+<td>product</td>
+<td>Produces fan, rain, and ambient sounds without playing music. Intended for sleep or concentration.</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>C013-0</td>
+<td>C013</td>
+<td>Study-skills article</td>
+<td>article</td>
+<td>An article describing ways to concentrate in a busy library.</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>C014-0</td>
+<td>C014</td>
+<td>Vancouver weather guide</td>
+<td>article</td>
+<td>An article about preparing for wet and dark winter commutes in Vancouver.</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="step-2-embed-and-store-the-chunks" class="level3">
+<h3 class="anchored" data-anchor-id="step-2-embed-and-store-the-chunks">Step 2: Embed and store the chunks</h3>
+<p>We embed chunks because these are the units the retriever will return. The DataFrame acts as our small document store, and the NumPy array acts as our vector store.</p>
+<p>Our query explicitly asks for products, so we use the <code>item_type</code> metadata to exclude articles before ranking. Metadata filters are useful when a query contains constraints that should be enforced exactly rather than approximated through semantic similarity.</p>
+<div id="chapter17-32" class="cell" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>chunk_embeddings <span class="op">=</span> embedding_model.encode(</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    chunks[<span class="st">"text"</span>].tolist(), normalize_embeddings<span class="op">=</span><span class="va">True</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> retrieve_chunks(query, k<span class="op">=</span><span class="dv">3</span>, item_type<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>    query_embedding <span class="op">=</span> embedding_model.encode([query], normalize_embeddings<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> cosine_similarity(query_embedding, chunk_embeddings).ravel()</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>    candidate_indices <span class="op">=</span> chunks.index</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> item_type <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>        candidate_indices <span class="op">=</span> chunks.index[chunks[<span class="st">"item_type"</span>] <span class="op">==</span> item_type]</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>    candidate_scores <span class="op">=</span> scores[candidate_indices]</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>    top_indices <span class="op">=</span> candidate_indices[np.argsort(candidate_scores)[::<span class="op">-</span><span class="dv">1</span>][:k]]</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> chunks.loc[top_indices].copy()</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>    results[<span class="st">"score"</span>] <span class="op">=</span> scores[top_indices]</span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> results[</span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>        [<span class="st">"chunk_id"</span>, <span class="st">"product_id"</span>, <span class="st">"title"</span>, <span class="st">"item_type"</span>, <span class="st">"score"</span>, <span class="st">"text"</span>]</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>rag_query <span class="op">=</span> (</span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">"I commute by bike after evening labs in Vancouver rain and carry a laptop. "</span></span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Which two products should I consider, and why?"</span></span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>retrieve_chunks(rag_query, k<span class="op">=</span><span class="dv">2</span>, item_type<span class="op">=</span><span class="st">"product"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="16">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">chunk_id</th>
+<th data-quarto-table-cell-role="th">product_id</th>
+<th data-quarto-table-cell-role="th">title</th>
+<th data-quarto-table-cell-role="th">item_type</th>
+<th data-quarto-table-cell-role="th">score</th>
+<th data-quarto-table-cell-role="th">text</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>C003-0</td>
+<td>C003</td>
+<td>Waterproof laptop backpack</td>
+<td>product</td>
+<td>0.561849</td>
+<td>Rain-resistant backpack with sealed zippers and a padded compartment for a 16-inch laptop. Keeps electronics and not...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>C010-0</td>
+<td>C010</td>
+<td>Bike-light set</td>
+<td>product</td>
+<td>0.414160</td>
+<td>Rechargeable front and rear bicycle lights with weather-resistant housings. Improves visibility when commuting after...</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="step-3-construct-an-augmented-prompt" class="level3">
+<h3 class="anchored" data-anchor-id="step-3-construct-an-augmented-prompt">Step 3: Construct an augmented prompt</h3>
+<p>The prompt tells the model how to use the retrieved text. In applications where unsupported answers are costly, it is useful to instruct the model to say when the context is insufficient. We also attach source identifiers so that the answer can point back to evidence.</p>
+<div id="chapter17-34" class="cell" data-execution_count="17">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> build_rag_prompt(query, retrieved_chunks):</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    context_blocks <span class="op">=</span> []</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> row <span class="kw">in</span> retrieved_chunks.itertuples(index<span class="op">=</span><span class="va">False</span>):</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>        context_blocks.append(</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"SOURCE ID: </span><span class="sc">{</span>row<span class="sc">.</span>chunk_id<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"PRODUCT TITLE: </span><span class="sc">{</span>row<span class="sc">.</span>title<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"DESCRIPTION: </span><span class="sc">{</span>row<span class="sc">.</span>text<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>    context <span class="op">=</span> <span class="st">"</span><span class="ch">\n\n</span><span class="st">"</span>.join(context_blocks)</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="ss">f"""Answer the question using only the context below.</span></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a><span class="ss">If the context does not contain enough information, say that you do not know.</span></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a><span class="ss">Recommend exactly two products. Use their exact titles, explain briefly why each</span></span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a><span class="ss">fits the user's needs, and cite each supporting source ID in square brackets.</span></span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a><span class="ss">CONTEXT</span></span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a><span class="sc">{</span>context<span class="sc">}</span></span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a><span class="ss">QUESTION</span></span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a><span class="sc">{</span>query<span class="sc">}</span></span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a><span class="ss">ANSWER</span></span>
+<span id="cb27-23"><a href="#cb27-23" aria-hidden="true" tabindex="-1"></a><span class="ss">"""</span></span>
+<span id="cb27-24"><a href="#cb27-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-25"><a href="#cb27-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-26"><a href="#cb27-26" aria-hidden="true" tabindex="-1"></a>rag_chunks <span class="op">=</span> retrieve_chunks(rag_query, k<span class="op">=</span><span class="dv">2</span>, item_type<span class="op">=</span><span class="st">"product"</span>)</span>
+<span id="cb27-27"><a href="#cb27-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(build_rag_prompt(rag_query, rag_chunks))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Answer the question using only the context below.
+If the context does not contain enough information, say that you do not know.
+Recommend exactly two products. Use their exact titles, explain briefly why each
+fits the user's needs, and cite each supporting source ID in square brackets.
+
+CONTEXT
+SOURCE ID: C003-0
+PRODUCT TITLE: Waterproof laptop backpack
+DESCRIPTION: Rain-resistant backpack with sealed zippers and a padded compartment for a 16-inch laptop. Keeps electronics and notes dry during wet commutes.
+
+SOURCE ID: C010-0
+PRODUCT TITLE: Bike-light set
+DESCRIPTION: Rechargeable front and rear bicycle lights with weather-resistant housings. Improves visibility when commuting after dark.
+
+QUESTION
+I commute by bike after evening labs in Vancouver rain and carry a laptop. Which two products should I consider, and why?
+
+ANSWER
+</code></pre>
+</div>
+</div>
+<p>Inspecting the prompt is an important debugging step. The language model cannot use evidence that the retriever failed to include. Notice also that the retrieved text is untrusted input. A document could contain instructions such as “ignore the user’s question.” Robust applications must distinguish application instructions from document content and defend against this form of <strong>prompt injection</strong>.</p>
+</section>
+<section id="step-4-generate-an-answer" class="level3">
+<h3 class="anchored" data-anchor-id="step-4-generate-an-answer">Step 4: Generate an answer</h3>
+<p>Retrieval and generation are separate parts of the pipeline. The same retrieved chunks and prompt can be sent to a small local model, a larger local model, or a hosted LLM. Here we use <code>google/flan-t5-small</code> so that the example can run on an ordinary computer. It is not an LLM by contemporary standards, and its output quality should not be taken as a limit of RAG.</p>
+<p>The saved output is shown in the rendered book, but the cell is not executed during the build. Running it locally downloads the model. Output can vary across library and model versions.</p>
+<div id="chapter17-37" class="cell" data-execution_count="18">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> AutoModelForSeq2SeqLM, AutoTokenizer</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>generator_name <span class="op">=</span> <span class="st">"google/flan-t5-small"</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>generator_tokenizer <span class="op">=</span> AutoTokenizer.from_pretrained(generator_name)</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>generator_model <span class="op">=</span> AutoModelForSeq2SeqLM.from_pretrained(generator_name)</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> generate_text(prompt, max_new_tokens<span class="op">=</span><span class="dv">100</span>):</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>    model_inputs <span class="op">=</span> generator_tokenizer(prompt, return_tensors<span class="op">=</span><span class="st">"pt"</span>, truncation<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>    output_ids <span class="op">=</span> generator_model.generate(</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>        <span class="op">**</span>model_inputs,</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>        max_new_tokens<span class="op">=</span>max_new_tokens,</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>        do_sample<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> generator_tokenizer.decode(output_ids[<span class="dv">0</span>], skip_special_tokens<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> answer_with_rag(query, k<span class="op">=</span><span class="dv">3</span>, item_type<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>    retrieved <span class="op">=</span> retrieve_chunks(query, k<span class="op">=</span>k, item_type<span class="op">=</span>item_type)</span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>    prompt <span class="op">=</span> build_rag_prompt(query, retrieved)</span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>    answer <span class="op">=</span> generate_text(prompt)</span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">"answer"</span>: answer,</span>
+<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a>        <span class="st">"sources"</span>: retrieved[[<span class="st">"chunk_id"</span>, <span class="st">"title"</span>, <span class="st">"score"</span>, <span class="st">"text"</span>]],</span>
+<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a>        <span class="st">"prompt"</span>: prompt,</span>
+<span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb29-27"><a href="#cb29-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-28"><a href="#cb29-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-29"><a href="#cb29-29" aria-hidden="true" tabindex="-1"></a>rag_result <span class="op">=</span> answer_with_rag(rag_query, k<span class="op">=</span><span class="dv">2</span>, item_type<span class="op">=</span><span class="st">"product"</span>)</span>
+<span id="cb29-30"><a href="#cb29-30" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(rag_result[<span class="st">"answer"</span>])</span>
+<span id="cb29-31"><a href="#cb29-31" aria-hidden="true" tabindex="-1"></a>display(rag_result[<span class="st">"sources"</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"a29fd04a288e4158a05d5e7e3fab80f6","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>[transformers] The tied weights mapping and config for this model specifies to tie shared.weight to lm_head.weight, but both are present in the checkpoints with different values, so we will NOT tie them. You should update the config with `tie_word_embeddings=False` to silence this warning.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Bike-light set and waterproof laptop backpack</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">chunk_id</th>
+<th data-quarto-table-cell-role="th">title</th>
+<th data-quarto-table-cell-role="th">score</th>
+<th data-quarto-table-cell-role="th">text</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>C003-0</td>
+<td>Waterproof laptop backpack</td>
+<td>0.561849</td>
+<td>Rain-resistant backpack with sealed zippers and a padded compartment for a 16-inch laptop. Keeps electronics and not...</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>C010-0</td>
+<td>Bike-light set</td>
+<td>0.414160</td>
+<td>Rechargeable front and rear bicycle lights with weather-resistant housings. Improves visibility when commuting after...</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The retrieved sources make it possible to check the generated response. With this small generator, the wording may be incomplete and it may fail to follow the requested citation format even when retrieval succeeds. A fully supported response would say something like:</p>
+<ul>
+<li><strong>Waterproof laptop backpack</strong> protects the laptop and notes from rain during a wet commute [C003-0].</li>
+<li><strong>Bike-light set</strong> improves the cyclist’s visibility after an evening lab and has weather-resistant housings [C010-0].</li>
+</ul>
+<p>This comparison is part of RAG evaluation, not merely a cosmetic rewrite. The evidence was retrieved correctly, so omitting a product, reason, or citation would be a <strong>generation failure</strong>. Returning the retrieved sources alongside the answer helps us identify that distinction, although a source list alone does not prove that every generated claim is supported.</p>
+<section id="optional-replace-the-generator-with-qwen" class="level4">
+<h4 class="anchored" data-anchor-id="optional-replace-the-generator-with-qwen">Optional: replace the generator with Qwen</h4>
+<p>The weak answer above is a useful reminder that a RAG pipeline is not tied to one language model. We can keep the catalog, embeddings, retriever, and prompt exactly as they are and replace only the generator. A more capable instruction-tuned chat model will often follow constraints such as “exactly two products” and source citations better, although no model guarantees a correct or fully supported answer.</p>
+<p>The optional cell below uses <code>Qwen/Qwen2.5-1.5B-Instruct</code>. It is not executed when the book is rendered because it requires a substantially larger download and more memory than FLAN-T5-small. Students with suitable hardware can run it themselves—or pass <code>rag_result["prompt"]</code> to another local or hosted instruction-following LLM. The retrieval part of the pipeline does not need to change.</p>
+<div id="chapter17-qwen-code" class="cell" data-execution_count="19">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> AutoModelForCausalLM, AutoTokenizer</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>qwen_name <span class="op">=</span> <span class="st">"Qwen/Qwen2.5-1.5B-Instruct"</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>qwen_tokenizer <span class="op">=</span> AutoTokenizer.from_pretrained(qwen_name)</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>qwen_model <span class="op">=</span> AutoModelForCausalLM.from_pretrained(</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    qwen_name, torch_dtype<span class="op">=</span><span class="st">"auto"</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>messages <span class="op">=</span> [</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"role"</span>: <span class="st">"system"</span>,</span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"content"</span>: <span class="st">"Follow the user's instructions and use only the supplied context."</span>,</span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: rag_result[<span class="st">"prompt"</span>]},</span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>model_inputs <span class="op">=</span> qwen_tokenizer.apply_chat_template(</span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>    messages,</span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>    add_generation_prompt<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>    tokenize<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>    return_dict<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>    return_tensors<span class="op">=</span><span class="st">"pt"</span>,</span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>).to(qwen_model.device)</span>
+<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a>output_ids <span class="op">=</span> qwen_model.generate(</span>
+<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>model_inputs, max_new_tokens<span class="op">=</span><span class="dv">160</span>, do_sample<span class="op">=</span><span class="va">False</span></span>
+<span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb32-28"><a href="#cb32-28" aria-hidden="true" tabindex="-1"></a>new_token_ids <span class="op">=</span> output_ids[<span class="dv">0</span>, model_inputs[<span class="st">"input_ids"</span>].shape[<span class="dv">1</span>] :]</span>
+<span id="cb32-29"><a href="#cb32-29" aria-hidden="true" tabindex="-1"></a>qwen_answer <span class="op">=</span> qwen_tokenizer.decode(new_token_ids, skip_special_tokens<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb32-30"><a href="#cb32-30" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(qwen_answer)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"b52a8fea9d134798b90e3587b42667d7","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>To address your need to commute by bike after evening labs in Vancouver rain while carrying a laptop, I recommend considering the following two products:
+
+1. **Bike-Light Set [C010-0]** - This product is essential because it provides both front and rear bicycle lights, which are crucial for improved visibility especially at night or during rainy conditions. The rechargeable nature of these lights ensures they can be used continuously without needing frequent recharging, making them convenient for long commutes. Additionally, the weather-resistant housing protects the lights from moisture, ensuring they remain functional even if exposed to rain.
+
+2. **Waterproof Laptop Backpack [C003-0]** - While this product primarily addresses keeping electronic devices dry during rainy commutes, its inclusion here is important as it complements</code></pre>
+</div>
+</div>
+<p>A stronger generator may produce a more complete response, but we should evaluate it against the same retrieved evidence. Did it name exactly two products? Is each reason supported by the catalog? Are the citations correct? Swapping the generator changes the likely failure modes; it does not remove the need to inspect the answer and its sources.</p>
+</section>
+</section>
+<section id="the-complete-pipeline" class="level3">
+<h3 class="anchored" data-anchor-id="the-complete-pipeline">The complete pipeline</h3>
+<p>Our implementation contains two phases.</p>
+<p>During <strong>indexing</strong>, we:</p>
+<ol type="1">
+<li>load documents;</li>
+<li>split them into chunks;</li>
+<li>embed the chunks; and</li>
+<li>store the text, metadata, and vectors.</li>
+</ol>
+<p>For each query, we:</p>
+<ol type="1">
+<li>embed the query;</li>
+<li>retrieve the top-(k) chunks;</li>
+<li>construct a prompt containing those chunks;</li>
+<li>generate an answer; and</li>
+<li>return the answer with its sources.</li>
+</ol>
+<p>Indexing is normally done only when documents are added or changed. Query processing happens for every user request.</p>
+<p>We implemented the pipeline directly to make each step visible. In practice, frameworks such as <a href="https://docs.langchain.com/oss/python/langchain/retrieval">LangChain</a> provide abstractions for document loading, text splitting, embedding models, vector stores, retrievers, prompts, and language models. These abstractions can reduce integration code, but they do not remove the need to understand and evaluate each component.</p>
+</section>
+<section id="evaluating-and-improving-a-rag-pipeline" class="level3">
+<h3 class="anchored" data-anchor-id="evaluating-and-improving-a-rag-pipeline">Evaluating and improving a RAG pipeline</h3>
+<p>A final answer can fail for different reasons:</p>
+<ul>
+<li><strong>Retrieval failure:</strong> the necessary evidence was not among the retrieved chunks.</li>
+<li><strong>Context failure:</strong> a chunk contained relevant words but omitted information needed to interpret them.</li>
+<li><strong>Generation failure:</strong> the evidence was present, but the model ignored, distorted, or contradicted it.</li>
+<li><strong>Knowledge-base failure:</strong> the required information was absent, incorrect, or outdated in the source documents.</li>
+</ul>
+<p>These failures call for different fixes. Changing the prompt will not recover a document that was never retrieved. Changing the embedding model will not correct an inaccurate source document. Evaluate intermediate outputs instead of treating the system as one black box.</p>
+<p>Evaluation should cover both retrieval and the generated answer—for example, whether the answer addresses the question and whether its claims are supported by the retrieved context. Frameworks such as <a href="https://docs.ragas.io/en/stable/concepts/metrics/available_metrics/">Ragas</a> provide metrics for both parts of a RAG pipeline. Automated scores, especially those produced by an LLM judge, are useful diagnostics but should complement rather than replace inspection and human evaluation.</p>
+<section id="important-design-choices" class="level4">
+<h4 class="anchored" data-anchor-id="important-design-choices">Important design choices</h4>
+<p>Several choices affect both quality and cost:</p>
+<ul>
+<li><strong>Embedding model:</strong> It should suit the language and domain of the documents.</li>
+<li><strong>Chunking:</strong> Chunk size, overlap, and document structure determine what can be retrieved together.</li>
+<li><strong>Retrieval method:</strong> Sparse, dense, and hybrid methods have different strengths.</li>
+<li><strong>Number of chunks:</strong> Increasing (k) may recover more evidence, but it also adds irrelevant context and consumes space.</li>
+<li><strong>Prompt:</strong> The instructions should specify the task, permitted evidence, desired output, and behaviour when evidence is missing.</li>
+<li><strong>Generator:</strong> Models differ in instruction-following ability, context size, latency, cost, and deployment constraints.</li>
+</ul>
+<p>Changing any of these components should be followed by evaluation on representative queries.</p>
+</section>
+<section id="risks-and-limitations" class="level4">
+<h4 class="anchored" data-anchor-id="risks-and-limitations">Risks and limitations</h4>
+<p>RAG provides access to external information; it does not make the overall system inherently trustworthy.</p>
+<ul>
+<li>Retrieved documents can contain private, copyrighted, biased, malicious, or outdated information.</li>
+<li>Embedding models may perform unevenly across languages and social groups.</li>
+<li>A generated answer can make claims that are absent from—or contradicted by—the retrieved evidence.</li>
+<li>Document text can attempt to manipulate the generator through prompt injection.</li>
+<li>Logging queries and retrieved passages may expose sensitive information.</li>
+<li>Model calls and large context windows introduce latency, monetary cost, and environmental cost.</li>
+</ul>
+<p>The appropriate safeguards depend on the application. High-stakes systems may require access controls, document provenance, citations, abstention, human review, and monitoring after deployment.</p>
+</section>
+<section id="exercise-17.3-diagnose-a-failed-answer" class="level4">
+<h4 class="anchored" data-anchor-id="exercise-17.3-diagnose-a-failed-answer">Exercise 17.3: Diagnose a failed answer</h4>
+<p>A shopper asks, “Do you sell a HUB-7Y?” That exact model is absent from the catalog, but the retriever returns the similar <code>HUB-7X</code>. The generator answers, “Yes, the HUB-7Y is available.”</p>
+<ol type="1">
+<li>Does the retrieved passage support the answer?</li>
+<li>Is the main failure in retrieval, generation, or the knowledge base?</li>
+<li>What should a better answer say?</li>
+</ol>
+<p>Explain your reasoning using the retrieved description rather than the model’s confidence or writing style.</p>
+</section>
+<section id="exercise-17.4-extend-the-pipeline" class="level4">
+<h4 class="anchored" data-anchor-id="exercise-17.4-extend-the-pipeline">Exercise 17.4: Extend the pipeline</h4>
+<p>Add two short documents to the knowledge base and write three realistic questions about them. At least one question should use different wording from its relevant document.</p>
+<p>Then:</p>
+<ol type="1">
+<li>rebuild the chunk embeddings;</li>
+<li>inspect the top-three chunks for each query;</li>
+<li>record whether the relevant chunk was retrieved;</li>
+<li>generate an answer only after checking retrieval; and</li>
+<li>identify one change that improves the pipeline and one trade-off introduced by that change.</li>
+</ol>
+</section>
+</section>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<ul>
+<li>NLP systems need numerical representations of text; the chosen representation determines what kinds of similarity they can detect.</li>
+<li>Bag-of-words and TF–IDF are sparse and effective for exact vocabulary matches, but they do not directly represent meaning or word order.</li>
+<li>Word and text embeddings encode some semantic relationships in dense vectors, but their similarities are imperfect and can reproduce social biases.</li>
+<li>Retrieval produces a ranking, not a guarantee: sparse retrieval is strong on exact terms, while dense retrieval can connect differently worded ideas.</li>
+<li>A language model predicts a distribution over the next token. Scaling and post-training produce more capable LLMs, but better prompts neither change their weights nor supply missing knowledge.</li>
+<li>RAG means <strong>retrieve, augment, generate</strong>: retrieve relevant chunks, add them to the prompt, and ask a language model to answer from that context.</li>
+<li>Inspect the evidence and intermediate steps. Retrieval, context, generation, and the knowledge base can each fail, and fluent output is not proof of a supported answer.</li>
+</ul>
+
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../book/14_K-Means.html" class="pagination-link" aria-label="Chapter 15: K-Means Clustering">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Chapter 15: K-Means Clustering</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
