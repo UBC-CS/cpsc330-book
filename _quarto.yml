@@ -33,7 +33,11 @@ book:
     - part: Unsupervised Learning and Recommendation
       chapters:
         - book/14_K-Means.ipynb
-    # - Working with Different Data Types
+        - book/15_DBSCAN-hierarchical.ipynb
+    - part: Working with Different Data Types
+      chapters:
+        - book/16_intro_to_computer-vision.ipynb
+        - book/17_natural-language-processing.ipynb
         
     # - Responsible Machine Learning in Practice
 
