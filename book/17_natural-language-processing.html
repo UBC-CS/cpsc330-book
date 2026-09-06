@@ -966,7 +966,7 @@ Dimensions per word: 300</code></pre>
 <p><span class="math display">\[
 v(\text{king}) - v(\text{man}) + v(\text{woman}).
 \]</span></p>
-<div id="fig-king-queen-analogy" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A vector diagram showing that the arrow from man to woman is approximately parallel to the arrow from king to queen" data-fig-align="center">
+<div id="fig-king-queen-analogy" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="A vector diagram showing that the arrow from man to woman is approximately parallel to the arrow from king to queen">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-king-queen-analogy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="img/king-queen-ex-illustration.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%" alt="A vector diagram showing that the arrow from man to woman is approximately parallel to the arrow from king to queen">
@@ -1043,7 +1043,7 @@ Figure&nbsp;9.1: A schematic illustration of the king–queen analogy. The displ
 <section id="information-retrieval" class="level2">
 <h2 class="anchored" data-anchor-id="information-retrieval">Information retrieval</h2>
 <p><strong>Information retrieval</strong> (IR) is the task of finding useful items in a collection in response to a query. Unlike a classifier, which predicts a label, a retrieval system returns a ranked list. Several results may be useful, and relevance depends partly on what the user intends.</p>
-<div id="fig-information-retrieval-pipeline" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Documents pass through document processing into a document index. A query passes through query processing into a query vector. A search component compares them using dense, keyword, or hybrid search and returns a ranked list of documents." data-fig-align="center">
+<div id="fig-information-retrieval-pipeline" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="Documents pass through document processing into a document index. A query passes through query processing into a query vector. A search component compares them using dense, keyword, or hybrid search and returns a ranked list of documents.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-information-retrieval-pipeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="img/IR.jpeg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%" alt="Documents pass through document processing into a document index. A query passes through query processing into a query vector. A search component compares them using dense, keyword, or hybrid search and returns a ranked list of documents.">
@@ -1262,7 +1262,7 @@ Figure&nbsp;9.2: The main components of an information-retrieval system. Documen
 </div>
 </div>
 <p>Compare this ranking with the TF–IDF results. Dense retrieval ranks the noise-cancelling headphones first by connecting <em>avoid hearing people talk</em> with active noise cancellation, even though the wording differs. It still returns broadly related study products, because an embedding model estimates textual similarity rather than knowing the user’s intent with certainty.</p>
-<div id="fig-sparse-vs-dense" class="quarto-float quarto-figure quarto-figure-center anchored" alt="On the left, sparse retrieval tokenizes a query and matches its sparse vector against an inverted index built from document word counts. On the right, dense retrieval encodes the query and documents and matches the query vector against a vectorized index. Both return a ranked list." data-fig-align="center">
+<div id="fig-sparse-vs-dense" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="On the left, sparse retrieval tokenizes a query and matches its sparse vector against an inverted index built from document word counts. On the right, dense retrieval encodes the query and documents and matches the query vector against a vectorized index. Both return a ranked list.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-sparse-vs-dense-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="img/sparse-vs-dense.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%" alt="On the left, sparse retrieval tokenizes a query and matches its sparse vector against an inverted index built from document word counts. On the right, dense retrieval encodes the query and documents and matches the query vector against a vectorized index. Both return a ranked list.">
@@ -1371,7 +1371,7 @@ P(\text{next token} \mid \text{context}).
 <li><strong>Augment:</strong> place those chunks, the query, and instructions in a prompt.</li>
 <li><strong>Generate:</strong> ask a language model to answer from the supplied context.</li>
 </ol>
-<div id="fig-rag-bike-example" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A user asks which two products would help with a rainy bicycle commute after an evening lab while carrying a laptop. A retriever selects relevant documents from an indexed corpus. The documents and query enter a prompt, and an LLM generates the recommendations waterproof laptop backpack and bike-light set." data-fig-align="center">
+<div id="fig-rag-bike-example" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="A user asks which two products would help with a rainy bicycle commute after an evening lab while carrying a laptop. A retriever selects relevant documents from an indexed corpus. The documents and query enter a prompt, and an LLM generates the recommendations waterproof laptop backpack and bike-light set.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-rag-bike-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="img/RAG-bike-ex.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%" alt="A user asks which two products would help with a rainy bicycle commute after an evening lab while carrying a laptop. A retriever selects relevant documents from an indexed corpus. The documents and query enter a prompt, and an LLM generates the recommendations waterproof laptop backpack and bike-light set.">
