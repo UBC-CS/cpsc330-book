@@ -1,0 +1,1837 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Chapter 8: Hyperparameter Optimization – CPSC 330: Applied Machine Learning</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../book/14_K-Means.html" rel="next">
+<link href="../book/07_linear-models.html" rel="prev">
+<link href="../book/img/UBC-CS-logo.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-a220972fa267516723a03c2fb8475964.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">CPSC 330: Applied Machine Learning</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/02_terminology-baselines-decision-trees.html">Foundations and Supervised Learning</a></li><li class="breadcrumb-item"><a href="../book/08_hyperparameter-optimization.html"><span class="chapter-title">Chapter 8: Hyperparameter Optimization</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../book/img/UBC-CS-logo.png" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../book/img/UBC-CS-logo.png" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../learning-objectives.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Detailed Learning Objectives</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/01_intro.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 1: Course Introduction</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Foundations and Supervised Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/02_terminology-baselines-decision-trees.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 2: From Data to a First Model</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/03_ml-fundamentals.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 3: Machine Learning Fundamentals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/04_kNNs-SVM-RBF.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 4: Similarity-Based Models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/05_preprocessing-pipelines.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 5: Preprocessing and Pipelines</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/06_column-transformer-text-feats.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 6: Column Transformers and Text Features</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/07_linear-models.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 7: Linear Models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/08_hyperparameter-optimization.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Chapter 8: Hyperparameter Optimization</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Unsupervised Learning and Recommendation</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/14_K-Means.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 15: K-Means Clustering</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">Working with Different Data Types</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/17_natural-language-processing.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 17: Natural Language Processing</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#why-tune-hyperparameters" id="toc-why-tune-hyperparameters" class="nav-link active" data-scroll-target="#why-tune-hyperparameters">Why tune hyperparameters?</a>
+  <ul>
+  <li><a href="#from-choosing-a-depth-to-choosing-a-pipeline" id="toc-from-choosing-a-depth-to-choosing-a-pipeline" class="nav-link" data-scroll-target="#from-choosing-a-depth-to-choosing-a-pipeline">From choosing a depth to choosing a pipeline</a></li>
+  <li><a href="#automating-the-search" id="toc-automating-the-search" class="nav-link" data-scroll-target="#automating-the-search">Automating the search</a></li>
+  </ul></li>
+  <li><a href="#automating-the-workflow-with-gridsearchcv" id="toc-automating-the-workflow-with-gridsearchcv" class="nav-link" data-scroll-target="#automating-the-workflow-with-gridsearchcv">Automating the workflow with <code>GridSearchCV</code></a>
+  <ul>
+  <li><a href="#specifying-a-pipelines-hyperparameters" id="toc-specifying-a-pipelines-hyperparameters" class="nav-link" data-scroll-target="#specifying-a-pipelines-hyperparameters">Specifying a pipeline’s hyperparameters</a></li>
+  <li><a href="#reading-the-search-results" id="toc-reading-the-search-results" class="nav-link" data-scroll-target="#reading-the-search-results">Reading the search results</a></li>
+  </ul></li>
+  <li><a href="#choosing-and-inspecting-the-search-space" id="toc-choosing-and-inspecting-the-search-space" class="nav-link" data-scroll-target="#choosing-and-inspecting-the-search-space">Choosing and inspecting the search space</a>
+  <ul>
+  <li><a href="#start-broad-then-inspect" id="toc-start-broad-then-inspect" class="nav-link" data-scroll-target="#start-broad-then-inspect">Start broad, then inspect</a></li>
+  <li><a href="#tuning-the-representation-and-counting-the-cost" id="toc-tuning-the-representation-and-counting-the-cost" class="nav-link" data-scroll-target="#tuning-the-representation-and-counting-the-cost">Tuning the representation and counting the cost</a></li>
+  </ul></li>
+  <li><a href="#randomized-search" id="toc-randomized-search" class="nav-link" data-scroll-target="#randomized-search">Randomized search</a>
+  <ul>
+  <li><a href="#sampling-from-distributions" id="toc-sampling-from-distributions" class="nav-link" data-scroll-target="#sampling-from-distributions">Sampling from distributions</a></li>
+  <li><a href="#why-can-random-search-use-a-budget-more-effectively" id="toc-why-can-random-search-use-a-budget-more-effectively" class="nav-link" data-scroll-target="#why-can-random-search-use-a-budget-more-effectively">Why can random search use a budget more effectively?</a></li>
+  </ul></li>
+  <li><a href="#optimization-bias-and-final-evaluation" id="toc-optimization-bias-and-final-evaluation" class="nav-link" data-scroll-target="#optimization-bias-and-final-evaluation">Optimization bias and final evaluation</a>
+  <ul>
+  <li><a href="#why-the-winning-score-can-be-optimistic" id="toc-why-the-winning-score-can-be-optimistic" class="nav-link" data-scroll-target="#why-the-winning-score-can-be-optimistic">Why the winning score can be optimistic</a></li>
+  <li><a href="#a-random-answer-example" id="toc-a-random-answer-example" class="nav-link" data-scroll-target="#a-random-answer-example">A random-answer example</a></li>
+  <li><a href="#putting-the-workflow-together-final-evaluation" id="toc-putting-the-workflow-together-final-evaluation" class="nav-link" data-scroll-target="#putting-the-workflow-together-final-evaluation">Putting the workflow together: final evaluation</a></li>
+  </ul></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a>
+  <ul>
+  <li><a href="#exercise-8.1-budget-a-search" id="toc-exercise-8.1-budget-a-search" class="nav-link" data-scroll-target="#exercise-8.1-budget-a-search">Exercise 8.1: Budget a search</a></li>
+  <li><a href="#exercise-8.2-decide-what-to-try-next" id="toc-exercise-8.2-decide-what-to-try-next" class="nav-link" data-scroll-target="#exercise-8.2-decide-what-to-try-next">Exercise 8.2: Decide what to try next</a></li>
+  <li><a href="#exercise-8.3-find-the-evaluation-problems" id="toc-exercise-8.3-find-the-evaluation-problems" class="nav-link" data-scroll-target="#exercise-8.3-find-the-evaluation-problems">Exercise 8.3: Find the evaluation problems</a></li>
+  <li><a href="#exercise-8.4-would-you-trust-the-reported-accuracy" id="toc-exercise-8.4-would-you-trust-the-reported-accuracy" class="nav-link" data-scroll-target="#exercise-8.4-would-you-trust-the-reported-accuracy">Exercise 8.4: Would you trust the reported accuracy?</a></li>
+  <li><a href="#exercise-8.5-respond-to-a-disappointing-test-score" id="toc-exercise-8.5-respond-to-a-disappointing-test-score" class="nav-link" data-scroll-target="#exercise-8.5-respond-to-a-disappointing-test-score">Exercise 8.5: Respond to a disappointing test score</a></li>
+  </ul></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/02_terminology-baselines-decision-trees.html">Foundations and Supervised Learning</a></li><li class="breadcrumb-item"><a href="../book/08_hyperparameter-optimization.html"><span class="chapter-title">Chapter 8: Hyperparameter Optimization</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-title">Chapter 8: Hyperparameter Optimization</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="callout-lo">
+<p>By the end of this chapter, you will be able to:</p>
+<ul>
+<li>Explain how hyperparameter selection differs from fitting model parameters.</li>
+<li>Tune a complete pipeline using <code>GridSearchCV</code> and <code>RandomizedSearchCV</code>.</li>
+<li>Choose search ranges and interpret cross-validation search results.</li>
+<li>Estimate the number of model fits required by a search.</li>
+<li>Explain optimization bias and distinguish the selected cross-validation score from a final test score.</li>
+<li>Identify evaluation workflows that reuse validation or test data in misleading ways.</li>
+</ul>
+</div>
+<p>Changing a hyperparameter takes one line of code. Deciding what to change it to is harder. Should we let a decision tree grow deeper? Use more neighbours in <span class="math inline">\(k\)</span>-NN? Which combination of <code>C</code> and <code>gamma</code> should we use for an RBF SVM? Try a different model altogether? We already know how to compare a few choices using for loops and cross-validation, but the possibilities multiply quickly.</p>
+<p>In this chapter, we will turn those comparisons into a systematic search, starting with a familiar task: choosing a tree’s depth. Along the way, we will encounter a puzzle: <strong>if we try more settings and find a higher validation score, have we necessarily found a better model?</strong> The answer will help us decide both how to search and how much to trust what we find.</p>
+<div id="cell-3" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-09T15:40:18.669480Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T15:40:18.669344Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T15:40:19.415151Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T15:40:19.414739Z&quot;}}" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> binom, loguniform, randint</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.compose <span class="im">import</span> make_column_transformer</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.dummy <span class="im">import</span> DummyClassifier</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> CountVectorizer</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> (</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    GridSearchCV, RandomizedSearchCV, cross_val_score, train_test_split,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> make_pipeline</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> OneHotEncoder, StandardScaler</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.svm <span class="im">import</span> SVC</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> DecisionTreeClassifier</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>DATA_DIR <span class="op">=</span> Path(<span class="st">"data"</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>CV <span class="op">=</span> <span class="dv">5</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="why-tune-hyperparameters" class="level2">
+<h2 class="anchored" data-anchor-id="why-tune-hyperparameters">Why tune hyperparameters?</h2>
+<p>Let’s start with a task we already know how to carry out: choosing a decision tree’s <code>max_depth</code> using cross-validation. A shallow tree may underfit, while a deeper tree may fit quirks of the training examples. We want a depth that works well on unseen examples, so we compare validation scores rather than choosing the highest training score.</p>
+<p>Let’s bring back the <a href="https://www.kaggle.com/datasets/geomack/spotifyclassification">Spotify Song Attributes</a> dataset. Our task is to predict whether a listener will like a song. This dataset contains numerical audio features, categorical features, and song titles. Its binary target records whether the listener liked a song (<code>1</code>) or did not (<code>0</code>). We will combine preprocessing and a tree in a pipeline, using the tools from Chapters 5 and 6.</p>
+<p>First, we set aside the test set. All our model-selection decisions will use cross-validation on the training set.</p>
+<div id="cell-5" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-09T15:40:19.416373Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T15:40:19.416275Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T15:40:19.457415Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T15:40:19.457009Z&quot;}}" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>spotify_df <span class="op">=</span> pd.read_csv(DATA_DIR <span class="op">/</span> <span class="st">"spotify.csv"</span>, index_col<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> spotify_df.drop(columns<span class="op">=</span>[<span class="st">"target"</span>, <span class="st">"artist"</span>])</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> spotify_df[<span class="st">"target"</span>]</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    X, y, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">123</span>, stratify<span class="op">=</span>y,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>X_train.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">acousticness</th>
+<th data-quarto-table-cell-role="th">danceability</th>
+<th data-quarto-table-cell-role="th">duration_ms</th>
+<th data-quarto-table-cell-role="th">energy</th>
+<th data-quarto-table-cell-role="th">instrumentalness</th>
+<th data-quarto-table-cell-role="th">key</th>
+<th data-quarto-table-cell-role="th">liveness</th>
+<th data-quarto-table-cell-role="th">loudness</th>
+<th data-quarto-table-cell-role="th">mode</th>
+<th data-quarto-table-cell-role="th">speechiness</th>
+<th data-quarto-table-cell-role="th">tempo</th>
+<th data-quarto-table-cell-role="th">time_signature</th>
+<th data-quarto-table-cell-role="th">valence</th>
+<th data-quarto-table-cell-role="th">song_title</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">487</th>
+<td>0.019300</td>
+<td>0.352</td>
+<td>248133</td>
+<td>0.807</td>
+<td>0.000006</td>
+<td>0</td>
+<td>0.0963</td>
+<td>-7.781</td>
+<td>1</td>
+<td>0.1730</td>
+<td>90.772</td>
+<td>4.0</td>
+<td>0.0459</td>
+<td>Don't Die</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">215</th>
+<td>0.030400</td>
+<td>0.614</td>
+<td>315000</td>
+<td>0.838</td>
+<td>0.000297</td>
+<td>10</td>
+<td>0.1660</td>
+<td>-6.896</td>
+<td>1</td>
+<td>0.0280</td>
+<td>127.971</td>
+<td>4.0</td>
+<td>0.5840</td>
+<td>Come Save Me</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1582</th>
+<td>0.830000</td>
+<td>0.534</td>
+<td>238265</td>
+<td>0.582</td>
+<td>0.000000</td>
+<td>2</td>
+<td>0.1250</td>
+<td>-6.220</td>
+<td>1</td>
+<td>0.0424</td>
+<td>186.346</td>
+<td>4.0</td>
+<td>0.2890</td>
+<td>No Le Digas Que Hacer</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">749</th>
+<td>0.000076</td>
+<td>0.597</td>
+<td>343878</td>
+<td>0.839</td>
+<td>0.825000</td>
+<td>7</td>
+<td>0.5500</td>
+<td>-6.964</td>
+<td>1</td>
+<td>0.0377</td>
+<td>108.993</td>
+<td>4.0</td>
+<td>0.1990</td>
+<td>Viol - Original Mix</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">587</th>
+<td>0.040100</td>
+<td>0.636</td>
+<td>267147</td>
+<td>0.702</td>
+<td>0.000000</td>
+<td>11</td>
+<td>0.1050</td>
+<td>-5.437</td>
+<td>1</td>
+<td>0.0743</td>
+<td>125.998</td>
+<td>4.0</td>
+<td>0.4710</td>
+<td>Hold Me Back</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>We scale the numerical features, one-hot encode the categorical features, pass through the binary <code>mode</code> feature, and represent song titles with <code>CountVectorizer</code>. Scaling is unnecessary for a tree, but lets us reuse this preprocessor with an SVM later. We omit artist identity in this example.</p>
+<p>As in Chapter 6, the string <code>"song_title"</code> selects a one-dimensional collection of documents for <code>CountVectorizer</code>; the other transformers receive lists of columns. Keeping preprocessing inside the pipeline ensures that each fold learns its scaling statistics, categories, and vocabulary using only its training portion.</p>
+<div id="cell-7" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-09T15:40:19.469503Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T15:40:19.469417Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T15:40:19.476153Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T15:40:19.475827Z&quot;}}" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>numeric_feats <span class="op">=</span> [</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"acousticness"</span>, <span class="st">"danceability"</span>, <span class="st">"duration_ms"</span>, <span class="st">"energy"</span>, <span class="st">"instrumentalness"</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"liveness"</span>, <span class="st">"loudness"</span>, <span class="st">"speechiness"</span>, <span class="st">"tempo"</span>, <span class="st">"valence"</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>categorical_feats <span class="op">=</span> [<span class="st">"time_signature"</span>, <span class="st">"key"</span>]</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>preprocessor <span class="op">=</span> make_column_transformer(</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    (StandardScaler(), numeric_feats),</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    (OneHotEncoder(handle_unknown<span class="op">=</span><span class="st">"ignore"</span>), categorical_feats),</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"passthrough"</span>, [<span class="st">"mode"</span>]),</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    (CountVectorizer(max_features<span class="op">=</span><span class="dv">100</span>, stop_words<span class="op">=</span><span class="st">"english"</span>), <span class="st">"song_title"</span>),</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>baseline_scores <span class="op">=</span> cross_val_score(</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    DummyClassifier(strategy<span class="op">=</span><span class="st">"most_frequent"</span>), X_train, y_train,</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    cv<span class="op">=</span>CV, scoring<span class="op">=</span><span class="st">"accuracy"</span>,</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>baseline_scores.mean()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<pre><code>np.float64(0.5058900448051074)</code></pre>
+</div>
+</div>
+<p>Now we try ten possible depths. For each depth, we build a pipeline, compute its mean cross-validation accuracy, and record the result. The only setting we change between candidates is <code>max_depth</code>.</p>
+<div id="cell-9" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-09T15:40:19.477017Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T15:40:19.476966Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T15:40:20.047342Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T15:40:20.046993Z&quot;}}" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>depth_results <span class="op">=</span> []</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> depth <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">20</span>, <span class="dv">2</span>):</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    tree_pipe <span class="op">=</span> make_pipeline(</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        preprocessor, DecisionTreeClassifier(max_depth<span class="op">=</span>depth, random_state<span class="op">=</span><span class="dv">123</span>),</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> cross_val_score(</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        tree_pipe, X_train, y_train, cv<span class="op">=</span>CV, scoring<span class="op">=</span><span class="st">"accuracy"</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    depth_results.append({<span class="st">"max_depth"</span>: depth, <span class="st">"mean_cv_score"</span>: scores.mean()})</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>depth_results <span class="op">=</span> pd.DataFrame(depth_results)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>depth_results.sort_values(<span class="st">"mean_cv_score"</span>, ascending<span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">max_depth</th>
+<th data-quarto-table-cell-role="th">mean_cv_score</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">3</th>
+<td>7</td>
+<td>0.719143</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>3</td>
+<td>0.718543</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>5</td>
+<td>0.716055</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>11</td>
+<td>0.704286</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>9</td>
+<td>0.702408</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">6</th>
+<td>13</td>
+<td>0.686928</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">7</th>
+<td>15</td>
+<td>0.680722</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">8</th>
+<td>17</td>
+<td>0.679474</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">9</th>
+<td>19</td>
+<td>0.678253</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">0</th>
+<td>1</td>
+<td>0.647226</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>We choose the depth with the highest mean validation accuracy and refit its pipeline on all the training data. This is the same selection-and-refitting workflow we used in earlier chapters. We leave test evaluation until we have finished model development.</p>
+<div id="cell-11" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-09T15:40:20.048311Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T15:40:20.048257Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T15:40:20.060799Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T15:40:20.060448Z&quot;}}" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>best_depth <span class="op">=</span> <span class="bu">int</span>(depth_results.loc[depth_results[<span class="st">"mean_cv_score"</span>].idxmax(), <span class="st">"max_depth"</span>])</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>selected_tree <span class="op">=</span> make_pipeline(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    preprocessor, DecisionTreeClassifier(max_depth<span class="op">=</span>best_depth, random_state<span class="op">=</span><span class="dv">123</span>),</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>selected_tree.fit(X_train, y_train)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Selected depth:"</span>, best_depth)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Selected depth: 7</code></pre>
+</div>
+</div>
+<p>We can summarize this workflow as shown in the picture below:</p>
+<div id="cell-13" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-09T15:40:20.061814Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T15:40:20.061759Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T15:40:20.321660Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T15:40:20.321285Z&quot;}}" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mglearn</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>mglearn.plots.plot_grid_search_overview()<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="08_hyperparameter-optimization_files/figure-html/cell-7-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Why stop before test evaluation?">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Why stop before test evaluation?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The complete workflow includes a final test-set evaluation. If we had finished choosing our model, we would now call <code>selected_tree.score(X_test, y_test)</code>. Here, we will continue exploring other models and hyperparameters, so we leave the test set untouched until those choices are complete. The code pauses at refitting; we will return to final evaluation at the end of the chapter.</p>
+</div>
+</div>
+<section id="from-choosing-a-depth-to-choosing-a-pipeline" class="level3">
+<h3 class="anchored" data-anchor-id="from-choosing-a-depth-to-choosing-a-pipeline">From choosing a depth to choosing a pipeline</h3>
+<p>For one listener and one hyperparameter, the loop is manageable. It performs ten five-fold comparisons (50 pipeline fits) followed by one fit of the selected pipeline. The chosen depth is the best among those we tried according to cross-validation; it is not guaranteed to be the best possible depth on future data.</p>
+<p>Choosing a tree’s depth is only one of the decisions we face. We have already learned several model families: should we use a decision tree, <span class="math inline">\(k\)</span>-nearest neighbours, an RBF SVM, or a linear model? Each comes with its own hyperparameters, such as <code>max_depth</code> for a tree or the number of neighbours for <span class="math inline">\(k\)</span>-NN. Our preprocessing choices add more possibilities: for example, <code>CountVectorizer</code>’s <code>max_features</code> limits how many vocabulary terms we retain.</p>
+<p>We can think of each combination of preprocessing choices, model family, and hyperparameter values as a <strong>candidate pipeline</strong>. Which candidate should we use for the task at hand? Our depth-search loop explored just ten candidates, keeping everything else fixed. Once we allow these other choices to vary, the number of candidates grows rapidly. Some hyperparameters, such as <code>C</code> and <code>gamma</code>, can take any positive real value, so we cannot exhaustively evaluate every possibility. A finite grid may be manageable, but it covers only the choices we put into it.</p>
+<p>Hyperparameter optimization therefore involves deciding both <strong>where to search</strong> and <strong>how to spend the computation available</strong>. Automated methods help us evaluate candidates systematically, but we still need to define a useful search space.</p>
+<div class="callout-reflection">
+<div class="callout-reflection-title">
+What if we needed to do this for 10,000 listeners?
+</div>
+<p>Imagine working at a music recommendation company (e.g., Spotify). You need to compare models and tune a separate song-preference pipeline for each of 10,000 listeners. Use five-fold cross-validation throughout, and initially count only the cross-validation fits, excluding final refits.</p>
+<ol type="1">
+<li><strong>Repeat the familiar search.</strong> If you try the same ten tree depths for every listener, how many pipeline fits will you need in total?</li>
+<li><strong>Add more choices.</strong> For an RBF SVM, you want to try three vocabulary sizes, four values of <code>C</code>, and five values of <code>gamma</code>. How many candidate pipelines does this give per listener? How many cross-validation fits does that mean per listener and across all 10,000 listeners? If you run both the tree and SVM searches, what is the combined total?</li>
+<li><strong>Translate fits into time.</strong> Suppose each pipeline fit and its validation scoring take one second, and all runs happen sequentially. Roughly how many days would the combined search take?</li>
+<li><strong>Decide what automation should do.</strong> What would you want a search tool to record and handle for you? If it evaluates exactly the same candidates with the same folds as your loops, does automation alone reduce the number of fits? What could you change if the search exceeds your computational budget?</li>
+</ol>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Discussion">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Discussion
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>The tree search requires <span class="math inline">\(10 \times 5 \times 10{,}000 = 500{,}000\)</span> cross-validation fits.</li>
+<li>The SVM search has <span class="math inline">\(3 \times 4 \times 5 = 60\)</span> candidates per listener. That means 300 cross-validation fits per listener, or 3,000,000 across all listeners. Running both searches requires 3,500,000 cross-validation fits.</li>
+<li>At one second per run, the combined search takes about <span class="math inline">\(3{,}500{,}000 / 86{,}400 \approx 40.5\)</span> days. This is a simplified estimate: actual run times vary with the data and settings, and parallel execution can reduce elapsed time.</li>
+<li>A tool could record each candidate’s model, preprocessing settings, scores, and run time, then select and refit a pipeline for each listener. It should apply the evaluation procedure consistently within each listener’s search. Evaluating the same candidates and folds still requires the same number of fits. To reduce that number, we could try fewer values or sample a limited number of combinations, accepting that we may miss useful candidates. Model knowledge can guide those choices, but changing the range restricts what the search can discover.</li>
+</ol>
+</div>
+</div>
+</div>
+</section>
+<section id="automating-the-search" class="level3">
+<h3 class="anchored" data-anchor-id="automating-the-search">Automating the search</h3>
+<p>We can still use our understanding of a model to suggest settings. For example, reducing <code>max_depth</code> when a tree is overfitting. Manual tuning can be reproducible when we record the settings, splits, and evaluation procedure. The problem is the growing amount of work needed to manage these experiments.</p>
+<p><strong>Automated hyperparameter search</strong> packages the repeated fitting, evaluation, selection, and refitting into a reusable procedure. We specify a <strong>search space</strong>, the candidate settings to explore, and an evaluation procedure. The search handles the bookkeeping that we wrote ourselves above.</p>
+<p><code>GridSearchCV</code> evaluates every specified combination, so it does not reduce the number of fits. However, these fits are independent and can run in parallel: setting <code>n_jobs=-1</code> lets the search use all available CPU cores, potentially reducing the elapsed time compared with the sequential loop we wrote above. We could also parallelize our own code, but the search tool handles this for us. <code>RandomizedSearchCV</code> supports parallel execution too, and also lets us limit the number of candidates evaluated. Both approaches still require sensible search ranges and careful use of held-out data.</p>
+</section>
+</section>
+<section id="automating-the-workflow-with-gridsearchcv" class="level2">
+<h2 class="anchored" data-anchor-id="automating-the-workflow-with-gridsearchcv">Automating the workflow with <code>GridSearchCV</code></h2>
+<p>We will reuse the full preprocessor and the same training data, now with an RBF SVM so we can explore two interacting hyperparameters. First, we establish its cross-validation accuracy with the default model settings.</p>
+<section id="specifying-a-pipelines-hyperparameters" class="level3">
+<h3 class="anchored" data-anchor-id="specifying-a-pipelines-hyperparameters">Specifying a pipeline’s hyperparameters</h3>
+<div id="cell-17" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-09T15:40:20.322739Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T15:40:20.322681Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T15:40:20.486691Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T15:40:20.486277Z&quot;}}" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>svm_pipe <span class="op">=</span> make_pipeline(preprocessor, SVC())</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>default_svm_scores <span class="op">=</span> cross_val_score(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    svm_pipe, X_train, y_train, cv<span class="op">=</span>CV, scoring<span class="op">=</span><span class="st">"accuracy"</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>default_svm_scores.mean()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<pre><code>np.float64(0.7340288060304213)</code></pre>
+</div>
+</div>
+<p>To tell a search which part of a pipeline to change, we use names separated by double underscores (<code>__</code>). For this pipeline, <code>svc__C</code> means the <code>C</code> hyperparameter of its <code>svc</code> step. Likewise, <code>svc__gamma</code> refers to that step’s <code>gamma</code>.</p>
+<p>The names come from the steps created by <code>make_pipeline</code> and <code>make_column_transformer</code>. We can also reach further inside a pipeline: <code>columntransformer__countvectorizer__max_features</code> controls the size of the song-title vocabulary. We will tune that later; first we will keep the representation fixed so we can visualize a two-dimensional grid.</p>
+<div id="cell-19" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-09T15:40:20.487784Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T15:40:20.487725Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T15:40:22.725636Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T15:40:22.725201Z&quot;}}" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>param_grid <span class="op">=</span> {</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"svc__C"</span>: [<span class="fl">0.001</span>, <span class="fl">0.01</span>, <span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">100</span>],</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"svc__gamma"</span>: [<span class="fl">0.001</span>, <span class="fl">0.01</span>, <span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">100</span>],</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>grid_search <span class="op">=</span> GridSearchCV(</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    svm_pipe, param_grid, cv<span class="op">=</span>CV, scoring<span class="op">=</span><span class="st">"accuracy"</span>,</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    n_jobs<span class="op">=-</span><span class="dv">1</span>, return_train_score<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>grid_search.fit(X_train, y_train)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>There are <span class="math inline">\(6 \times 6 = 36\)</span> candidate configurations. Five-fold cross-validation requires <span class="math inline">\(36 \times 5 = 180\)</span> pipeline fits. With the default <code>refit=True</code>, the search then fits the selected configuration once more using the entire training set, for 181 fits altogether.</p>
+<p><code>n_jobs=-1</code> allows the search to use all available CPU cores. Parallel fitting can reduce elapsed time, but it also uses more memory. Set a smaller positive number if you need to limit resource use.</p>
+</section>
+<section id="reading-the-search-results" class="level3">
+<h3 class="anchored" data-anchor-id="reading-the-search-results">Reading the search results</h3>
+<p>The fitted search stores the selected settings in <code>best_params_</code> and their mean cross-validation score in <code>best_score_</code>.</p>
+<div id="cell-21" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-09T15:40:22.727101Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T15:40:22.727034Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T15:40:22.728853Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T15:40:22.728530Z&quot;}}" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Selected settings:"</span>, grid_search.best_params_)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Selected mean CV accuracy: </span><span class="sc">{</span>grid_search<span class="sc">.</span>best_score_<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Selected settings: {'svc__C': 1, 'svc__gamma': 0.1}
+Selected mean CV accuracy: 0.737</code></pre>
+</div>
+</div>
+<p><code>cv_results_</code> contains results for every candidate. Rather than displaying the entire object, we can inspect a few useful columns, sorted by validation rank.</p>
+<div id="cell-23" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-09T15:40:22.729736Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T15:40:22.729680Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T15:40:22.733930Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T15:40:22.733476Z&quot;}}" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>grid_results <span class="op">=</span> pd.DataFrame(grid_search.cv_results_)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>result_columns <span class="op">=</span> [</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"param_svc__C"</span>, <span class="st">"param_svc__gamma"</span>, <span class="st">"mean_train_score"</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"mean_test_score"</span>, <span class="st">"std_test_score"</span>, <span class="st">"mean_fit_time"</span>, <span class="st">"rank_test_score"</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>grid_results.sort_values(<span class="st">"rank_test_score"</span>)[result_columns].head(<span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">param_svc__C</th>
+<th data-quarto-table-cell-role="th">param_svc__gamma</th>
+<th data-quarto-table-cell-role="th">mean_train_score</th>
+<th data-quarto-table-cell-role="th">mean_test_score</th>
+<th data-quarto-table-cell-role="th">std_test_score</th>
+<th data-quarto-table-cell-role="th">mean_fit_time</th>
+<th data-quarto-table-cell-role="th">rank_test_score</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">20</th>
+<td>1.0</td>
+<td>0.100</td>
+<td>0.858493</td>
+<td>0.737121</td>
+<td>0.018541</td>
+<td>0.033746</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">31</th>
+<td>100.0</td>
+<td>0.010</td>
+<td>0.870583</td>
+<td>0.726591</td>
+<td>0.016407</td>
+<td>0.049898</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">25</th>
+<td>10.0</td>
+<td>0.010</td>
+<td>0.790916</td>
+<td>0.720397</td>
+<td>0.019134</td>
+<td>0.033176</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">26</th>
+<td>10.0</td>
+<td>0.100</td>
+<td>0.972566</td>
+<td>0.720389</td>
+<td>0.007717</td>
+<td>0.046703</td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">30</th>
+<td>100.0</td>
+<td>0.001</td>
+<td>0.751552</td>
+<td>0.708001</td>
+<td>0.013397</td>
+<td>0.034890</td>
+<td>5</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">19</th>
+<td>1.0</td>
+<td>0.010</td>
+<td>0.725202</td>
+<td>0.704290</td>
+<td>0.015648</td>
+<td>0.035010</td>
+<td>6</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">14</th>
+<td>0.1</td>
+<td>0.100</td>
+<td>0.734966</td>
+<td>0.696852</td>
+<td>0.022000</td>
+<td>0.036695</td>
+<td>7</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">32</th>
+<td>100.0</td>
+<td>0.100</td>
+<td>0.998605</td>
+<td>0.691266</td>
+<td>0.009264</td>
+<td>0.056730</td>
+<td>8</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">24</th>
+<td>10.0</td>
+<td>0.001</td>
+<td>0.699630</td>
+<td>0.679493</td>
+<td>0.023026</td>
+<td>0.038066</td>
+<td>9</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>0.1</td>
+<td>0.010</td>
+<td>0.688781</td>
+<td>0.679486</td>
+<td>0.021403</td>
+<td>0.041934</td>
+<td>10</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Why does this table say test score?">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Why does this table say test score?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In <code>cv_results_</code>, <code>mean_test_score</code> is the mean score on the held-out <strong>cross-validation folds</strong>. In this book’s terminology, it is a validation score. The search has not seen <code>X_test</code> or <code>y_test</code>.</p>
+</div>
+</div>
+<p>Training scores can help us diagnose underfitting and overfitting. The <code>std_test_score</code> column describes variation across validation folds; it is not a confidence interval for future accuracy. Small differences in mean validation score should not automatically be treated as meaningful improvements.</p>
+<p>With <code>refit=True</code>, <code>best_estimator_</code> is the selected pipeline fitted on all the training data. The search object can therefore make predictions directly. We will postpone its test-set evaluation until we have finished all our model-selection decisions.</p>
+</section>
+</section>
+<section id="choosing-and-inspecting-the-search-space" class="level2">
+<h2 class="anchored" data-anchor-id="choosing-and-inspecting-the-search-space">Choosing and inspecting the search space</h2>
+<p>A grid search is exhaustive only within the grid we supply. It cannot discover values outside our range or between the listed values. Choosing a useful search space is therefore part of the modelling work.</p>
+<section id="start-broad-then-inspect" class="level3">
+<h3 class="anchored" data-anchor-id="start-broad-then-inspect">Start broad, then inspect</h3>
+<p>For positive hyperparameters such as <code>C</code> and <code>gamma</code>, a useful starting point is often values separated by factors of ten. This explores several orders of magnitude without requiring a long list. <code>np.logspace(-3, 2, 6)</code> produces the six values we used above.</p>
+<p>Linear spacing can be useful for a later, narrower search. It is not inherently wrong to try <code>C=1, 2, 3</code>; the limitation is that those values cover only a small part of the possible range.</p>
+<div id="cell-25" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-09T15:40:22.734754Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T15:40:22.734701Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T15:40:22.736323Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T15:40:22.736056Z&quot;}}" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>np.logspace(<span class="op">-</span><span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">6</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<pre><code>array([1.e-03, 1.e-02, 1.e-01, 1.e+00, 1.e+01, 1.e+02])</code></pre>
+</div>
+</div>
+<p>We can visualize the grid we have already evaluated. Each cell below corresponds to one candidate’s mean validation accuracy. Using a pivot table keeps the labels and scores aligned without assuming a particular grid size.</p>
+<div id="cell-27" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-09T15:40:22.737143Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T15:40:22.737087Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T15:40:22.811989Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T15:40:22.811573Z&quot;}}" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>score_grid <span class="op">=</span> grid_results.pivot(</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span><span class="st">"param_svc__C"</span>, columns<span class="op">=</span><span class="st">"param_svc__gamma"</span>, values<span class="op">=</span><span class="st">"mean_test_score"</span>,</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>).sort_index().sort_index(axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">5</span>))</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>heatmap <span class="op">=</span> ax.imshow(score_grid.to_numpy(), cmap<span class="op">=</span><span class="st">"viridis"</span>, aspect<span class="op">=</span><span class="st">"auto"</span>, origin<span class="op">=</span><span class="st">"lower"</span>)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>ax.set_xticks(<span class="bu">range</span>(<span class="bu">len</span>(score_grid.columns)), labels<span class="op">=</span>score_grid.columns)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>ax.set_yticks(<span class="bu">range</span>(<span class="bu">len</span>(score_grid.index)), labels<span class="op">=</span>score_grid.index)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"gamma"</span>)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"C"</span>)</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> row <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(score_grid.index)):</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> col <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(score_grid.columns)):</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>        ax.text(col, row, <span class="ss">f"</span><span class="sc">{</span>score_grid<span class="sc">.</span>iloc[row, col]<span class="sc">:.2f}</span><span class="ss">"</span>,</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>                ha<span class="op">=</span><span class="st">"center"</span>, va<span class="op">=</span><span class="st">"center"</span>, color<span class="op">=</span><span class="st">"white"</span>,</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>                bbox<span class="op">=</span><span class="bu">dict</span>(facecolor<span class="op">=</span><span class="st">"black"</span>, alpha<span class="op">=</span><span class="fl">0.4</span>, edgecolor<span class="op">=</span><span class="st">"none"</span>))</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>fig.colorbar(heatmap, ax<span class="op">=</span>ax, label<span class="op">=</span><span class="st">"Mean CV accuracy"</span>)</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="08_hyperparameter-optimization_files/figure-html/cell-13-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Look for regions of useful performance, rather than just the single brightest cell. How much does a change in <code>gamma</code> matter at different values of <code>C</code>? The heatmap helps us see why tuning one hyperparameter while fixing the other can miss promising combinations.</p>
+<p>If the best scores occur at a boundary, consider extending that boundary when computationally feasible and sensible for the model. If a promising region lies inside the grid, a finer search nearby may be useful. Neither strategy guarantees an improvement. Every such adjustment is another decision based on the same validation data, a point we will return to when discussing optimization bias.</p>
+<div class="callout-reflection">
+<p>Suppose every value of <code>C</code> performs poorly when <code>gamma</code> is very large. Would trying more closely spaced <code>C</code> values in that region be your first use of additional computation? Explain how the heatmap would guide your next search.</p>
+</div>
+</section>
+<section id="tuning-the-representation-and-counting-the-cost" class="level3">
+<h3 class="anchored" data-anchor-id="tuning-the-representation-and-counting-the-cost">Tuning the representation and counting the cost</h3>
+<p>The number of grid configurations is the product of the numbers of choices. Adding six vocabulary sizes to our six-by-six model grid gives <span class="math inline">\(6^3 = 216\)</span> candidates and 1,080 cross-validation fits, plus the final refit. With five hyperparameters and ten values each, the cost becomes 100,000 candidates, or 500,000 cross-validation fits with five folds.</p>
+<p>Changing <code>max_features</code> changes the representation available to the model, so it can affect which <code>C</code> and <code>gamma</code> settings work well. Searching these choices together is useful, but a full grid can become expensive. This motivates a search method with an explicit limit on the number of candidates.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Conditional grids">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Conditional grids
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><code>GridSearchCV</code> also accepts a list of dictionaries. This is useful when a hyperparameter applies only to some configurations. For example, an RBF <code>SVC</code> uses both <code>C</code> and <code>gamma</code>, while a linear-kernel <code>SVC</code> uses <code>C</code> but ignores <code>gamma</code>. Separate dictionaries avoid repeating equivalent linear-kernel candidates for different values of <code>gamma</code>.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="randomized-search" class="level2">
+<h2 class="anchored" data-anchor-id="randomized-search">Randomized search</h2>
+<p>Instead of evaluating every combination, <code>RandomizedSearchCV</code> samples a specified number of candidates. Its <code>n_iter</code> argument controls that number, not a time limit. The actual running time also depends on the folds, dataset, and sampled settings.</p>
+<p>We can first supply lists of possible values, just as we did for grid search. The following search samples 20 of the 216 possible configurations. With five folds and a final refit, it requires 101 pipeline fits.</p>
+<div id="cell-29" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-09T15:40:22.812911Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T15:40:22.812854Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T15:40:23.336614Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T15:40:23.336093Z&quot;}}" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>search_values <span class="op">=</span> {</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"columntransformer__countvectorizer__max_features"</span>: [<span class="dv">100</span>, <span class="dv">200</span>, <span class="dv">400</span>, <span class="dv">800</span>, <span class="dv">1000</span>, <span class="dv">2000</span>],</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"svc__C"</span>: [<span class="fl">0.001</span>, <span class="fl">0.01</span>, <span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">100</span>],</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"svc__gamma"</span>: [<span class="fl">0.001</span>, <span class="fl">0.01</span>, <span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">100</span>],</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>random_list_search <span class="op">=</span> RandomizedSearchCV(</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    svm_pipe, param_distributions<span class="op">=</span>search_values, n_iter<span class="op">=</span><span class="dv">20</span>,</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    cv<span class="op">=</span>CV, scoring<span class="op">=</span><span class="st">"accuracy"</span>, random_state<span class="op">=</span><span class="dv">123</span>, n_jobs<span class="op">=-</span><span class="dv">1</span>,</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>random_list_search.fit(X_train, y_train)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Setting <code>random_state</code> makes the sampled configurations reproducible. Increasing <code>n_iter</code> allows more exploration, but costs more fits and does not guarantee better performance on unseen data.</p>
+<section id="sampling-from-distributions" class="level3">
+<h3 class="anchored" data-anchor-id="sampling-from-distributions">Sampling from distributions</h3>
+<p>For a continuous hyperparameter, we need not limit ourselves to a short list. A <strong>probability distribution</strong> describes how likely values in different ranges are to be sampled. In hyperparameter search, it tells the search where to spend its trials. Equal-width ranges do not have to be equally likely: we can give some ranges more attention than others.</p>
+<p>Two useful choices for this pipeline are:</p>
+<ul>
+<li><code>loguniform(a, b)</code> for positive values spanning several orders of magnitude. Equal multiplicative intervals, such as 0.01–0.1 and 0.1–1, receive equal probability when they lie within the range.</li>
+<li><code>randint(a, b)</code> for integer values from <code>a</code> up to, but excluding, <code>b</code>.</li>
+</ul>
+<p>A uniform distribution over a very wide numerical interval puts most samples at its larger orders of magnitude. For example, uniform sampling between 0.001 and 100 puts about 90% of samples above 10. Log-uniform sampling gives the smaller orders of magnitude more attention.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Optional: What does sampling from a distribution look like?">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Optional: What does sampling from a distribution look like?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Sampling means drawing values according to a distribution’s probabilities. Imagine drawing 10,000 candidate values and counting how many fall into each interval. A <strong>histogram</strong> displays these counts as bars.</p>
+<p>For <strong>uniform sampling</strong> between 0 and 5, equal-width intervals are equally likely. For example, a sample is just as likely to fall between 0 and 1 as between 4 and 5.</p>
+<p>For <strong>log-uniform sampling</strong> between 0.001 and 100, equal multiplicative intervals are equally likely. Each tenfold interval—0.001–0.01, 0.01–0.1, and so on—has the same probability. The code below draws samples from each distribution; <code>.rvs</code> means drawing random values from the specified SciPy distribution.</p>
+<div id="cell-32" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use a local random generator so this illustration does not affect other examples.</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>distribution_rng <span class="op">=</span> np.random.default_rng(<span class="dv">123</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>uniform_samples <span class="op">=</span> distribution_rng.uniform(<span class="dv">0</span>, <span class="dv">5</span>, size<span class="op">=</span><span class="dv">10000</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>loguniform_samples <span class="op">=</span> loguniform.rvs(</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="fl">1e-3</span>, <span class="fl">1e2</span>, size<span class="op">=</span><span class="dv">10000</span>, random_state<span class="op">=</span>distribution_rng,</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">4</span>))</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].hist(uniform_samples, bins<span class="op">=</span>np.linspace(<span class="dv">0</span>, <span class="dv">5</span>, <span class="dv">21</span>), edgecolor<span class="op">=</span><span class="st">"white"</span>)</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].<span class="bu">set</span>(title<span class="op">=</span><span class="st">"Uniform sampling"</span>, xlabel<span class="op">=</span><span class="st">"Sampled value (linear scale)"</span>,</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>            ylabel<span class="op">=</span><span class="st">"Number of samples in interval"</span>)</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].hist(loguniform_samples, bins<span class="op">=</span>np.logspace(<span class="op">-</span><span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">21</span>), edgecolor<span class="op">=</span><span class="st">"white"</span>)</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_xscale(<span class="st">"log"</span>)</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_xticks([<span class="fl">0.001</span>, <span class="fl">0.01</span>, <span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">100</span>],</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>                  labels<span class="op">=</span>[<span class="st">"0.001"</span>, <span class="st">"0.01"</span>, <span class="st">"0.1"</span>, <span class="st">"1"</span>, <span class="st">"10"</span>, <span class="st">"100"</span>])</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].<span class="bu">set</span>(title<span class="op">=</span><span class="st">"Log-uniform sampling"</span>, xlabel<span class="op">=</span><span class="st">"Sampled value (logarithmic scale)"</span>,</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>            ylabel<span class="op">=</span><span class="st">"Number of samples in interval"</span>)</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="08_hyperparameter-optimization_files/figure-html/cell-15-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The bars are roughly level in both plots, but <strong>the horizontal scales and intervals differ</strong>. The left plot uses equal-width bins on a linear axis. The right uses bins with equal multiplicative ratios on a logarithmic axis: the interval from 1 to 10 occupies the same horizontal distance as 0.01 to 0.1. On a linear axis, the log-uniform samples would look concentrated near the small values. The slight differences in bar heights come from random sampling.</p>
+<p><strong>Pause and think:</strong> If <code>C</code> could plausibly be anywhere between 0.001 and 100, would uniform or log-uniform sampling give the smaller orders of magnitude more attention?</p>
+<p>Log-uniform sampling would. It assigns the same probability to each tenfold interval in this range, whereas uniform sampling puts about 90% of samples between 10 and 100. The distribution therefore changes which parts of the search space receive more trials; neither choice guarantees good hyperparameters.</p>
+</div>
+</div>
+</div>
+<div id="cell-34" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-09T15:40:23.337910Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T15:40:23.337837Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T15:40:23.872363Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T15:40:23.871939Z&quot;}}" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>param_distributions <span class="op">=</span> {</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"columntransformer__countvectorizer__max_features"</span>: randint(<span class="dv">100</span>, <span class="dv">2001</span>),</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"svc__C"</span>: loguniform(<span class="fl">1e-3</span>, <span class="fl">1e2</span>),</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"svc__gamma"</span>: loguniform(<span class="fl">1e-3</span>, <span class="fl">1e2</span>),</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>random_dist_search <span class="op">=</span> RandomizedSearchCV(</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    svm_pipe, param_distributions<span class="op">=</span>param_distributions, n_iter<span class="op">=</span><span class="dv">20</span>,</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    cv<span class="op">=</span>CV, scoring<span class="op">=</span><span class="st">"accuracy"</span>, random_state<span class="op">=</span><span class="dv">123</span>, n_jobs<span class="op">=-</span><span class="dv">1</span>,</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>random_dist_search.fit(X_train, y_train)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>These distributions are choices about where to spend computation; they are not learned from the data. Their ranges still need to be sensible. For example, increasing <code>max_features</code> beyond the number of available vocabulary terms will not produce additional features.</p>
+</section>
+<section id="why-can-random-search-use-a-budget-more-effectively" class="level3">
+<h3 class="anchored" data-anchor-id="why-can-random-search-use-a-budget-more-effectively">Why can random search use a budget more effectively?</h3>
+<p>Suppose performance depends strongly on one hyperparameter and only weakly on another. A three-by-three grid evaluates nine candidates but tries only three distinct values of the important hyperparameter. A random search over continuous ranges can try nine distinct values of it with the same number of evaluations.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/randomsearch_bergstra.png" class="img-fluid figure-img"></p>
+<figcaption>Grid and random search with nine evaluations each. Random search explores more distinct values along the important dimension.</figcaption>
+</figure>
+</div>
+<p>Source: Bergstra and Bengio, <a href="https://www.jmlr.org/papers/v13/bergstra12a.html">Random Search for Hyper-Parameter Optimization</a>, 2012.</p>
+<p>In this illustration, the horizontal dimension matters more than the vertical one. The grid spends several evaluations varying only the less important dimension. We generally do not know in advance which dimensions matter most, which makes random search attractive for larger spaces.</p>
+<p>Random search is not inherently faster per fit and does not always find a better candidate. A small grid is useful when we have a few specific combinations to compare or want a heatmap. Random search lets us explore a larger space while controlling the number of evaluations.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Optional: searches that adapt as they run">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Optional: searches that adapt as they run
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Successive halving starts by evaluating many candidates with a small resource allocation, such as fewer training examples, and gives more resources to promising candidates. This can save computation, although early performance with limited resources may not reflect performance with the full budget.</p>
+<p>Model-based methods, including Bayesian optimization, use the outcomes of earlier trials to guide later choices. These methods can be useful when individual fits are expensive. They still require a suitable search space and an evaluation procedure that protects held-out data.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="optimization-bias-and-final-evaluation" class="level2">
+<h2 class="anchored" data-anchor-id="optimization-bias-and-final-evaluation">Optimization bias and final evaluation</h2>
+<p>We have now compared several searches using the same training set. How should we choose the final pipeline? We can compare their selected mean cross-validation accuracies, but we must be careful about what the winning score means.</p>
+<div id="cell-37" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-09T15:40:23.873518Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T15:40:23.873453Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T15:40:23.876614Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T15:40:23.876233Z&quot;}}" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>searches <span class="op">=</span> {</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Grid"</span>: grid_search,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Random (lists)"</span>: random_list_search,</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Random (distributions)"</span>: random_dist_search,</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>search_comparison <span class="op">=</span> pd.DataFrame([</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"search"</span>: name, <span class="st">"best_mean_cv_accuracy"</span>: search.best_score_,</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>     <span class="st">"candidates"</span>: <span class="bu">len</span>(search.cv_results_[<span class="st">"params"</span>])}</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> name, search <span class="kw">in</span> searches.items()</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>]).set_index(<span class="st">"search"</span>)</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>search_comparison</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">best_mean_cv_accuracy</th>
+<th data-quarto-table-cell-role="th">candidates</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">search</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Grid</th>
+<td>0.737121</td>
+<td>36</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Random (lists)</th>
+<td>0.737121</td>
+<td>20</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Random (distributions)</th>
+<td>0.745178</td>
+<td>20</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>This table compares the searches we ran, not the search algorithms in general: their spaces and budgets differ. To finish this example, we will choose the pipeline with the highest mean cross-validation accuracy among these searches.</p>
+<section id="why-the-winning-score-can-be-optimistic" class="level3">
+<h3 class="anchored" data-anchor-id="why-the-winning-score-can-be-optimistic">Why the winning score can be optimistic</h3>
+<p>A validation score depends on both a model’s predictive ability and the particular examples used to evaluate it. When we select the highest score among many candidates, we may select a candidate that benefited from favourable evaluation noise. Its score can overstate its performance on new data. This selection effect is called <strong>optimization bias</strong>, or <strong>overfitting the validation set</strong>.</p>
+<p>This differs from fitting a model too closely to its training examples. Even when every pipeline obeys the Golden Rule within each fold, repeatedly using the validation scores to make choices can overfit those scores. Cross-validation reduces dependence on one split, but it does not remove the effect of selecting a winner.</p>
+</section>
+<section id="a-random-answer-example" class="level3">
+<h3 class="anchored" data-anchor-id="a-random-answer-example">A random-answer example</h3>
+<p>Imagine answering a ten-question multiple-choice quiz by guessing among four options. One randomly completed answer sheet has an expected accuracy of 25%. Now generate 100 answer sheets and keep whichever scores highest on those same ten questions. The selected sheet will usually score much better than 25%, even though no knowledge was involved.</p>
+<p>On new questions, random guessing still has an expected accuracy of 25%. The improvement came from selection on the original questions. In the analogy, the questions play the role of validation examples, and the answer sheets play the role of candidate models.</p>
+<p>The code below computes the expected winning score for different numbers of answer sheets, comparing quizzes with 10 and 100 questions. It avoids a slow simulation by using the probabilities for the number of correct guesses.</p>
+<div id="cell-39" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-09T15:40:23.877660Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T15:40:23.877592Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T15:40:23.880815Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T15:40:23.880522Z&quot;}}" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Adapted from the random-answer example attributed to Rodolfo Lourenzutti</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="co"># in the original lecture notes.</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>number_sheets <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">10</span>, <span class="dv">100</span>, <span class="dv">1000</span>, <span class="dv">10000</span>])</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>expected_best <span class="op">=</span> {}</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> number_questions <span class="kw">in</span> [<span class="dv">10</span>, <span class="dv">100</span>]:</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># P(one sheet has at most k correct answers), for k = 0, ..., q - 1.</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    cdf <span class="op">=</span> binom.cdf(np.arange(number_questions), number_questions, <span class="fl">0.25</span>)</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># P(best of m sheets exceeds k) = 1 - P(all m sheets score at most k).</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    expected_best[<span class="ss">f"</span><span class="sc">{</span>number_questions<span class="sc">}</span><span class="ss"> questions"</span>] <span class="op">=</span> [</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>        np.<span class="bu">sum</span>(<span class="dv">1</span> <span class="op">-</span> cdf <span class="op">**</span> m) <span class="op">/</span> number_questions <span class="cf">for</span> m <span class="kw">in</span> number_sheets</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>bias_table <span class="op">=</span> pd.DataFrame(expected_best, index<span class="op">=</span>number_sheets)</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>bias_table.index.name <span class="op">=</span> <span class="st">"Number of answer sheets tried"</span></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>bias_table.<span class="bu">round</span>(<span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="16">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">10 questions</th>
+<th data-quarto-table-cell-role="th">100 questions</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Number of answer sheets tried</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1</th>
+<td>0.250</td>
+<td>0.250</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2</th>
+<td>0.326</td>
+<td>0.274</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>0.470</td>
+<td>0.318</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">100</th>
+<td>0.620</td>
+<td>0.362</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1000</th>
+<td>0.734</td>
+<td>0.397</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">10000</th>
+<td>0.825</td>
+<td>0.426</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The expected winning score rises as we try more sheets. With more questions, chance fluctuations are smaller, and the selection effect is less pronounced. You do not need the probability calculation to use the lesson: searching many possibilities on a small validation set makes an unusually high score easier to obtain by chance.</p>
+<p>Real models are not independent random answer sheets. Similar hyperparameter settings often make similar predictions, so this example does not quantify the bias in our Spotify search. It isolates the reason selection can produce optimism even without a real improvement in predictive ability.</p>
+<p>The same issue applies to manual decisions: trying new features, changing preprocessing, comparing model families, and refining a search range all use validation information. The number of candidates in one <code>GridSearchCV</code> call is only part of the model-selection process.</p>
+</section>
+<section id="putting-the-workflow-together-final-evaluation" class="level3">
+<h3 class="anchored" data-anchor-id="putting-the-workflow-together-final-evaluation">Putting the workflow together: final evaluation</h3>
+<p>We began with a loop that compared tree depths and then refitted the selected pipeline. We now have the same workflow for a complete preprocessing-and-SVM pipeline: define candidate settings, compare them using cross-validation, select a configuration, and refit on all the training data. Both preprocessing and model fitting are part of that refit. The final step is to evaluate the selected pipeline on data that did not guide any of these choices.</p>
+<p>The held-out test set gives us an evaluation that was not used to make these choices. We now select the winning search using only its cross-validation score and evaluate its already-refitted pipeline once.</p>
+<div id="cell-41" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-09T15:40:23.881702Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T15:40:23.881653Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T15:40:23.896503Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T15:40:23.896156Z&quot;}}" data-execution_count="17">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>selected_name <span class="op">=</span> <span class="bu">max</span>(searches, key<span class="op">=</span><span class="kw">lambda</span> name: searches[name].best_score_)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>selected_search <span class="op">=</span> searches[selected_name]</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>final_test_accuracy <span class="op">=</span> selected_search.score(X_test, y_test)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>pd.Series({</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"selected_search"</span>: selected_name,</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"selected_mean_cv_accuracy"</span>: selected_search.best_score_,</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"final_test_accuracy"</span>: final_test_accuracy,</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="17">
+<pre><code>selected_search              Random (distributions)
+selected_mean_cv_accuracy                  0.745178
+final_test_accuracy                         0.75495
+dtype: object</code></pre>
+</div>
+</div>
+<p>These two scores need not match. The cross-validation score was used for selection and came from models fitted on only part of the training set. The test score evaluates the refitted pipeline on a different sample. Sampling variation can make the test score either higher or lower; a gap alone does not measure optimization bias.</p>
+<p>An untouched test set does not guarantee a precise estimate. Its size and how well it represents the intended prediction setting still matter. More representative data can improve evaluation precision and learning, but simply having more rows does not guarantee a better model.</p>
+<div class="callout callout-style-default callout-important callout-titled" title="What if the test score is disappointing?">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>What if the test score is disappointing?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Do not tune against the test score and then report it as an independent final evaluation. Investigate the workflow and report the result honestly. If you use the test results to guide further model development, that set has become part of model selection; a fresh held-out evaluation is needed for the revised model.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Optional: nested cross-validation">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Optional: nested cross-validation
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Another evaluation design places the entire hyperparameter search inside an outer cross-validation loop. Each outer training portion runs its own inner search; its outer held-out portion evaluates the selected pipeline. This is called <strong>nested cross-validation</strong>. It evaluates the selection procedure across multiple splits, at a substantial computational cost. The outer scores must also be protected from repeated tuning decisions.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="exercises" class="level2">
+<h2 class="anchored" data-anchor-id="exercises">Exercises</h2>
+<section id="exercise-8.1-budget-a-search" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-8.1-budget-a-search">Exercise 8.1: Budget a search</h3>
+<p>You want to tune three hyperparameters with 4, 5, and 6 candidate values, using five-fold cross-validation. How many pipeline fits does grid search require, including the default final refit? How many does random search require with <code>n_iter=20</code>? What do you give up by using the smaller search?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Grid search evaluates <span class="math inline">\(4 \times 5 \times 6 = 120\)</span> candidates, requiring <span class="math inline">\(120 \times 5 + 1 = 601\)</span> fits. Random search requires <span class="math inline">\(20 \times 5 + 1 = 101\)</span> fits. The random search leaves many combinations unevaluated and may miss a useful one; neither search guarantees the best settings beyond its evaluated candidates or on future data.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-8.2-decide-what-to-try-next" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-8.2-decide-what-to-try-next">Exercise 8.2: Decide what to try next</h3>
+<p>Your best mean validation accuracy occurs at <code>C=100</code>, the largest value in your grid. A colleague concludes that the optimal value is 100. What does the result actually establish? Suggest a next step that preserves the test set’s role.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>It establishes that this candidate has the highest mean validation score among those evaluated, possibly tied with others. Inspect neighbouring scores and consider extending the range above 100 using training-set cross-validation. The boundary result does not prove that a larger value will help. Keep the test set out of this decision.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-8.3-find-the-evaluation-problems" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-8.3-find-the-evaluation-problems">Exercise 8.3: Find the evaluation problems</h3>
+<p>A student fits <code>CountVectorizer</code> to all song titles before splitting the data. They then search 200 SVM settings and report the winning <code>mean_test_score</code> from <code>cv_results_</code> as their final test accuracy. Identify two problems and explain how to fix them.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The vocabulary was learned using data that should have been held out. Split the raw data first and place the vectorizer inside the pipeline searched by cross-validation. Also, <code>mean_test_score</code> is a cross-validation score used for selection, not an independent test score. Evaluate the selected, refitted pipeline on an untouched test set after model selection is complete.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-8.4-would-you-trust-the-reported-accuracy" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-8.4-would-you-trust-the-reported-accuracy">Exercise 8.4: Would you trust the reported accuracy?</h3>
+<p>Adapted from a question in Mark Schmidt’s notes.</p>
+<p>A colleague receives a small subset of a dataset, uses 96% of it for training and 4% for validation, and tries many hyperparameter settings. The winning validation accuracy is 97%. Should you expect similar accuracy on the remaining data? Explain what makes this estimate uncertain and what evidence would help.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The reported score is insufficient evidence. A small validation set gives a noisy estimate, and selecting the best among many settings can make it optimistic. The subset may also differ from the remaining data. An evaluation on sufficiently large, representative data that was not used for selection would provide more useful evidence. We cannot infer the actual accuracy from the information given.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-8.5-respond-to-a-disappointing-test-score" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-8.5-respond-to-a-disappointing-test-score">Exercise 8.5: Respond to a disappointing test score</h3>
+<p>After evaluating on the test set, you change the vocabulary size and rerun the search because the result was disappointing. The revised model scores better on that same test set. Can you report this as an independent final evaluation? Why or why not?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-13" class="callout-13-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>No.&nbsp;The first test result influenced a modelling decision, so the test set is now part of development. Report that reuse transparently and obtain a fresh held-out evaluation for the revised model. A better score on the reused set is not by itself evidence of the same improvement on new data.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<ul>
+<li>Hyperparameter search compares models fitted under different settings. Search the complete pipeline so preprocessing is learned separately within each fold.</li>
+<li>Grid search evaluates every specified combination; randomized search evaluates a chosen number of sampled configurations.</li>
+<li>Search ranges matter. Use model knowledge, broad initial ranges, and validation results to decide where further computation is useful.</li>
+<li><code>best_score_</code> is a score used for selection. With the default refitting behaviour, <code>best_estimator_</code> is the selected pipeline fitted on all the training data.</li>
+<li>Selecting the best validation result can produce optimization bias. Protect the test set throughout model development and use it for the final evaluation.</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled" title="Further reading">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Further reading
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The scikit-learn <a href="https://scikit-learn.org/stable/modules/grid_search.html">hyperparameter-tuning guide</a> provides additional examples and search strategies. The API references for <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html"><code>GridSearchCV</code></a> and <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.RandomizedSearchCV.html"><code>RandomizedSearchCV</code></a> describe their arguments and fitted attributes.</p>
+</div>
+</div>
+
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../book/07_linear-models.html" class="pagination-link" aria-label="Chapter 7: Linear Models">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Chapter 7: Linear Models</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../book/14_K-Means.html" class="pagination-link" aria-label="Chapter 15: K-Means Clustering">
+        <span class="nav-page-text"><span class="chapter-title">Chapter 15: K-Means Clustering</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
