@@ -28,7 +28,7 @@ book:
         - book/05_preprocessing-pipelines.ipynb
         - book/06_column-transformer-text-feats.ipynb
         - book/07_linear-models.ipynb
-
+        - book/08_hyperparameter-optimization.ipynb
     # Add the following parts when their first chapters are ready:
     - part: Unsupervised Learning and Recommendation
       chapters:
