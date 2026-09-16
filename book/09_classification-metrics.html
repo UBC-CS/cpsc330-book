@@ -1,0 +1,1914 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Chapter 9: Classification Metrics – CPSC 330: Applied Machine Learning</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../book/14_K-Means.html" rel="next">
+<link href="../book/08_hyperparameter-optimization.html" rel="prev">
+<link href="../book/img/UBC-CS-logo.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-a220972fa267516723a03c2fb8475964.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">CPSC 330: Applied Machine Learning</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/02_terminology-baselines-decision-trees.html">Foundations and Supervised Learning</a></li><li class="breadcrumb-item"><a href="../book/09_classification-metrics.html"><span class="chapter-title">Chapter 9: Classification Metrics</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../book/img/UBC-CS-logo.png" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../book/img/UBC-CS-logo.png" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../learning-objectives.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Detailed Learning Objectives</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/01_intro.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 1: Course Introduction</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Foundations and Supervised Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/02_terminology-baselines-decision-trees.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 2: From Data to a First Model</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/03_ml-fundamentals.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 3: Machine Learning Fundamentals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/04_kNNs-SVM-RBF.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 4: Similarity-Based Models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/05_preprocessing-pipelines.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 5: Preprocessing and Pipelines</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/06_column-transformer-text-feats.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 6: Column Transformers and Text Features</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/07_linear-models.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 7: Linear Models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/08_hyperparameter-optimization.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 8: Hyperparameter Optimization</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/09_classification-metrics.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Chapter 9: Classification Metrics</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Unsupervised Learning and Recommendation</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/14_K-Means.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 14: K-Means Clustering</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">Working with Different Data Types</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/17_natural-language-processing.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 17: Natural Language Processing</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#fraud-detection-when-accuracy-is-not-enough" id="toc-fraud-detection-when-accuracy-is-not-enough" class="nav-link active" data-scroll-target="#fraud-detection-when-accuracy-is-not-enough">Fraud detection: when accuracy is not enough</a></li>
+  <li><a href="#understanding-mistakes-confusion-matrices-precision-recall-and-f1" id="toc-understanding-mistakes-confusion-matrices-precision-recall-and-f1" class="nav-link" data-scroll-target="#understanding-mistakes-confusion-matrices-precision-recall-and-f1">Understanding mistakes: confusion matrices, precision, recall, and F1</a>
+  <ul>
+  <li><a href="#organizing-mistakes-the-confusion-matrix" id="toc-organizing-mistakes-the-confusion-matrix" class="nav-link" data-scroll-target="#organizing-mistakes-the-confusion-matrix">Organizing mistakes: the confusion matrix</a></li>
+  <li><a href="#asking-different-questions-precision-recall-and-f1" id="toc-asking-different-questions-precision-recall-and-f1" class="nav-link" data-scroll-target="#asking-different-questions-precision-recall-and-f1">Asking different questions: precision, recall, and F1</a></li>
+  <li><a href="#reading-a-classification-report" id="toc-reading-a-classification-report" class="nav-link" data-scroll-target="#reading-a-classification-report">Reading a classification report</a></li>
+  </ul></li>
+  <li><a href="#catching-more-fraud-without-retraining-the-model" id="toc-catching-more-fraud-without-retraining-the-model" class="nav-link" data-scroll-target="#catching-more-fraud-without-retraining-the-model">Catching more fraud without retraining the model</a>
+  <ul>
+  <li><a href="#changing-the-decision-threshold" id="toc-changing-the-decision-threshold" class="nav-link" data-scroll-target="#changing-the-decision-threshold">Changing the decision threshold</a></li>
+  <li><a href="#precisionrecall-curves" id="toc-precisionrecall-curves" class="nav-link" data-scroll-target="#precisionrecall-curves">Precision–recall curves</a></li>
+  <li><a href="#roc-curves" id="toc-roc-curves" class="nav-link" data-scroll-target="#roc-curves">ROC curves</a></li>
+  <li><a href="#choosing-evaluation-metrics" id="toc-choosing-evaluation-metrics" class="nav-link" data-scroll-target="#choosing-evaluation-metrics">Choosing evaluation metrics</a></li>
+  </ul></li>
+  <li><a href="#class-imbalance-and-model-selection" id="toc-class-imbalance-and-model-selection" class="nav-link" data-scroll-target="#class-imbalance-and-model-selection">Class imbalance and model selection</a>
+  <ul>
+  <li><a href="#changing-class-weights" id="toc-changing-class-weights" class="nav-link" data-scroll-target="#changing-class-weights">Changing class weights</a></li>
+  <li><a href="#comparing-candidate-pipelines" id="toc-comparing-candidate-pipelines" class="nav-link" data-scroll-target="#comparing-candidate-pipelines">Comparing candidate pipelines</a></li>
+  <li><a href="#returning-to-the-search-problem" id="toc-returning-to-the-search-problem" class="nav-link" data-scroll-target="#returning-to-the-search-problem">Returning to the search problem</a>
+  <ul class="collapse">
+  <li><a href="#selecting-a-candidate-with-an-explicit-objective" id="toc-selecting-a-candidate-with-an-explicit-objective" class="nav-link" data-scroll-target="#selecting-a-candidate-with-an-explicit-objective">Selecting a candidate with an explicit objective</a></li>
+  <li><a href="#selecting-the-operating-threshold" id="toc-selecting-the-operating-threshold" class="nav-link" data-scroll-target="#selecting-the-operating-threshold">Selecting the operating threshold</a></li>
+  <li><a href="#final-evaluation" id="toc-final-evaluation" class="nav-link" data-scroll-target="#final-evaluation">Final evaluation</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a>
+  <ul>
+  <li><a href="#exercise-9.1-higher-accuracy-better-detector" id="toc-exercise-9.1-higher-accuracy-better-detector" class="nav-link" data-scroll-target="#exercise-9.1-higher-accuracy-better-detector">Exercise 9.1: Higher accuracy, better detector?</a></li>
+  <li><a href="#exercise-9.2-lowering-the-threshold" id="toc-exercise-9.2-lowering-the-threshold" class="nav-link" data-scroll-target="#exercise-9.2-lowering-the-threshold">Exercise 9.2: Lowering the threshold</a></li>
+  <li><a href="#exercise-9.3-choosing-a-model-for-review" id="toc-exercise-9.3-choosing-a-model-for-review" class="nav-link" data-scroll-target="#exercise-9.3-choosing-a-model-for-review">Exercise 9.3: Choosing a model for review</a></li>
+  <li><a href="#exercise-9.4-find-the-evaluation-leak" id="toc-exercise-9.4-find-the-evaluation-leak" class="nav-link" data-scroll-target="#exercise-9.4-find-the-evaluation-leak">Exercise 9.4: Find the evaluation leak</a></li>
+  </ul></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/02_terminology-baselines-decision-trees.html">Foundations and Supervised Learning</a></li><li class="breadcrumb-item"><a href="../book/09_classification-metrics.html"><span class="chapter-title">Chapter 9: Classification Metrics</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-title">Chapter 9: Classification Metrics</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="callout-lo">
+<p>By the end of this chapter, you will be able to:</p>
+<ul>
+<li>Explain why high accuracy can hide an ineffective classifier.</li>
+<li>Interpret confusion matrices, precision, recall, F1, and classification reports.</li>
+<li>Explain how a decision threshold changes predictions and error counts.</li>
+<li>Interpret PR and ROC curves and distinguish their summaries from metrics at one threshold.</li>
+<li>Choose evaluation criteria that reflect an application’s needs.</li>
+<li>Use multiple metrics in cross-validation and select a pipeline and threshold without using the test set.</li>
+<li>Compare performance across groups and explain the limits of such comparisons.</li>
+</ul>
+</div>
+<p>In Chapter 8, we searched for the pipeline with the highest cross-validation accuracy. But does the highest accuracy always identify the most useful model? Imagine you are building a system for a bank that flags suspicious credit-card transactions for investigation. In a hypothetical batch of 10,000 transactions, 20 are fraudulent. Your model correctly classifies 9,980 transactions (an accuracy of 99.8%) but catches none of the fraud. How could a model get almost every prediction right and still fail at its job?</p>
+<p>Missing fraud can let unauthorized charges go unnoticed. Flagging legitimate purchases can inconvenience customers and consume investigation time. Both kinds of mistake matter, but their consequences are different. How can we compare models when different mistakes have different consequences?</p>
+<div id="ch09-003" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Show imports and setup</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.compose <span class="im">import</span> make_column_transformer</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.dummy <span class="im">import</span> DummyClassifier</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.impute <span class="im">import</span> SimpleImputer</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> (</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    ConfusionMatrixDisplay, PrecisionRecallDisplay, RocCurveDisplay,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    accuracy_score, average_precision_score, classification_report,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    confusion_matrix, f1_score, precision_recall_curve, precision_score,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    recall_score, roc_auc_score,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> GridSearchCV, StratifiedKFold, cross_validate, train_test_split</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> make_pipeline</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> OneHotEncoder, StandardScaler</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> DecisionTreeClassifier</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>DATA_DIR <span class="op">=</span> Path(<span class="st">"data"</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>CV <span class="op">=</span> StratifiedKFold(n_splits<span class="op">=</span><span class="dv">3</span>, shuffle<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<section id="fraud-detection-when-accuracy-is-not-enough" class="level2">
+<h2 class="anchored" data-anchor-id="fraud-detection-when-accuracy-is-not-enough">Fraud detection: when accuracy is not enough</h2>
+<p>Let’s turn the bank scenario into a prediction task using the <a href="https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud">Credit Card Fraud Detection dataset</a>. Each row describes a credit-card transaction, and our task is to predict whether it is fraudulent. The target column, <code>Class</code>, records <code>1</code> for fraud and <code>0</code> for non-fraud. A prediction of <code>1</code> would flag a transaction for investigation; it would not by itself establish that fraud occurred.</p>
+<p>We have numeric features describing each transaction, including its amount and a set of anonymized features named <code>V1</code>, <code>V2</code>, and so on. We do not need to interpret those anonymized features to investigate how well our predictions work.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Loading the data">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Loading the data
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The CSV is about 150 MB. The code uses <code>data/creditcard.csv</code> if you have a local copy; otherwise it reads the remote copy used in the lecture notes. Keep large downloaded data files out of version control.</p>
+</div>
+</div>
+</div>
+<div id="ch09-fraud-opening-01" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>fraud_path <span class="op">=</span> DATA_DIR <span class="op">/</span> <span class="st">"creditcard.csv"</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>DATA_URL <span class="op">=</span> <span class="st">"https://github.com/firasm/bits/raw/refs/heads/master/creditcard.csv"</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>fraud_df <span class="op">=</span> pd.read_csv(fraud_path <span class="cf">if</span> fraud_path.exists() <span class="cf">else</span> DATA_URL)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>As in earlier chapters, we reserve the test set before exploring the data or comparing models. We also set aside a validation set so that we can examine predictions from a fitted model on examples it has not seen. Later, we will use cross-validation within the training set to compare candidate pipelines, and the validation set to choose a decision threshold. The test set stays untouched until the final evaluation.</p>
+<p>We use <code>stratify</code> to approximately preserve the fraction of fraud cases in each split. This does not make the classes equally common; it helps avoid a split with very few fraud examples. Stratification is not the default in <code>train_test_split</code>.</p>
+<div id="ch09-fraud-opening-03" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>fraud_development, fraud_test <span class="op">=</span> train_test_split(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    fraud_df, test_size<span class="op">=</span><span class="fl">0.3</span>, random_state<span class="op">=</span><span class="dv">111</span>, stratify<span class="op">=</span>fraud_df[<span class="st">"Class"</span>]</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>fraud_fit, fraud_valid <span class="op">=</span> train_test_split(</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    fraud_development, test_size<span class="op">=</span><span class="fl">0.3</span>, random_state<span class="op">=</span><span class="dv">123</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    stratify<span class="op">=</span>fraud_development[<span class="st">"Class"</span>],</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>X_fit <span class="op">=</span> fraud_fit.drop(columns<span class="op">=</span>[<span class="st">"Class"</span>, <span class="st">"Time"</span>])</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>y_fit <span class="op">=</span> fraud_fit[<span class="st">"Class"</span>]</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>X_valid <span class="op">=</span> fraud_valid.drop(columns<span class="op">=</span>[<span class="st">"Class"</span>, <span class="st">"Time"</span>])</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>y_valid <span class="op">=</span> fraud_valid[<span class="st">"Class"</span>]</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>X_test <span class="op">=</span> fraud_test.drop(columns<span class="op">=</span>[<span class="st">"Class"</span>, <span class="st">"Time"</span>])</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>y_test <span class="op">=</span> fraud_test[<span class="st">"Class"</span>]</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Show a few columns from the training set to see the structure of the data.</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>fraud_fit[[<span class="st">"Amount"</span>, <span class="st">"V1"</span>, <span class="st">"V2"</span>, <span class="st">"V3"</span>, <span class="st">"Class"</span>]].head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Amount</th>
+<th data-quarto-table-cell-role="th">V1</th>
+<th data-quarto-table-cell-role="th">V2</th>
+<th data-quarto-table-cell-role="th">V3</th>
+<th data-quarto-table-cell-role="th">Class</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">161019</th>
+<td>33.35</td>
+<td>1.995966</td>
+<td>-0.247681</td>
+<td>-1.774412</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">179531</th>
+<td>10.00</td>
+<td>2.049079</td>
+<td>-0.189257</td>
+<td>-1.264731</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">229408</th>
+<td>18.63</td>
+<td>2.030060</td>
+<td>0.454393</td>
+<td>-2.473850</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">44337</th>
+<td>1.98</td>
+<td>-1.724699</td>
+<td>2.120453</td>
+<td>0.049281</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">143423</th>
+<td>150.00</td>
+<td>-1.361361</td>
+<td>-0.955378</td>
+<td>1.997082</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>We omit <code>Time</code> and use random splits to keep the focus on evaluation metrics. A system intended to predict future transactions would need an evaluation that accounts for time and, where relevant, repeated customers. A random split is not automatically a realistic deployment evaluation.</p>
+<p>How often does fraud occur in our training set? Let’s look at both counts and percentages.</p>
+<div id="ch09-fraud-opening-05" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>class_counts <span class="op">=</span> y_fit.value_counts().reindex([<span class="dv">0</span>, <span class="dv">1</span>])</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>class_summary <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Transactions"</span>: class_counts,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Percentage"</span>: <span class="dv">100</span> <span class="op">*</span> class_counts <span class="op">/</span> <span class="bu">len</span>(y_fit),</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>class_summary.index <span class="op">=</span> pd.Index([<span class="st">"Non-fraud"</span>, <span class="st">"Fraud"</span>], name<span class="op">=</span><span class="st">"Actual class"</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>class_summary.<span class="bu">round</span>({<span class="st">"Percentage"</span>: <span class="dv">3</span>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Transactions</th>
+<th data-quarto-table-cell-role="th">Percentage</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Actual class</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Non-fraud</th>
+<td>139313</td>
+<td>99.827</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Fraud</th>
+<td>241</td>
+<td>0.173</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Only about 0.17% of these transactions are fraud: fewer than 2 in every 1,000. This is an example of <strong>class imbalance</strong>, where one class occurs much more often than another. Here, rarity is part of the problem we want to solve. A useful detector must find fraud among many legitimate transactions.</p>
+<p>Class imbalance raises two different questions: how should we evaluate a model, and should we change how it learns or makes predictions? We will start with evaluation: choosing measures that reveal whether the model does what we need. Later, we will explore changing the decision threshold or giving fraud examples more weight during training, and use those measures to judge whether the changes help.</p>
+<div class="callout-reflection">
+<p>Suppose we predict “non-fraud” for every transaction. Using the class percentages above, what accuracy would you expect on data with similar proportions? How many fraud cases would this rule catch?</p>
+</div>
+<p>We can implement this rule with the familiar <code>DummyClassifier</code>. With <code>strategy="most_frequent"</code>, it learns which class is most common in the training set and predicts that class for every example, regardless of its features.</p>
+<div id="ch09-fraud-opening-07" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>dummy <span class="op">=</span> DummyClassifier(strategy<span class="op">=</span><span class="st">"most_frequent"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>dummy.fit(X_fit, y_fit)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>dummy_predictions <span class="op">=</span> dummy.predict(X_valid)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Dummy validation accuracy: </span><span class="sc">{</span>accuracy_score(y_valid, dummy_predictions)<span class="sc">:.3%}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Dummy validation accuracy: 99.828%</code></pre>
+</div>
+</div>
+<p>An accuracy of about 99.8% resolves the opening puzzle. The classifier gets the legitimate transactions right and misses every fraud case. In the hypothetical batch from the introduction, this same rule would make 9,980 correct predictions out of 10,000 without catching any of the 20 fraudulent transactions. High accuracy alone does not establish that we have a useful fraud detector.</p>
+<p>Can a model that learns from the transaction features do better? Let’s try logistic regression from Chapter 7, with scaling inside a pipeline. We fit on the same data and evaluate on the same validation examples so the comparison is meaningful.</p>
+<div id="ch09-fraud-opening-09" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>pipe_lr <span class="op">=</span> make_pipeline(StandardScaler(), LogisticRegression(max_iter<span class="op">=</span><span class="dv">2000</span>))</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>pipe_lr.fit(X_fit, y_fit)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>models <span class="op">=</span> {<span class="st">"Always non-fraud"</span>: dummy, <span class="st">"Logistic regression"</span>: pipe_lr}</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>pd.Series(</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    {name: accuracy_score(y_valid, model.predict(X_valid)) <span class="cf">for</span> name, model <span class="kw">in</span> models.items()},</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="st">"Validation accuracy"</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>).to_frame().<span class="bu">round</span>(<span class="dv">6</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Validation accuracy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Always non-fraud</th>
+<td>0.998278</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Logistic regression</th>
+<td>0.999264</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Both accuracies are close to 1. The difference looks small, but accuracy alone does not tell us what changed for the fraud cases. To see that, let’s count how many fraudulent transactions each model catches and how many legitimate transactions it flags by mistake. We can do this directly by comparing the predictions with the known validation labels.</p>
+<div id="ch09-fraud-opening-11" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>comparison <span class="op">=</span> {}</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, model <span class="kw">in</span> models.items():</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    predictions <span class="op">=</span> model.predict(X_valid)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    comparison[name] <span class="op">=</span> {</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Fraud caught"</span>: <span class="bu">int</span>(((y_valid <span class="op">==</span> <span class="dv">1</span>) <span class="op">&amp;</span> (predictions <span class="op">==</span> <span class="dv">1</span>)).<span class="bu">sum</span>()),</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Fraud missed"</span>: <span class="bu">int</span>(((y_valid <span class="op">==</span> <span class="dv">1</span>) <span class="op">&amp;</span> (predictions <span class="op">==</span> <span class="dv">0</span>)).<span class="bu">sum</span>()),</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Legitimate transactions flagged"</span>: <span class="bu">int</span>(((y_valid <span class="op">==</span> <span class="dv">0</span>) <span class="op">&amp;</span> (predictions <span class="op">==</span> <span class="dv">1</span>)).<span class="bu">sum</span>()),</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(comparison).T</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Fraud caught</th>
+<th data-quarto-table-cell-role="th">Fraud missed</th>
+<th data-quarto-table-cell-role="th">Legitimate transactions flagged</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Always non-fraud</th>
+<td>0</td>
+<td>103</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Logistic regression</th>
+<td>71</td>
+<td>32</td>
+<td>12</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Of the 103 fraud cases in this validation set, logistic regression catches 71 and misses 32. In total, it flags 83 transactions for investigation: 71 are actually fraudulent, while the other 12 are legitimate transactions incorrectly flagged as fraud. These 12 false alarms are called <strong>false positives</strong>. The dummy classifier catches no fraud at all. The small difference in accuracy hides a substantial difference in what these models do.</p>
+<p>Logistic regression is more useful for finding fraud in this comparison, but is it good enough for the bank? That depends on whether catching 71 cases justifies the investigations it triggers, and whether missing 32 cases is acceptable. We need a clearer way to describe these different outcomes before choosing a model. A <strong>confusion matrix</strong> will organize the counts, and the metrics derived from it will help us compare the kinds of mistakes that matter.</p>
+</section>
+<section id="understanding-mistakes-confusion-matrices-precision-recall-and-f1" class="level2">
+<h2 class="anchored" data-anchor-id="understanding-mistakes-confusion-matrices-precision-recall-and-f1">Understanding mistakes: confusion matrices, precision, recall, and F1</h2>
+<p>Our logistic-regression model flagged 83 transactions: 71 were fraud and 12 were legitimate. It also missed 32 fraud cases. These counts describe different aspects of its behaviour. Let’s organize them so that we can ask more precise questions about how well the detector works.</p>
+<section id="organizing-mistakes-the-confusion-matrix" class="level3">
+<h3 class="anchored" data-anchor-id="organizing-mistakes-the-confusion-matrix">Organizing mistakes: the confusion matrix</h3>
+<p>We call fraud the <strong>positive class</strong> because it is the event we want to detect; non-fraud is the <strong>negative class</strong>. “Positive” does not mean desirable. We must specify which class is positive before interpreting the metrics that follow.</p>
+<p>A <strong>confusion matrix</strong> groups predictions by their actual and predicted classes. For our logistic-regression model, the validation counts are:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Actual class</th>
+<th>Predicted non-fraud</th>
+<th>Predicted fraud</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Non-fraud</td>
+<td><strong>59,695 true negatives (TN):</strong> legitimate transactions correctly left unflagged</td>
+<td><strong>12 false positives (FP):</strong> legitimate transactions incorrectly flagged</td>
+</tr>
+<tr class="even">
+<td>Fraud</td>
+<td><strong>32 false negatives (FN):</strong> fraud cases missed</td>
+<td><strong>71 true positives (TP):</strong> fraud cases caught</td>
+</tr>
+</tbody>
+</table>
+<p>“True” and “false” describe whether the prediction was correct; “positive” and “negative” describe what was predicted. For example, a false negative is an actual fraud case that the model predicted as non-fraud. The two diagonal entries count correct predictions; the other two count mistakes.</p>
+<p>Scikit-learn can display these counts directly. We specify the class order with <code>labels=[0, 1]</code> and supply readable names with <code>display_labels</code>. Rows show actual classes and columns show predicted classes. Always check the axes and class order when reading a confusion matrix.</p>
+<div id="cell-fig-fraud-confusion" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">4</span>))</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, (name, model) <span class="kw">in</span> <span class="bu">zip</span>(axes, models.items()):</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    ConfusionMatrixDisplay.from_estimator(</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        model, X_valid, y_valid, labels<span class="op">=</span>[<span class="dv">0</span>, <span class="dv">1</span>],</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>        display_labels<span class="op">=</span>[<span class="st">"Non-fraud"</span>, <span class="st">"Fraud"</span>], values_format<span class="op">=</span><span class="st">"d"</span>, ax<span class="op">=</span>ax,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>        colorbar<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    ax.set_title(name)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="fig-fraud-confusion" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-fraud-confusion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="09_classification-metrics_files/figure-html/fig-fraud-confusion-output-1.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-fraud-confusion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.1: Validation confusion matrices distinguish false alarms from missed fraud.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The dummy classifier’s predicted-fraud column is empty: it never flags a transaction, so all 103 fraud cases appear as false negatives. Logistic regression moves 71 of those cases into the true-positive cell, but also produces 12 false positives. The matrices make this difference visible even though both classifiers have high accuracy.</p>
+<p>The counts are useful, but the bank also needs to know what they mean relative to its workload and the fraud it hopes to catch. How reliable are the alerts? How much of the fraud is being missed? These questions require different denominators.</p>
+</section>
+<section id="asking-different-questions-precision-recall-and-f1" class="level3">
+<h3 class="anchored" data-anchor-id="asking-different-questions-precision-recall-and-f1">Asking different questions: precision, recall, and F1</h3>
+<p>Imagine reviewing the 83 transactions flagged by logistic regression. Of these, 71 are actually fraudulent. <strong>Precision</strong> asks: <em>Of all the transactions predicted as fraud, what fraction really were fraud?</em></p>
+<p><span class="math display">\[
+\text{precision}=\frac{\text{fraud cases caught}}{\text{all transactions flagged}}
+=\frac{TP}{TP+FP}=\frac{71}{71+12}\approx0.855.
+\]</span></p>
+<p>About 86% of the alerts correspond to fraud. The remaining 14% are false alarms. Precision tells us about the reliability of the alerts, but not how many fraud cases were left unflagged.</p>
+<p>Now imagine starting with the 103 actual fraud cases instead. The model caught 71 and missed 32. <strong>Recall</strong> asks: <em>Of all the actual fraud cases, what fraction did we catch?</em></p>
+<p><span class="math display">\[
+\text{recall}=\frac{\text{fraud cases caught}}{\text{all actual fraud cases}}
+=\frac{TP}{TP+FN}=\frac{71}{71+32}\approx0.689.
+\]</span></p>
+<p>The detector catches about 69% of the fraud cases. The other 31% go undetected. Recall tells us about coverage of the fraud, but not how many legitimate transactions were flagged along the way.</p>
+<p>Both metrics count the same 71 true positives in the numerator. The difference is the group we compare them with:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Start with this group</th>
+<th>Count the fraud cases caught within it</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Precision</td>
+<td>83 predicted positives: 71 TP + 12 FP</td>
+<td>71 out of 83</td>
+</tr>
+<tr class="even">
+<td>Recall</td>
+<td>103 actual positives: 71 TP + 32 FN</td>
+<td>71 out of 103</td>
+</tr>
+</tbody>
+</table>
+<p>High precision means a small <strong>fraction of alerts</strong> are false alarms, not necessarily a small number of false alarms. High recall means a small <strong>fraction of actual positives</strong> are missed. Neither metric alone answers both questions.</p>
+<div class="callout-reflection">
+<p>Suppose a detector flags every transaction in this validation set. What would its precision and recall be? Would perfect recall make it useful for a team that has to investigate each alert?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Discussion">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Discussion
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>It catches all 103 fraud cases, so recall is 1. But all 59,810 transactions are flagged, giving precision <span class="math inline">\(103/59{,}810\approx0.00172\)</span>, or about 0.17%. Almost every investigation would concern a legitimate transaction. Perfect recall alone does not establish that the detector is useful.</p>
+</div>
+</div>
+</div>
+</div>
+<p>What if we want a single score that rewards both reliable alerts and catching fraud? The <strong>F1-score</strong> combines precision and recall using their <strong>harmonic mean</strong>:</p>
+<p><span class="math display">\[
+F_1=2\frac{\text{precision}\times\text{recall}}{\text{precision}+\text{recall}}
+=\frac{2TP}{2TP+FP+FN}.
+\]</span></p>
+<p>The harmonic mean gives a lower score than the ordinary arithmetic mean when its two inputs differ. A very high precision therefore cannot fully compensate for a very low recall, or vice versa. A high F1 requires both to be high.</p>
+<p>For our logistic-regression model,</p>
+<p><span class="math display">\[
+F_1=\frac{2\times71}{2\times71+12+32}=\frac{142}{186}\approx0.763.
+\]</span></p>
+<p>Unlike accuracy, F1 does not include true negatives. Adding more correctly classified legitimate transactions would increase accuracy but leave F1 unchanged. That can be helpful when we care about finding fraud among many legitimate transactions. However, F1 does not encode the bank’s financial costs or investigation capacity. It is one possible summary, not a universal definition of a good detector.</p>
+<p>We can calculate these metrics with scikit-learn’s <code>precision_score</code>, <code>recall_score</code>, and <code>f1_score</code>. For these binary labels, their default positive class is <code>1</code>, which matches our fraud class. The helper below collects the counts and scores so that we can reuse them when comparing predictions later. With <code>labels=[0, 1]</code>, flattening the confusion matrix using <code>.ravel()</code> returns TN, FP, FN, and TP in that order.</p>
+<p>The dummy classifier needs one special consideration: because it predicts no positives, its precision has denominator zero and is undefined. We use <code>zero_division=0</code> to report zero in that case. This is a reporting convention, not a measured proportion. Recall is similarly undefined if an evaluation set contains no actual positives. Our validation set does contain positives, so the dummy classifier’s recall and F1 are both zero.</p>
+<div id="ch09-013" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> prediction_metrics(y_true, y_pred):</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    tn, fp, fn, tp <span class="op">=</span> confusion_matrix(y_true, y_pred, labels<span class="op">=</span>[<span class="dv">0</span>, <span class="dv">1</span>]).ravel()</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">"TN"</span>: tn, <span class="st">"FP"</span>: fp, <span class="st">"FN"</span>: fn, <span class="st">"TP"</span>: tp,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">"accuracy"</span>: accuracy_score(y_true, y_pred),</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"precision"</span>: precision_score(y_true, y_pred, zero_division<span class="op">=</span><span class="dv">0</span>),</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"recall"</span>: recall_score(y_true, y_pred, zero_division<span class="op">=</span><span class="dv">0</span>),</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"F1"</span>: f1_score(y_true, y_pred, zero_division<span class="op">=</span><span class="dv">0</span>),</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    name: prediction_metrics(y_valid, model.predict(X_valid))</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> name, model <span class="kw">in</span> models.items()</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>}).T</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">TN</th>
+<th data-quarto-table-cell-role="th">FP</th>
+<th data-quarto-table-cell-role="th">FN</th>
+<th data-quarto-table-cell-role="th">TP</th>
+<th data-quarto-table-cell-role="th">accuracy</th>
+<th data-quarto-table-cell-role="th">precision</th>
+<th data-quarto-table-cell-role="th">recall</th>
+<th data-quarto-table-cell-role="th">F1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Always non-fraud</th>
+<td>59707.0</td>
+<td>0.0</td>
+<td>103.0</td>
+<td>0.0</td>
+<td>0.998278</td>
+<td>0.000000</td>
+<td>0.00000</td>
+<td>0.000000</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Logistic regression</th>
+<td>59695.0</td>
+<td>12.0</td>
+<td>32.0</td>
+<td>71.0</td>
+<td>0.999264</td>
+<td>0.855422</td>
+<td>0.68932</td>
+<td>0.763441</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="reading-a-classification-report" class="level3">
+<h3 class="anchored" data-anchor-id="reading-a-classification-report">Reading a classification report</h3>
+<p>The table above reproduces our calculations: logistic regression has precision about 0.855, recall about 0.689, and F1 about 0.763 for fraud. Scikit-learn’s <code>classification_report</code> provides a convenient summary of these metrics <strong>for each class</strong>, together with <strong>support</strong>, the number of actual examples of that class.</p>
+<p>Let’s read the fraud row first, since it answers the questions we have been asking.</p>
+<div id="ch09-015" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(classification_report(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    y_valid, pipe_lr.predict(X_valid), labels<span class="op">=</span>[<span class="dv">0</span>, <span class="dv">1</span>],</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    target_names<span class="op">=</span>[<span class="st">"Non-fraud"</span>, <span class="st">"Fraud"</span>], digits<span class="op">=</span><span class="dv">3</span>, zero_division<span class="op">=</span><span class="dv">0</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              precision    recall  f1-score   support
+
+   Non-fraud      0.999     1.000     1.000     59707
+       Fraud      0.855     0.689     0.763       103
+
+    accuracy                          0.999     59810
+   macro avg      0.927     0.845     0.882     59810
+weighted avg      0.999     0.999     0.999     59810
+</code></pre>
+</div>
+</div>
+<p>The <strong>Fraud</strong> row matches our calculations. Its support is 103: there are 103 actual fraud cases, regardless of how the model classifies them. Support is not the number of transactions flagged, which was 83.</p>
+<p>The <strong>Non-fraud</strong> row treats non-fraud as the class of interest. Its precision asks, “Of the transactions predicted as non-fraud, what fraction really were non-fraud?” Its recall asks, “Of the actual non-fraud transactions, what fraction were correctly left unflagged?” These values are close to 1 because the few mistakes are small relative to the many legitimate transactions. They do not mean that nearly all fraud was caught.</p>
+<p>The report also provides two ways to average the class-specific scores. The <strong>macro average</strong> gives each class equal weight. For example, macro recall is the average of non-fraud recall and fraud recall, so the rare fraud class contributes just as much as the common non-fraud class.</p>
+<p>The <strong>weighted average</strong> weights each class by its support. Here, 59,707 non-fraud examples vastly outnumber the 103 fraud examples, so the weighted averages are dominated by non-fraud performance. A weighted F1 close to 1 can therefore coexist with missing 32 of the 103 fraud cases. For this task, we should keep the fraud row visible rather than relying on the overall averages.</p>
+<p>Each reported F1 average averages the <strong>class-specific F1 values</strong>; it is not calculated by substituting averaged precision and recall into the F1 formula. The same report extends to multiclass problems by evaluating each class against all the other classes.</p>
+<p>We now have a more informative description than accuracy alone: most of the model’s alerts are correct, but it misses nearly a third of the fraud. Can we catch more of those missed cases <strong>without fitting a different model</strong>? The next section explores that question by changing the decision threshold.</p>
+</section>
+</section>
+<section id="catching-more-fraud-without-retraining-the-model" class="level2">
+<h2 class="anchored" data-anchor-id="catching-more-fraud-without-retraining-the-model">Catching more fraud without retraining the model</h2>
+<p>Our fitted logistic-regression model misses 32 fraud cases at its default decision threshold. Before trying a different model, we can ask whether changing how we turn its probabilities into decisions would catch more of them. We will first explore thresholds on this one fitted model, then use PR and ROC curves to examine the choices they offer. Finally, we will consider which evaluation measures match the bank’s goals.</p>
+<section id="changing-the-decision-threshold" class="level3">
+<h3 class="anchored" data-anchor-id="changing-the-decision-threshold">Changing the decision threshold</h3>
+<p>In Chapter 7, logistic regression produced probabilities before converting them into labels. A <strong>decision threshold</strong> specifies how large the estimated fraud probability must be before we flag a transaction. We will explicitly use the rule “predict fraud when the probability is at least the threshold.” This also makes our treatment of ties clear.</p>
+<p>The illustration below arranges transactions by their fraud scores; for our logistic-regression model, these are estimated fraud probabilities. Transactions at or to the right of the chosen threshold are predicted as fraud, and those to its left as non-fraud. The symbols show the actual classes, so we can see which predictions are mistakes.</p>
+<div id="fig-fraud-thresholding" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Fraudulent and legitimate transactions arranged along an increasing fraud-score axis, with low, medium, and high decision thresholds. Transactions to the right of a chosen threshold are flagged as fraud.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-fraud-thresholding-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/fraud-thresholding.png" class="img-fluid figure-img" style="width:100.0%" alt="Fraudulent and legitimate transactions arranged along an increasing fraud-score axis, with low, medium, and high decision thresholds. Transactions to the right of a chosen threshold are flagged as fraud.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-fraud-thresholding-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.2: Moving the threshold changes which transactions are flagged without changing their scores. The precision arrows show a common tendency, not a guarantee.
+</figcaption>
+</figure>
+</div>
+<p>Moving the threshold to the <strong>left</strong> flags more transactions. We may catch more fraud, so recall increases or stays the same, but we may also add false alarms. Precision tends to fall. Moving the threshold to the <strong>right</strong> flags fewer transactions: recall decreases or stays the same, while precision tends to rise. Unlike recall, precision can move in either direction because it depends on the mix of fraudulent and legitimate transactions added or removed.</p>
+<p>Throughout this process, the fitted model and its scores stay unchanged. Each threshold gives us a precision–recall pair; plotting those pairs across thresholds will give us the <strong>precision–recall curve</strong>. First, let’s inspect a few thresholds directly.</p>
+<div class="callout-reflection">
+<p>Before running the next cell, predict how missed fraud and false alarms will change as the threshold moves from 0.5 to 0.1. Can you guarantee which threshold has the highest F1?</p>
+</div>
+<div id="ch09-018" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fraud_column <span class="op">=</span> <span class="bu">list</span>(pipe_lr.classes_).index(<span class="dv">1</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>valid_probability <span class="op">=</span> pipe_lr.predict_proba(X_valid)[:, fraud_column]</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>threshold_examples <span class="op">=</span> [<span class="fl">0.9</span>, <span class="fl">0.5</span>, <span class="fl">0.1</span>, <span class="fl">0.01</span>]</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>threshold_table <span class="op">=</span> pd.DataFrame([</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"threshold"</span>: threshold, <span class="op">**</span>prediction_metrics(y_valid, valid_probability <span class="op">&gt;=</span> threshold)}</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> threshold <span class="kw">in</span> threshold_examples</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>]).set_index(<span class="st">"threshold"</span>)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>threshold_table</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">TN</th>
+<th data-quarto-table-cell-role="th">FP</th>
+<th data-quarto-table-cell-role="th">FN</th>
+<th data-quarto-table-cell-role="th">TP</th>
+<th data-quarto-table-cell-role="th">accuracy</th>
+<th data-quarto-table-cell-role="th">precision</th>
+<th data-quarto-table-cell-role="th">recall</th>
+<th data-quarto-table-cell-role="th">F1</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">threshold</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0.90</th>
+<td>59697</td>
+<td>10</td>
+<td>47</td>
+<td>56</td>
+<td>0.999047</td>
+<td>0.848485</td>
+<td>0.543689</td>
+<td>0.662722</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">0.50</th>
+<td>59695</td>
+<td>12</td>
+<td>32</td>
+<td>71</td>
+<td>0.999264</td>
+<td>0.855422</td>
+<td>0.689320</td>
+<td>0.763441</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0.10</th>
+<td>59681</td>
+<td>26</td>
+<td>21</td>
+<td>82</td>
+<td>0.999214</td>
+<td>0.759259</td>
+<td>0.796117</td>
+<td>0.777251</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">0.01</th>
+<td>59594</td>
+<td>113</td>
+<td>15</td>
+<td>88</td>
+<td>0.997860</td>
+<td>0.437811</td>
+<td>0.854369</td>
+<td>0.578947</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>An <strong>operating point</strong> is the combination of error rates or metrics obtained at a chosen threshold. The appropriate point depends on what happens after a flag: a low-cost manual review and an automatic transaction block can justify different choices.</p>
+<p>For illustration, suppose our requirement is to catch at least 80% of fraud cases while keeping the proportion of false alerts as small as possible. Later we will choose the threshold with the highest validation precision among those reaching 80% validation recall. This is a development target, not a guarantee about future transactions. We must not choose the threshold by inspecting test results.</p>
+</section>
+<section id="precisionrecall-curves" class="level3">
+<h3 class="anchored" data-anchor-id="precisionrecall-curves">Precision–recall curves</h3>
+<p>Instead of inspecting a few thresholds, a <strong>precision–recall (PR) curve</strong> shows precision against recall as the threshold varies. Recall is on the horizontal axis and precision on the vertical axis. The desirable region is the top right: many fraud cases caught with few false alerts relative to all alerts.</p>
+<p>Lower thresholds move us towards larger recall, although precision can move up or down. Marking thresholds on the curve connects its shape to decisions we could actually make.</p>
+<div id="cell-fig-fraud-pr" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">5</span>))</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>PrecisionRecallDisplay.from_predictions(y_valid, valid_probability, ax<span class="op">=</span>ax, name<span class="op">=</span><span class="st">"Logistic regression"</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> threshold, row <span class="kw">in</span> threshold_table.iterrows():</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    ax.scatter(row[<span class="st">"recall"</span>], row[<span class="st">"precision"</span>])</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    ax.annotate(<span class="ss">f"t=</span><span class="sc">{</span>threshold<span class="sc">:g}</span><span class="ss">"</span>, (row[<span class="st">"recall"</span>], row[<span class="st">"precision"</span>]), xytext<span class="op">=</span>(<span class="dv">5</span>, <span class="dv">5</span>), textcoords<span class="op">=</span><span class="st">"offset points"</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>ax.axhline(y_valid.mean(), color<span class="op">=</span><span class="st">"grey"</span>, linestyle<span class="op">=</span><span class="st">"--"</span>, label<span class="op">=</span><span class="st">"Fraud prevalence"</span>)</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="fig-fraud-pr" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-fraud-pr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="09_classification-metrics_files/figure-html/fig-fraud-pr-output-1.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-fraud-pr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.3: The same logistic-regression scores give different operating points as the threshold changes.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The fraction of examples that are positive is called <strong>prevalence</strong>. Predicting every transaction as fraud gives recall 1 and precision equal to fraud prevalence. This prevalence also provides a useful reference level for an uninformative ranking, although finite-sample curves fluctuate.</p>
+<p><strong>Average precision (AP)</strong> summarizes precision as recall increases, weighting each precision by the increase in recall. It rewards retrieving positives early in the ranking. Scikit-learn’s <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html">AP calculation</a> is not the trapezoidal area obtained by connecting PR points with straight lines. We will use <code>average_precision_score</code> rather than interchange these calculations.</p>
+<p>F1 evaluates class predictions at one threshold; AP summarizes a ranking across thresholds. AP accepts decision scores as well as probabilities. A high AP does not establish that a predicted probability of 0.8 corresponds to an 80% event frequency.</p>
+<div id="ch09-023" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>average_precision_score(y_valid, valid_probability)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<pre><code>0.747350326308888</code></pre>
+</div>
+</div>
+</section>
+<section id="roc-curves" class="level3">
+<h3 class="anchored" data-anchor-id="roc-curves">ROC curves</h3>
+<p>The PR curve tells us how reliable our alerts are at different levels of recall. Another question is how much disruption those alerts cause among legitimate transactions. To answer it, we measure false alarms relative to all actual negatives rather than relative to all alerts.</p>
+<p>Recall is also called the <strong>true positive rate (TPR)</strong>. A <strong>receiver operating characteristic (ROC) curve</strong> plots it against the <strong>false positive rate (FPR)</strong>:</p>
+<p><span class="math display">\[
+\text{TPR}=\frac{TP}{TP+FN}, \qquad
+\text{FPR}=\frac{FP}{FP+TN}.
+\]</span></p>
+<p>FPR asks what fraction of actual negatives were flagged. It is not <span class="math inline">\(1-\text{precision}\)</span>, which asks what fraction of positive predictions were false alarms.</p>
+<p>At a threshold above all scores, no examples are flagged, giving the bottom-left point. At a threshold below all scores, everything is flagged, giving the top-right point. The desirable region is the top left: high recall and low FPR.</p>
+<div id="cell-fig-fraud-roc" class="cell" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">5</span>))</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>RocCurveDisplay.from_predictions(y_valid, valid_probability, ax<span class="op">=</span>ax, name<span class="op">=</span><span class="st">"Logistic regression"</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> threshold, row <span class="kw">in</span> threshold_table.iterrows():</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    fpr <span class="op">=</span> row[<span class="st">"FP"</span>] <span class="op">/</span> (row[<span class="st">"FP"</span>] <span class="op">+</span> row[<span class="st">"TN"</span>])</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    ax.scatter(fpr, row[<span class="st">"recall"</span>])</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    ax.annotate(<span class="ss">f"t=</span><span class="sc">{</span>threshold<span class="sc">:g}</span><span class="ss">"</span>, (fpr, row[<span class="st">"recall"</span>]), xytext<span class="op">=</span>(<span class="dv">5</span>, <span class="dv">5</span>), textcoords<span class="op">=</span><span class="st">"offset points"</span>)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>ax.plot([<span class="dv">0</span>, <span class="dv">1</span>], [<span class="dv">0</span>, <span class="dv">1</span>], <span class="st">"--"</span>, color<span class="op">=</span><span class="st">"grey"</span>, label<span class="op">=</span><span class="st">"Uninformative ranking"</span>)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="fig-fraud-roc" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-fraud-roc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="09_classification-metrics_files/figure-html/fig-fraud-roc-output-1.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-fraud-roc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.4: A ROC curve measures false alarms relative to the actual negative class.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>ROC AUC</strong> is the area under the ROC curve. It has a useful interpretation: draw one positive and one negative at random; AUC measures how often the positive receives the higher score, giving half credit for ties. A perfect ordering has AUC 1; an uninformative ranking has expected AUC 0.5. Scores below 0.5 are possible.</p>
+<p>Like AP, ROC AUC evaluates ranking rather than a particular threshold or the accuracy of probability estimates. Two models can have similar AUC yet behave differently in the region where we intend to operate.</p>
+<div id="ch09-027" class="cell" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>roc_auc_score(y_valid, valid_probability)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<pre><code>0.9726235934346708</code></pre>
+</div>
+</div>
+</section>
+<section id="choosing-evaluation-metrics" class="level3">
+<h3 class="anchored" data-anchor-id="choosing-evaluation-metrics">Choosing evaluation metrics</h3>
+<p>Start with the action that follows a prediction. Who is affected by a missed positive? What happens after a false alarm? A metric makes some aspects of these consequences visible, but choosing it still requires context.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Evaluation question</th>
+<th>Useful measure or criterion</th>
+<th>What else to inspect</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>What fraction of all decisions are correct?</td>
+<td>Accuracy</td>
+<td>Class proportions and error types</td>
+</tr>
+<tr class="even">
+<td>How reliable are positive alerts?</td>
+<td>Precision</td>
+<td>Recall and the number of alerts</td>
+</tr>
+<tr class="odd">
+<td>How many actual positives do we catch?</td>
+<td>Recall</td>
+<td>Precision or an alert-capacity constraint</td>
+</tr>
+<tr class="even">
+<td>Do we achieve both precision and recall at this threshold?</td>
+<td>F1</td>
+<td>Whether its trade-off matches the application</td>
+</tr>
+<tr class="odd">
+<td>How well do we retrieve rare positives?</td>
+<td>PR curve and AP</td>
+<td>Prevalence and the operating region</td>
+</tr>
+<tr class="even">
+<td>How well are positives ranked above negatives?</td>
+<td>ROC curve and ROC AUC</td>
+<td>FPR and recall in the relevant region</td>
+</tr>
+</tbody>
+</table>
+<p>Suppose 100 of 100,000 transactions are fraud. At 80% recall and 1% FPR, we catch 80 fraud cases but flag 999 legitimate transactions. Precision is only <span class="math inline">\(80/(80+999)\approx7.4\%\)</span>. A seemingly small FPR can still overwhelm an investigation team.</p>
+<p>This is why PR curves are particularly informative when the positive class is rare and the quality of alerts matters. ROC curves remain useful for examining the fraction of negatives affected and for ranking comparisons, including on imbalanced data. Neither is universally preferable. If prevalence changes while the class-conditional score distributions stay fixed, ROC rates stay the same but precision changes. Compare PR summaries on data representative of the same intended setting.</p>
+<p>A whole-curve summary can also hide the part that matters. If the team needs recall of at least 0.8, compare performance in that region. If each error has a specified cost, a more direct criterion may be <span class="math inline">\(c_{FP}FP+c_{FN}FN\)</span>. F1 does not automatically represent those costs.</p>
+</section>
+</section>
+<section id="class-imbalance-and-model-selection" class="level2">
+<h2 class="anchored" data-anchor-id="class-imbalance-and-model-selection">Class imbalance and model selection</h2>
+<p>Changing the threshold lets us choose among the trade-offs offered by a fitted model, but it does not improve the model’s ranking of transactions. What if none of those operating points meets our needs? We can consider changing the training procedure or trying a different candidate pipeline, then use our chosen evaluation measures to judge whether the change helps.</p>
+<p>Recall the distinction from the beginning of the chapter: evaluating an imbalanced problem and changing how a model learns are different tasks. Rare fraud does not automatically require balancing the data. The question is whether a change improves the performance we care about on data representative of the intended setting.</p>
+<section id="changing-class-weights" class="level3">
+<h3 class="anchored" data-anchor-id="changing-class-weights">Changing class weights</h3>
+<p>Changing a threshold leaves the fitted model unchanged. <strong>Class weighting</strong> instead changes the influence of examples during fitting. Several classifiers, including logistic regression and decision trees, support <code>class_weight</code>; not every classifier does.</p>
+<p>For logistic regression, <code>{0: 1, 1: 10}</code> gives a fraud example ten times the weight of a non-fraud example in the loss. <code>"balanced"</code> uses inverse-frequency weights so each class has equal total weight. Neither setting guarantees better performance for our application, nor does it directly specify a deployment error cost.</p>
+<p>We compare three weighting choices using cross-validation within the training set. Precision, recall, and F1 evaluate each fitted model at its default threshold; AP and ROC AUC evaluate its ranking. The validation and test sets are not used in this comparison.</p>
+<div id="ch09-041" class="cell" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>scoring <span class="op">=</span> [<span class="st">"accuracy"</span>, <span class="st">"precision"</span>, <span class="st">"recall"</span>, <span class="st">"f1"</span>, <span class="st">"average_precision"</span>, <span class="st">"roc_auc"</span>]</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>weight_results <span class="op">=</span> {}</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> label, weight <span class="kw">in</span> [(<span class="st">"Unweighted"</span>, <span class="va">None</span>), (<span class="st">"Fraud weight 10"</span>, {<span class="dv">0</span>: <span class="dv">1</span>, <span class="dv">1</span>: <span class="dv">10</span>}), (<span class="st">"Balanced"</span>, <span class="st">"balanced"</span>)]:</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    weighted_model <span class="op">=</span> make_pipeline(</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>        StandardScaler(), LogisticRegression(max_iter<span class="op">=</span><span class="dv">2000</span>, class_weight<span class="op">=</span>weight)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> cross_validate(weighted_model, X_fit, y_fit, scoring<span class="op">=</span>scoring, cv<span class="op">=</span>CV)</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    weight_results[label] <span class="op">=</span> {metric: result[<span class="ss">f"test_</span><span class="sc">{</span>metric<span class="sc">}</span><span class="ss">"</span>].mean() <span class="cf">for</span> metric <span class="kw">in</span> scoring}</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(weight_results).T</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="16">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">accuracy</th>
+<th data-quarto-table-cell-role="th">precision</th>
+<th data-quarto-table-cell-role="th">recall</th>
+<th data-quarto-table-cell-role="th">f1</th>
+<th data-quarto-table-cell-role="th">average_precision</th>
+<th data-quarto-table-cell-role="th">roc_auc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Unweighted</th>
+<td>0.999162</td>
+<td>0.865437</td>
+<td>0.609877</td>
+<td>0.713506</td>
+<td>0.742913</td>
+<td>0.961859</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Fraud weight 10</th>
+<td>0.999197</td>
+<td>0.751063</td>
+<td>0.804733</td>
+<td>0.775672</td>
+<td>0.751748</td>
+<td>0.970565</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Balanced</th>
+<td>0.976074</td>
+<td>0.062240</td>
+<td>0.892130</td>
+<td>0.116225</td>
+<td>0.729041</td>
+<td>0.950527</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Compare recall with precision, and AP with F1. Does weighting help the ranking, the default decisions, or both? Logistic regression was never directly maximizing accuracy, and weighting need not reduce accuracy in every dataset.</p>
+<p>Imbalance alone is not a reason to change the data or fitting procedure. First ask whether rarity reflects the intended setting or a data-collection problem. If resampling is used, it belongs inside the training folds, not in validation or test data whose prevalence should reflect the evaluation setting. Resampling methods such as undersampling, oversampling, and SMOTE are beyond this chapter’s scope.</p>
+</section>
+<section id="comparing-candidate-pipelines" class="level3">
+<h3 class="anchored" data-anchor-id="comparing-candidate-pipelines">Comparing candidate pipelines</h3>
+<p>Class weighting is one possible training choice; model family is another. The curves we developed for exploring thresholds also let us compare the operating points offered by different fitted models.</p>
+<p>We will compare logistic regression with a small decision tree, another model we already know. The tree supplies probabilities from its leaves, so its curve may have fewer distinct operating points. Inspect both curves rather than assuming that the model with the larger summary score wins at every threshold.</p>
+<div id="cell-fig-fraud-model-curves" class="cell" data-execution_count="17">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>pipe_tree <span class="op">=</span> make_pipeline(DecisionTreeClassifier(max_depth<span class="op">=</span><span class="dv">5</span>, min_samples_leaf<span class="op">=</span><span class="dv">20</span>, random_state<span class="op">=</span><span class="dv">42</span>))</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>pipe_tree.fit(X_fit, y_fit)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>comparison_models <span class="op">=</span> {<span class="st">"Logistic regression"</span>: pipe_lr, <span class="st">"Decision tree"</span>: pipe_tree}</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">11</span>, <span class="dv">4</span>))</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, model <span class="kw">in</span> comparison_models.items():</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    PrecisionRecallDisplay.from_estimator(model, X_valid, y_valid, name<span class="op">=</span>name, ax<span class="op">=</span>axes[<span class="dv">0</span>])</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    RocCurveDisplay.from_estimator(model, X_valid, y_valid, name<span class="op">=</span>name, ax<span class="op">=</span>axes[<span class="dv">1</span>])</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div id="fig-fraud-model-curves" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-fraud-model-curves-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="09_classification-metrics_files/figure-html/fig-fraud-model-curves-output-1.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-fraud-model-curves-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.5: PR and ROC curves emphasize different aspects of the same predictions.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="returning-to-the-search-problem" class="level3">
+<h3 class="anchored" data-anchor-id="returning-to-the-search-problem">Returning to the search problem</h3>
+<p>Chapter 8 defined a candidate pipeline by its preprocessing, model family, and hyperparameters. We now need to specify <strong>how candidates will be compared</strong>. Evaluation metrics define the selection objective; thresholds add another decision to the workflow.</p>
+<p>First, let us inspect several metrics using cross-validation within the training set. Precision, recall, and F1 here use each estimator’s default class predictions. AP and ROC AUC use its scores. The <code>test_</code> prefix below refers to held-out cross-validation folds, not our reserved test set.</p>
+<div id="ch09-032" class="cell" data-execution_count="18">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>cv_comparison <span class="op">=</span> {}</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, model <span class="kw">in</span> comparison_models.items():</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> cross_validate(model, X_fit, y_fit, scoring<span class="op">=</span>scoring, cv<span class="op">=</span>CV)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    cv_comparison[name] <span class="op">=</span> {</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>        metric: result[<span class="ss">f"test_</span><span class="sc">{</span>metric<span class="sc">}</span><span class="ss">"</span>].mean() <span class="cf">for</span> metric <span class="kw">in</span> scoring</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(cv_comparison).T</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="18">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">accuracy</th>
+<th data-quarto-table-cell-role="th">precision</th>
+<th data-quarto-table-cell-role="th">recall</th>
+<th data-quarto-table-cell-role="th">f1</th>
+<th data-quarto-table-cell-role="th">average_precision</th>
+<th data-quarto-table-cell-role="th">roc_auc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Logistic regression</th>
+<td>0.999162</td>
+<td>0.865437</td>
+<td>0.609877</td>
+<td>0.713506</td>
+<td>0.742913</td>
+<td>0.961859</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Decision tree</th>
+<td>0.999183</td>
+<td>0.812121</td>
+<td>0.688580</td>
+<td>0.743993</td>
+<td>0.696873</td>
+<td>0.916331</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<section id="selecting-a-candidate-with-an-explicit-objective" class="level4">
+<h4 class="anchored" data-anchor-id="selecting-a-candidate-with-an-explicit-objective">Selecting a candidate with an explicit objective</h4>
+<p>For this demonstration, we choose the pipeline with the highest mean cross-validation AP, then select an operating threshold separately. This is a tractable two-stage strategy, not a guarantee of the highest attainable precision at our recall target. A search designed specifically around that target could choose a different model.</p>
+<p>We search a small set of logistic-regression and tree configurations. Keeping the search small makes the workflow reproducible without making computation the focus of the chapter. Scaling stays inside the pipeline; it is useful for logistic regression and unnecessary but harmless for this tree.</p>
+<div id="ch09-034" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>search_pipeline <span class="op">=</span> make_pipeline(StandardScaler(), LogisticRegression(max_iter<span class="op">=</span><span class="dv">2000</span>))</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Use a common final-step name so the search can replace the estimator.</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>search_pipeline.steps[<span class="op">-</span><span class="dv">1</span>] <span class="op">=</span> (<span class="st">"classifier"</span>, search_pipeline.steps[<span class="op">-</span><span class="dv">1</span>][<span class="dv">1</span>])</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>param_grid <span class="op">=</span> [</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"classifier"</span>: [LogisticRegression(max_iter<span class="op">=</span><span class="dv">2000</span>)], <span class="st">"classifier__C"</span>: [<span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">10</span>]},</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"classifier"</span>: [DecisionTreeClassifier(min_samples_leaf<span class="op">=</span><span class="dv">20</span>, random_state<span class="op">=</span><span class="dv">42</span>)],</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>     <span class="st">"classifier__max_depth"</span>: [<span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">8</span>]},</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>search <span class="op">=</span> GridSearchCV(</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    search_pipeline, param_grid, scoring<span class="op">=</span>scoring, refit<span class="op">=</span><span class="st">"average_precision"</span>,</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    cv<span class="op">=</span>CV, n_jobs<span class="op">=</span><span class="dv">1</span>, error_score<span class="op">=</span><span class="st">"raise"</span>,</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>search.fit(X_fit, y_fit)</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>result_columns <span class="op">=</span> [<span class="st">"params"</span>, <span class="st">"mean_test_average_precision"</span>, <span class="st">"std_test_average_precision"</span>,</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"mean_test_precision"</span>, <span class="st">"mean_test_recall"</span>, <span class="st">"mean_test_f1"</span>, <span class="st">"mean_test_roc_auc"</span>]</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(search.cv_results_)[result_columns].sort_values(</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"mean_test_average_precision"</span>, ascending<span class="op">=</span><span class="va">False</span></span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>With multiple metrics, <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html"><code>refit="average_precision"</code></a> specifies which one selects the winner. The chosen pipeline is refitted on all of <code>X_fit</code>; validation and test data are not included in that refit. A small difference in mean score is not necessarily meaningful, and variation across folds is not a confidence interval.</p>
+<p>Changing <code>scoring</code> does not change the loss used inside <code>fit</code>. Logistic regression still fits using regularized log loss. AP tells the outer search which fitted candidate to select.</p>
+</section>
+<section id="selecting-the-operating-threshold" class="level4">
+<h4 class="anchored" data-anchor-id="selecting-the-operating-threshold">Selecting the operating threshold</h4>
+<p>Now we apply that fitted pipeline to the validation set. Among thresholds attaining at least 0.8 validation recall, we choose the one with the highest precision. If several tie, we choose the highest threshold. If a requirement were infeasible, we would report that rather than silently relaxing it. Here predicting everything positive makes a recall-only constraint attainable, though possibly with unacceptable precision.</p>
+<div id="ch09-036" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>selected_model <span class="op">=</span> search.best_estimator_</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>selected_probability <span class="op">=</span> selected_model.predict_proba(X_valid)[:, <span class="bu">list</span>(selected_model.classes_).index(<span class="dv">1</span>)]</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>precision, recall, thresholds <span class="op">=</span> precision_recall_curve(y_valid, selected_probability)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co"># The last precision/recall pair has no corresponding threshold.</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>threshold_candidates <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"threshold"</span>: thresholds, <span class="st">"precision"</span>: precision[:<span class="op">-</span><span class="dv">1</span>], <span class="st">"recall"</span>: recall[:<span class="op">-</span><span class="dv">1</span>],</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>feasible <span class="op">=</span> threshold_candidates.query(<span class="st">"recall &gt;= 0.8"</span>)</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>chosen <span class="op">=</span> feasible.sort_values([<span class="st">"precision"</span>, <span class="st">"threshold"</span>], ascending<span class="op">=</span><span class="va">False</span>).iloc[<span class="dv">0</span>]</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>selected_threshold <span class="op">=</span> <span class="bu">float</span>(chosen[<span class="st">"threshold"</span>])</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>chosen.to_frame(<span class="st">"Selected validation operating point"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>This validation score was used to choose a threshold, so it is not an independent estimate of the chosen system’s performance. Our earlier plots also used this validation set. Repeatedly adjusting models, objectives, or requirements in response to those plots adds to the optimization bias discussed in Chapter 8.</p>
+</section>
+<section id="final-evaluation" class="level4">
+<h4 class="anchored" data-anchor-id="final-evaluation">Final evaluation</h4>
+<p>We now freeze both the fitted pipeline and its threshold. We do not refit on the validation data here: refitting could change the score distribution and invalidate the threshold we just selected. More elaborate workflows can use cross-validation to make efficient use of development data, but must still keep threshold selection separate from final evaluation.</p>
+<p>Only now do we evaluate the reserved test set. Report the counts as well as the summary metrics so readers can see the practical scale of the errors.</p>
+<div id="ch09-038" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>test_probability <span class="op">=</span> selected_model.predict_proba(X_test)[:, <span class="bu">list</span>(selected_model.classes_).index(<span class="dv">1</span>)]</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>test_prediction <span class="op">=</span> test_probability <span class="op">&gt;=</span> selected_threshold</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>final_metrics <span class="op">=</span> prediction_metrics(y_test, test_prediction)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>final_metrics[<span class="st">"AP"</span>] <span class="op">=</span> average_precision_score(y_test, test_probability)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>final_metrics[<span class="st">"ROC AUC"</span>] <span class="op">=</span> roc_auc_score(y_test, test_probability)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>pd.Series(final_metrics, name<span class="op">=</span><span class="st">"Final test evaluation"</span>).to_frame()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Test recall need not meet the validation target exactly. The sample is different, and selecting a threshold does not guarantee future performance. If the result is disappointing, report it honestly. Using it to revise the model or threshold turns this test set into development data; the revised system needs a fresh independent evaluation.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Optional activity: What aggregate metrics hide">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Optional activity: What aggregate metrics hide
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>A classifier can perform well overall while making different mistakes for different groups. We will examine this using the Adult census dataset already used in the lecture material. The task is to predict the dataset’s income category. These historical income labels are not measures of merit or creditworthiness.</p>
+<p>To keep the activity focused, we use a small set of familiar numeric and categorical features. We keep the recorded <code>sex</code> column separately for evaluation. Its two recorded categories do not represent the full range of sex or gender identities. Omitting it from the features does not guarantee fairness: other features can contain related information.</p>
+<div id="ch09-044" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>adult_df <span class="op">=</span> pd.read_csv(DATA_DIR <span class="op">/</span> <span class="st">"adult.csv"</span>).replace(<span class="st">"?"</span>, np.nan)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>adult_fit, adult_eval <span class="op">=</span> train_test_split(</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    adult_df, test_size<span class="op">=</span><span class="fl">0.3</span>, random_state<span class="op">=</span><span class="dv">42</span>, stratify<span class="op">=</span>adult_df[<span class="st">"income"</span>]</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>adult_numeric <span class="op">=</span> [<span class="st">"age"</span>, <span class="st">"capital.gain"</span>, <span class="st">"capital.loss"</span>, <span class="st">"hours.per.week"</span>]</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>adult_categorical <span class="op">=</span> [<span class="st">"workclass"</span>, <span class="st">"education"</span>, <span class="st">"occupation"</span>, <span class="st">"marital.status"</span>]</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>adult_features <span class="op">=</span> adult_numeric <span class="op">+</span> adult_categorical</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>adult_preprocessor <span class="op">=</span> make_column_transformer(</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>    (make_pipeline(SimpleImputer(strategy<span class="op">=</span><span class="st">"median"</span>), StandardScaler()), adult_numeric),</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>    (make_pipeline(SimpleImputer(strategy<span class="op">=</span><span class="st">"most_frequent"</span>),</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>                   OneHotEncoder(handle_unknown<span class="op">=</span><span class="st">"ignore"</span>)), adult_categorical),</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>adult_model <span class="op">=</span> make_pipeline(adult_preprocessor, LogisticRegression(max_iter<span class="op">=</span><span class="dv">2000</span>))</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>adult_y_fit <span class="op">=</span> adult_fit[<span class="st">"income"</span>].<span class="bu">str</span>.strip().<span class="bu">str</span>.rstrip(<span class="st">"."</span>).eq(<span class="st">"&gt;50K"</span>).astype(<span class="bu">int</span>)</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>adult_y_eval <span class="op">=</span> adult_eval[<span class="st">"income"</span>].<span class="bu">str</span>.strip().<span class="bu">str</span>.rstrip(<span class="st">"."</span>).eq(<span class="st">"&gt;50K"</span>).astype(<span class="bu">int</span>)</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>adult_model.fit(adult_fit[adult_features], adult_y_fit)</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>adult_predictions <span class="op">=</span> pd.Series(adult_model.predict(adult_eval[adult_features]), index<span class="op">=</span>adult_eval.index)</span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>group_results <span class="op">=</span> {}</span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> group, rows <span class="kw">in</span> adult_eval.groupby(<span class="st">"sex"</span>):</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>    metrics <span class="op">=</span> prediction_metrics(adult_y_eval.loc[rows.index], adult_predictions.loc[rows.index])</span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>    metrics[<span class="st">"support"</span>] <span class="op">=</span> <span class="bu">len</span>(rows)</span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>    metrics[<span class="st">"prevalence"</span>] <span class="op">=</span> adult_y_eval.loc[rows.index].mean()</span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>    metrics[<span class="st">"FPR"</span>] <span class="op">=</span> metrics[<span class="st">"FP"</span>] <span class="op">/</span> (metrics[<span class="st">"FP"</span>] <span class="op">+</span> metrics[<span class="st">"TN"</span>])</span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>    metrics[<span class="st">"positive prediction rate"</span>] <span class="op">=</span> adult_predictions.loc[rows.index].mean()</span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>    group_results[group] <span class="op">=</span> metrics</span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(group_results).T</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Use the table to discuss the following:</p>
+<ol type="1">
+<li>Which differences would you miss by reporting only overall accuracy? Compare recall, FPR, and positive prediction rates, keeping their denominators distinct.</li>
+<li>Could differences in prevalence help explain differences in precision? What additional evidence would you need before explaining why the groups differ?</li>
+<li>Suppose someone proposes using the predictions to decide who receives financial opportunities. What assumptions would that add beyond predicting recorded income? Who could be harmed by each kind of mistake?</li>
+<li>Does excluding <code>sex</code> establish fair treatment? Does matching one metric across groups establish it?</li>
+</ol>
+<p>These comparisons can identify questions worth investigating; they do not establish causes or settle what fairness requires. Labels, data collection, the proposed use, affected people’s perspectives, and uncertainty for small groups all matter. If we use these evaluation results to improve the model, we need new held-out data to assess the revised system.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="exercises" class="level2">
+<h2 class="anchored" data-anchor-id="exercises">Exercises</h2>
+<section id="exercise-9.1-higher-accuracy-better-detector" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-9.1-higher-accuracy-better-detector">Exercise 9.1: Higher accuracy, better detector?</h3>
+<p>Two classifiers are evaluated on the same 95 negative and 5 positive examples. Model A has TN=90, FP=5, FN=5, TP=0. Model B has TN=80, FP=15, FN=0, TP=5. Compute accuracy, precision, and recall. Which would you choose if missed positives are particularly costly? What else would you want to know?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>A has accuracy 0.90, precision 0, and recall 0. B has accuracy 0.85, precision 0.25, and recall 1. B catches every positive at the cost of more false alarms. It is a plausible choice when misses are particularly costly, but we still need the consequences and costs of false alarms, operational capacity, and evidence that this evaluation represents future use.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-9.2-lowering-the-threshold" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-9.2-lowering-the-threshold">Exercise 9.2: Lowering the threshold</h3>
+<p>A model has TP=6, FP=4, FN=2, TN=88. Lowering the threshold flags three additional transactions: two are fraud and one is legitimate. Find the new precision and recall. Does this contradict the usual precision–recall trade-off?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The new counts are TP=8, FP=5, FN=0, TN=87. Precision increases from 0.60 to <span class="math inline">\(8/13\approx0.615\)</span>, and recall increases from 0.75 to 1. Precision need not fall when the threshold falls; it depends on the newly flagged examples. Recall cannot decrease on the same fixed examples.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-9.3-choosing-a-model-for-review" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-9.3-choosing-a-model-for-review">Exercise 9.3: Choosing a model for review</h3>
+<p>A review team needs at least 0.8 recall. Model A has AP=0.90 and precision 0.50 at its best validation threshold meeting that requirement. Model B has AP=0.86 and precision 0.70 at its best qualifying threshold. Which would you select under the stated requirement? Why can the AP ranking disagree?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>B better meets the stated goal of high precision subject to the recall requirement. AP summarizes a range of recall values, so A can have better overall AP while being worse in the operating region. These are validation-based choices; an untouched evaluation is still needed, and differences may be uncertain with few positives.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-9.4-find-the-evaluation-leak" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-9.4-find-the-evaluation-leak">Exercise 9.4: Find the evaluation leak</h3>
+<p>A student selects a pipeline using cross-validation, tries 100 thresholds on the test set, and reports the highest test F1. They say the test set was never passed to <code>fit</code>, so the evaluation is independent. Explain the error and propose a repair.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Choosing a threshold uses the test labels to select the decision rule, even without calling <code>fit</code>. Threshold selection belongs in development data, such as a separate validation set. Freeze the fitted pipeline and threshold before independent evaluation. Since these test results have already guided selection, the revised system needs fresh held-out evaluation data.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<ul>
+<li>Accuracy counts all correct decisions equally; confusion matrices reveal which mistakes occur.</li>
+<li>Precision measures the reliability of positive predictions, recall measures how many positives are caught, and F1 summarizes both at a particular threshold.</li>
+<li>Threshold changes alter decisions without refitting. Their consequences must be evaluated in the application context.</li>
+<li>PR/AP and ROC/AUC describe rankings across thresholds; a summary can hide the operating region that matters.</li>
+<li>Choose the evaluation objective deliberately, compare candidates using development data, and protect the test set from both model and threshold selection.</li>
+<li>Aggregate metrics can hide group differences, and no single metric establishes fair treatment.</li>
+</ul>
+
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../book/08_hyperparameter-optimization.html" class="pagination-link" aria-label="Chapter 8: Hyperparameter Optimization">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Chapter 8: Hyperparameter Optimization</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../book/14_K-Means.html" class="pagination-link" aria-label="Chapter 14: K-Means Clustering">
+        <span class="nav-page-text"><span class="chapter-title">Chapter 14: K-Means Clustering</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
