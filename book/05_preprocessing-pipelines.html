@@ -267,7 +267,7 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../book/14_K-Means.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 15: K-Means Clustering</span></a>
+  <a href="../book/14_K-Means.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 14: K-Means Clustering</span></a>
   </div>
 </li>
       </ul>
@@ -373,8 +373,9 @@ window.Quarto = {
 <p>The accompanying videos introduce <a href="https://youtu.be/xx9HlmzORRk">the motivation for preprocessing</a>, <a href="https://youtu.be/G2IXbVzKlt8">imputation and scaling</a>, and <a href="https://youtu.be/2mJ9rAhMMl0">categorical features</a>.</p>
 </div>
 </div>
-<p><strong>Imports</strong></p>
-<div id="7885d740" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T01:54:39.890888Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T01:54:39.890807Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T01:54:40.630666Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T01:54:40.630310Z&quot;}}" data-execution_count="1">
+<div id="7885d740" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-02T01:54:39.890888Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-02T01:54:39.890807Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-02T01:54:40.630666Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-02T01:54:40.630310Z&quot;}}">
+<details class="code-fold">
+<summary>Show imports and setup</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -388,6 +389,7 @@ window.Quarto = {
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> OneHotEncoder, OrdinalEncoder, StandardScaler</span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>DATA_DIR <span class="op">=</span> Path(<span class="st">"data"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
 <section id="why-preprocessing-matters" class="level2">
 <h2 class="anchored" data-anchor-id="why-preprocessing-matters">Why preprocessing matters</h2>

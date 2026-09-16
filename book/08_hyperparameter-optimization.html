@@ -267,7 +267,7 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../book/14_K-Means.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 15: K-Means Clustering</span></a>
+  <a href="../book/14_K-Means.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 14: K-Means Clustering</span></a>
   </div>
 </li>
       </ul>
@@ -371,7 +371,9 @@ window.Quarto = {
 </div>
 <p>Changing a hyperparameter takes one line of code. Deciding what to change it to is harder. Should we let a decision tree grow deeper? Use more neighbours in <span class="math inline">\(k\)</span>-NN? Which combination of <code>C</code> and <code>gamma</code> should we use for an RBF SVM? Try a different model altogether? We already know how to compare a few choices using for loops and cross-validation, but the possibilities multiply quickly.</p>
 <p>In this chapter, we will turn those comparisons into a systematic search, starting with a familiar task: choosing a tree’s depth. Along the way, we will encounter a puzzle: <strong>if we try more settings and find a higher validation score, have we necessarily found a better model?</strong> The answer will help us decide both how to search and how much to trust what we find.</p>
-<div id="cell-3" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-09T15:40:18.669480Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T15:40:18.669344Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T15:40:19.415151Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T15:40:19.414739Z&quot;}}" data-execution_count="1">
+<div id="cell-3" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-09T15:40:18.669480Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-09T15:40:18.669344Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-09T15:40:19.415151Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-09T15:40:19.414739Z&quot;}}">
+<details class="code-fold">
+<summary>Show imports and setup</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -391,6 +393,7 @@ window.Quarto = {
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>DATA_DIR <span class="op">=</span> Path(<span class="st">"data"</span>)</span>
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>CV <span class="op">=</span> <span class="dv">5</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
 <section id="why-tune-hyperparameters" class="level2">
 <h2 class="anchored" data-anchor-id="why-tune-hyperparameters">Why tune hyperparameters?</h2>
@@ -1823,8 +1826,8 @@ dtype: object</code></pre>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../book/14_K-Means.html" class="pagination-link" aria-label="Chapter 15: K-Means Clustering">
-        <span class="nav-page-text"><span class="chapter-title">Chapter 15: K-Means Clustering</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../book/14_K-Means.html" class="pagination-link" aria-label="Chapter 14: K-Means Clustering">
+        <span class="nav-page-text"><span class="chapter-title">Chapter 14: K-Means Clustering</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

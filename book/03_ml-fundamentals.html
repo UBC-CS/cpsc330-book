@@ -267,7 +267,7 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../book/14_K-Means.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 15: K-Means Clustering</span></a>
+  <a href="../book/14_K-Means.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Chapter 14: K-Means Clustering</span></a>
   </div>
 </li>
       </ul>
@@ -386,8 +386,9 @@ window.Quarto = {
 <li>Apply a standard supervised-learning workflow: split the data, select hyperparameters using cross-validation, fit the selected model, and evaluate it once on the test set.</li>
 </ul>
 </div>
-<p><strong>Imports</strong></p>
-<div id="cell-3" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:08.911765Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:08.911589Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:09.817320Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:09.816896Z&quot;}}" data-execution_count="1">
+<div id="cell-2" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:08.911765Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:08.911589Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:09.817320Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:09.816896Z&quot;}}">
+<details class="code-fold">
+<summary>Show imports and setup</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
@@ -411,6 +412,7 @@ window.Quarto = {
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>DATA_DIR <span class="op">=</span> Path(<span class="st">"data"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
 <section id="generalization" class="level2">
 <h2 class="anchored" data-anchor-id="generalization">Generalization</h2>
@@ -435,7 +437,7 @@ window.Quarto = {
 <section id="a-motivating-example-tree-depth" class="level3">
 <h3 class="anchored" data-anchor-id="a-motivating-example-tree-depth">A motivating example: tree depth</h3>
 <p>Chapter 2 introduced decision boundaries and the <code>max_depth</code> hyperparameter of a decision tree. Increasing <code>max_depth</code> allows a tree to learn more detailed rules. Let us see what that does to its performance on the data used to fit it.</p>
-<div id="cell-8" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:09.818822Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:09.818723Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:09.823074Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:09.822722Z&quot;}}" data-execution_count="2">
+<div id="cell-7" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:09.818822Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:09.818723Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:09.823074Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:09.822722Z&quot;}}" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Toy quiz2 grade data</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>classification_df <span class="op">=</span> pd.read_csv(DATA_DIR <span class="op">/</span> <span class="st">"quiz2-grade-toy-classification.csv"</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>classification_df.head(<span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -574,11 +576,11 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<div id="cell-9" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:09.837108Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:09.837030Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:09.838809Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:09.838502Z&quot;}}" data-execution_count="3">
+<div id="cell-8" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:09.837108Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:09.837030Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:09.838809Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:09.838502Z&quot;}}" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> classification_df.drop([<span class="st">"quiz2"</span>], axis<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> classification_df[<span class="st">"quiz2"</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-10" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:09.839748Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:09.839699Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:09.842144Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:09.841727Z&quot;}}" data-execution_count="4">
+<div id="cell-9" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:09.839748Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:09.839699Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:09.842144Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:09.841727Z&quot;}}" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>X_subset <span class="op">=</span> X[[<span class="st">"lab4"</span>, <span class="st">"quiz1"</span>]]  <span class="co"># Let's consider a subset of the data for visualization</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>X_subset.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
@@ -628,7 +630,7 @@ window.Quarto = {
 <section id="a-depth-one-tree" class="level4">
 <h4 class="anchored" data-anchor-id="a-depth-one-tree">A depth-one tree</h4>
 <p>With <code>max_depth=1</code>, the model asks one question. Its decision boundary is simple, but it makes several mistakes on the training data.</p>
-<div id="cell-12" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:09.843097Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:09.843046Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:09.939055Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:09.938666Z&quot;}}" data-scrolled="true" data-execution_count="5">
+<div id="cell-11" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:09.843097Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:09.843046Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:09.939055Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:09.938666Z&quot;}}" data-scrolled="true" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>depth <span class="op">=</span> <span class="dv">1</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> DecisionTreeClassifier(max_depth<span class="op">=</span>depth)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>model.fit(X_subset.values, y)</span>
@@ -652,7 +654,7 @@ window.Quarto = {
 <section id="a-depth-two-tree" class="level4">
 <h4 class="anchored" data-anchor-id="a-depth-two-tree">A depth-two tree</h4>
 <p>A second split creates a more detailed boundary and reduces the training error.</p>
-<div id="cell-14" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:09.940329Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:09.940267Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.019498Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.019120Z&quot;}}" data-execution_count="6">
+<div id="cell-13" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:09.940329Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:09.940267Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.019498Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.019120Z&quot;}}" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>depth <span class="op">=</span> <span class="dv">2</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> DecisionTreeClassifier(max_depth<span class="op">=</span>depth)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>model.fit(X_subset.values, y)</span>
@@ -676,7 +678,7 @@ window.Quarto = {
 <section id="a-depth-four-tree" class="level4">
 <h4 class="anchored" data-anchor-id="a-depth-four-tree">A depth-four tree</h4>
 <p>As depth increases, the tree can divide the feature space into smaller regions.</p>
-<div id="cell-16" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.020669Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.020611Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.132388Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.131990Z&quot;}}" data-execution_count="7">
+<div id="cell-15" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.020669Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.020611Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.132388Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.131990Z&quot;}}" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>depth <span class="op">=</span> <span class="dv">4</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> DecisionTreeClassifier(max_depth<span class="op">=</span>depth)</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>model.fit(X_subset.values, y)</span>
@@ -700,7 +702,7 @@ window.Quarto = {
 <section id="a-depth-six-tree" class="level4">
 <h4 class="anchored" data-anchor-id="a-depth-six-tree">A depth-six tree</h4>
 <p>At depth six, the tree is flexible enough to classify every training example correctly.</p>
-<div id="cell-18" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.133608Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.133542Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.258702Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.258204Z&quot;}}" data-execution_count="8">
+<div id="cell-17" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.133608Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.133542Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.258702Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.258204Z&quot;}}" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>depth <span class="op">=</span> <span class="dv">6</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> DecisionTreeClassifier(max_depth<span class="op">=</span>depth)</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>model.fit(X_subset, y)</span>
@@ -724,7 +726,7 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<div id="cell-19" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.259902Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.259840Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.294286Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.293955Z&quot;}}" data-execution_count="9">
+<div id="cell-18" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.259902Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.259840Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.294286Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.293955Z&quot;}}" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>max_depths <span class="op">=</span> np.arange(<span class="dv">1</span>, <span class="dv">18</span>)</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>errors <span class="op">=</span> []</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> max_depth <span class="kw">in</span> max_depths:</span>
@@ -824,14 +826,14 @@ Important
 </ul>
 <p>The diagram shows an 80/20 split of ten examples. We usually create this split near the beginning of a project and keep the test set in an imaginary vault until the end.</p>
 <p><img src="img/train-test-split.png" class="img-fluid"></p>
-<div id="cell-30" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.295808Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.295752Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.298119Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.297721Z&quot;}}" data-execution_count="10">
+<div id="cell-29" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.295808Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.295752Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.298119Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.297721Z&quot;}}" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's demonstrate this with the canada usa cities data</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The data is available in the data directory</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(DATA_DIR <span class="op">/</span> <span class="st">"canada_usa_cities.csv"</span>)</span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> df.drop(columns<span class="op">=</span>[<span class="st">"country"</span>])</span>
 <span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> df[<span class="st">"country"</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-31" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.299071Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.299010Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.302190Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.301843Z&quot;}}" data-execution_count="11">
+<div id="cell-30" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.299071Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.299010Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.302190Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.301843Z&quot;}}" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(</span>
@@ -1068,13 +1070,13 @@ Exercise 3.1: The roles of data subsets
 </section>
 <section id="cross-validation-using-scikit-learn" class="level3">
 <h3 class="anchored" data-anchor-id="cross-validation-using-scikit-learn">Cross-validation using <code>scikit-learn</code></h3>
-<div id="cell-47" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.303765Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.303712Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.305095Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.304825Z&quot;}}" data-execution_count="12">
+<div id="cell-46" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.303765Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.303712Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.305095Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.304825Z&quot;}}" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> cross_val_score, cross_validate</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <section id="validation-scores-with-cross_val_score" class="level4">
 <h4 class="anchored" data-anchor-id="validation-scores-with-cross_val_score">Validation scores with <code>cross_val_score</code></h4>
 <p><code>cross_val_score</code> returns one validation score per fold. Here we evaluate a depth-four decision tree using ten folds.</p>
-<div id="cell-49" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.306074Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.306032Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.317138Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.316894Z&quot;}}" data-execution_count="13">
+<div id="cell-48" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.306074Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.306032Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.317138Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.316894Z&quot;}}" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> DecisionTreeClassifier(max_depth<span class="op">=</span><span class="dv">4</span>)</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>cv_scores <span class="op">=</span> cross_val_score(model, X_train, y_train, cv<span class="op">=</span><span class="dv">10</span>)</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>cv_scores</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1083,7 +1085,7 @@ Exercise 3.1: The roles of data subsets
        0.82352941, 0.70588235, 0.9375    , 0.9375    , 0.9375    ])</code></pre>
 </div>
 </div>
-<div id="cell-50" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.318234Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.318167Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.319759Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.319433Z&quot;}}" data-execution_count="14">
+<div id="cell-49" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.318234Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.318167Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.319759Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.319433Z&quot;}}" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Average cross-validation score = </span><span class="sc">{</span>np<span class="sc">.</span>mean(cv_scores)<span class="sc">:.2f}</span><span class="ss">"</span>)</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Standard deviation of cross-validation score = </span><span class="sc">{</span>np<span class="sc">.</span>std(cv_scores)<span class="sc">:.2f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -1096,7 +1098,7 @@ Standard deviation of cross-validation score = 0.09</code></pre>
 <section id="training-and-validation-scores-with-cross_validate" class="level4">
 <h4 class="anchored" data-anchor-id="training-and-validation-scores-with-cross_validate">Training and validation scores with <code>cross_validate</code></h4>
 <p><code>cross_validate</code> can return additional information. Setting <code>return_train_score=True</code> lets us compare performance on each fold’s training and validation portions.</p>
-<div id="cell-53" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.320670Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.320622Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.336380Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.336010Z&quot;}}" data-execution_count="15">
+<div id="cell-52" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.320670Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.320622Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.336380Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.336010Z&quot;}}" data-execution_count="15">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> cross_validate(model, X_train, y_train, cv<span class="op">=</span><span class="dv">10</span>, return_train_score<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(scores)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="15">
@@ -1190,7 +1192,7 @@ Standard deviation of cross-validation score = 0.09</code></pre>
 </div>
 </div>
 </div>
-<div id="cell-54" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.337345Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.337293Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.339444Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.339116Z&quot;}}" data-execution_count="16">
+<div id="cell-53" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.337345Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.337293Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.339444Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.339116Z&quot;}}" data-execution_count="16">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(pd.DataFrame(scores).mean())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="16">
 <div>
@@ -1294,7 +1296,7 @@ Note
 <section id="underfitting" class="level3">
 <h3 class="anchored" data-anchor-id="underfitting">Underfitting</h3>
 <p>A model <strong>underfits</strong> when it is too simple to capture useful patterns in the training data. A depth-one decision tree illustrates this behaviour.</p>
-<div id="cell-61" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.340599Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.340550Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.355109Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.354745Z&quot;}}" data-execution_count="17">
+<div id="cell-60" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.340599Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.340550Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.355109Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.354745Z&quot;}}" data-execution_count="17">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> DecisionTreeClassifier(max_depth<span class="op">=</span><span class="dv">1</span>)  <span class="co"># decision stump</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> cross_validate(model, X_train, y_train, cv<span class="op">=</span><span class="dv">10</span>, return_train_score<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Train error:   </span><span class="sc">%0.3f</span><span class="st">"</span> <span class="op">%</span> (<span class="dv">1</span> <span class="op">-</span> np.mean(scores[<span class="st">"train_score"</span>])))</span>
@@ -1310,7 +1312,7 @@ Validation error:   0.190</code></pre>
 <section id="overfitting" class="level3">
 <h3 class="anchored" data-anchor-id="overfitting">Overfitting</h3>
 <p>A model <strong>overfits</strong> when it learns details of the training data that do not generalize. An unrestricted decision tree can keep splitting until it closely fits—or even memorizes—the training examples.</p>
-<div id="cell-64" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.356082Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.356036Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.371163Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.370836Z&quot;}}" data-execution_count="18">
+<div id="cell-63" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.356082Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.356036Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.371163Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.370836Z&quot;}}" data-execution_count="18">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> DecisionTreeClassifier(max_depth<span class="op">=</span><span class="va">None</span>)</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> cross_validate(model, X_train, y_train, cv<span class="op">=</span><span class="dv">10</span>, return_train_score<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Train error:   </span><span class="sc">%0.3f</span><span class="st">"</span> <span class="op">%</span> (<span class="dv">1</span> <span class="op">-</span> np.mean(scores[<span class="st">"train_score"</span>])))</span>
@@ -1323,7 +1325,7 @@ Validation error:   0.197</code></pre>
 <p>Here the training error is very low, but the validation error is substantially higher. This large gap is evidence of overfitting.</p>
 <p>Low training error alone is not the problem. The problem is that performance drops considerably on examples not used for fitting.</p>
 <p>Increasing complexity therefore does not guarantee better validation performance. Let us compare several depths systematically.</p>
-<div id="cell-67" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.372182Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.372133Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.554270Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.553804Z&quot;}}" data-execution_count="19">
+<div id="cell-66" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.372182Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.372133Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.554270Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.553804Z&quot;}}" data-execution_count="19">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>results_dict <span class="op">=</span> {</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"depth"</span>: [],</span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"mean_train_error"</span>: [],</span>
@@ -1345,7 +1347,7 @@ Validation error:   0.197</code></pre>
 <span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a>results_df <span class="op">=</span> pd.DataFrame(results_dict)</span>
 <span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>results_df <span class="op">=</span> results_df.set_index(<span class="st">"depth"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-68" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.555369Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.555310Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.607119Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.606744Z&quot;}}" data-execution_count="20">
+<div id="cell-67" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.555369Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.555310Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.607119Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.606744Z&quot;}}" data-execution_count="20">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>results_df[[<span class="st">"mean_train_error"</span>, <span class="st">"mean_cv_error"</span>]].plot()<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -1372,7 +1374,7 @@ Validation error:   0.197</code></pre>
 <p><img src="img/malp_0201.png" class="img-fluid"></p>
 <p><a href="https://learning.oreilly.com/library/view/introduction-to-machine/9781449369880/ch02.html#relation-of-model-complexity-to-dataset-size">Image source</a></p>
 <p>In practice, validation scores contain sampling noise, so there may not be one obviously best value. A common starting point is to choose the hyperparameter with the best mean cross-validation score while also examining variation across folds and preferring simpler models when performance is similar.</p>
-<div id="cell-73" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.608229Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.608177Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.610975Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.610605Z&quot;}}" data-execution_count="21">
+<div id="cell-72" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.608229Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.608177Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.610975Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.610605Z&quot;}}" data-execution_count="21">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>results_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="21">
 <div>
@@ -1511,7 +1513,7 @@ Validation error:   0.197</code></pre>
 <section id="final-evaluation-on-the-test-set" class="level3">
 <h3 class="anchored" data-anchor-id="final-evaluation-on-the-test-set">Final evaluation on the test set</h3>
 <p>The cross-validation results let us select <code>max_depth</code> without consulting the test set.</p>
-<div id="cell-75" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.611891Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.611846Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.613494Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.613161Z&quot;}}" data-execution_count="22">
+<div id="cell-74" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.611891Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.611846Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.613494Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.613161Z&quot;}}" data-execution_count="22">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>best_depth <span class="op">=</span> results_df.index.values[np.argmin(results_df[<span class="st">"mean_cv_error"</span>])]</span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(</span>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"The minimum validation error is </span><span class="sc">%0.3f</span><span class="st"> at max_depth = </span><span class="sc">%d</span><span class="st"> "</span></span>
@@ -1525,7 +1527,7 @@ Validation error:   0.197</code></pre>
 </div>
 </div>
 <p>We now fit a new decision tree with the selected depth on the full training set. Only after fitting this final model do we unlock the test set.</p>
-<div id="cell-77" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.614340Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.614297Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.617079Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.616685Z&quot;}}" data-execution_count="23">
+<div id="cell-76" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-28T15:24:10.614340Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-28T15:24:10.614297Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-28T15:24:10.617079Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-28T15:24:10.616685Z&quot;}}" data-execution_count="23">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> DecisionTreeClassifier(max_depth<span class="op">=</span>best_depth)</span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>model.fit(X_train, y_train)</span>
 <span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Error on test set: </span><span class="sc">{</span><span class="dv">1</span> <span class="op">-</span> model<span class="sc">.</span>score(X_test, y_test)<span class="sc">:.2f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>

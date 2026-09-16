@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Chapter 15: K-Means Clustering – CPSC 330: Applied Machine Learning</title>
+<title>Chapter 14: K-Means Clustering – CPSC 330: Applied Machine Learning</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -175,7 +175,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/14_K-Means.html">Unsupervised Learning and Recommendation</a></li><li class="breadcrumb-item"><a href="../book/14_K-Means.html"><span class="chapter-title">Chapter 15: K-Means Clustering</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/14_K-Means.html">Unsupervised Learning and Recommendation</a></li><li class="breadcrumb-item"><a href="../book/14_K-Means.html"><span class="chapter-title">Chapter 14: K-Means Clustering</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -267,7 +267,7 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../book/14_K-Means.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Chapter 15: K-Means Clustering</span></a>
+  <a href="../book/14_K-Means.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Chapter 14: K-Means Clustering</span></a>
   </div>
 </li>
       </ul>
@@ -343,9 +343,9 @@ window.Quarto = {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/14_K-Means.html">Unsupervised Learning and Recommendation</a></li><li class="breadcrumb-item"><a href="../book/14_K-Means.html"><span class="chapter-title">Chapter 15: K-Means Clustering</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/14_K-Means.html">Unsupervised Learning and Recommendation</a></li><li class="breadcrumb-item"><a href="../book/14_K-Means.html"><span class="chapter-title">Chapter 14: K-Means Clustering</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-title">Chapter 15: K-Means Clustering</span></h1>
+<h1 class="title"><span class="chapter-title">Chapter 14: K-Means Clustering</span></h1>
 </div>
 
 
@@ -374,8 +374,9 @@ window.Quarto = {
 </ul>
 </div>
 <p>Clustering looks for structure in data without using a target column. In this chapter, we will develop K-Means from its central idea, representing each group by a centre, then examine the practical choices and limitations that determine whether its clusters are useful.</p>
-<p><strong>Imports</strong></p>
-<div id="cell-4" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;skip&quot;}}" data-execution_count="1">
+<div id="cell-3" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;skip&quot;}}">
+<details class="code-fold">
+<summary>Show imports and setup</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
@@ -397,6 +398,7 @@ window.Quarto = {
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">"font.size"</span>] <span class="op">=</span> <span class="dv">12</span></span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">"figure.figsize"</span>] <span class="op">=</span> (<span class="dv">5</span>, <span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
 <section id="before-you-begin" class="level2">
 <h2 class="anchored" data-anchor-id="before-you-begin">Before you begin</h2>
@@ -424,7 +426,7 @@ window.Quarto = {
 </section>
 <section id="clustering-input-and-possible-output" class="level3">
 <h3 class="anchored" data-anchor-id="clustering-input-and-possible-output">Clustering input and possible output</h3>
-<div id="cell-13" class="cell" data-execution_count="2">
+<div id="cell-12" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>X, y <span class="op">=</span> make_blobs(n_samples<span class="op">=</span><span class="dv">10</span>, centers<span class="op">=</span><span class="dv">3</span>, n_features<span class="op">=</span><span class="dv">2</span>, random_state<span class="op">=</span><span class="dv">10</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">4</span>))</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>discrete_scatter(X[:, <span class="dv">0</span>], X[:, <span class="dv">1</span>], ax <span class="op">=</span> axes[<span class="dv">0</span>])<span class="op">;</span> <span class="co"># user-defined plotting function defined in code/plotting_functions.py</span></span>
@@ -483,7 +485,7 @@ window.Quarto = {
 </ul>
 <p>It returns one of <code>K</code> cluster labels for each example and learns <code>K</code> cluster centres.</p>
 <p>We will begin with the toy dataset above, where three compact groups are visually apparent.</p>
-<div id="cell-30" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-execution_count="3">
+<div id="cell-29" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>X, y <span class="op">=</span> make_blobs(n_samples<span class="op">=</span><span class="dv">10</span>, centers<span class="op">=</span><span class="dv">3</span>, n_features<span class="op">=</span><span class="dv">2</span>, random_state<span class="op">=</span><span class="dv">10</span>)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>discrete_scatter(X[:, <span class="dv">0</span>], X[:, <span class="dv">1</span>])<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
@@ -495,14 +497,14 @@ window.Quarto = {
 </div>
 </div>
 <p>We set <code>n_clusters=3</code> and pass only <code>X</code> to <code>fit</code>; clustering does not use target labels.</p>
-<div id="cell-32" class="cell" data-execution_count="4">
+<div id="cell-31" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> KMeans</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>kmeans <span class="op">=</span> KMeans(n_clusters<span class="op">=</span><span class="dv">3</span>, n_init<span class="op">=</span><span class="st">'auto'</span>)</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>kmeans.fit(X)<span class="op">;</span> <span class="co"># We are only passing X because this is unsupervised learning</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><code>predict</code> returns the cluster assignment for each example.</p>
-<div id="cell-34" class="cell" data-execution_count="5">
+<div id="cell-33" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>clust_labels <span class="op">=</span> kmeans.predict(X)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>clust_labels</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="5">
@@ -510,13 +512,13 @@ window.Quarto = {
 </div>
 </div>
 <p>For the data used during fitting, the same assignments are stored in <code>labels_</code>.</p>
-<div id="cell-36" class="cell" data-execution_count="6">
+<div id="cell-35" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>kmeans.labels_</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="6">
 <pre><code>array([1, 0, 2, 0, 1, 1, 2, 2, 0, 1], dtype=int32)</code></pre>
 </div>
 </div>
-<div id="cell-37" class="cell" data-execution_count="7">
+<div id="cell-36" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>toy_clust_df <span class="op">=</span> pd.DataFrame(X, columns <span class="op">=</span> [<span class="st">'feat1'</span>, <span class="st">'feat2'</span>])</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>toy_clust_df[<span class="st">'cluster labels'</span>] <span class="op">=</span> clust_labels</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>toy_clust_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -601,7 +603,7 @@ window.Quarto = {
 </div>
 </div>
 <p>The learned cluster centres are stored in <code>cluster_centers_</code>.</p>
-<div id="cell-39" class="cell" data-execution_count="8">
+<div id="cell-38" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>cluster_centers <span class="op">=</span> kmeans.cluster_centers_</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>cluster_centers</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="8">
@@ -611,7 +613,7 @@ window.Quarto = {
 </div>
 </div>
 <p>Let’s plot clustered data points and their corresponding centers.</p>
-<div id="cell-41" class="cell" data-execution_count="9">
+<div id="cell-40" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>km_labels <span class="op">=</span> kmeans.labels_</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>discrete_scatter(X[:, <span class="dv">0</span>], X[:, <span class="dv">1</span>], kmeans.labels_, c<span class="op">=</span>kmeans.labels_, markers<span class="op">=</span><span class="st">"o"</span>)<span class="op">;</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>plt.legend()<span class="op">;</span></span>
@@ -627,14 +629,14 @@ window.Quarto = {
 <p>The stars mark the <strong>centroids</strong>, or means of the examples assigned to each cluster. A centroid lies in the feature space but is not usually an observed example.</p>
 <p>A fitted K-Means model can also assign new examples to their nearest learned centroid.</p>
 <p>Consider the two new query points shown with triangles below.</p>
-<div id="cell-44" class="cell" data-execution_count="10">
+<div id="cell-43" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>new_examples <span class="op">=</span> np.array([[<span class="op">-</span><span class="dv">2</span>, <span class="op">-</span><span class="fl">2.5</span>], [<span class="dv">2</span>, <span class="dv">4</span>]])</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>kmeans.predict(new_examples)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="10">
 <pre><code>array([2, 0], dtype=int32)</code></pre>
 </div>
 </div>
-<div id="cell-45" class="cell" data-execution_count="11">
+<div id="cell-44" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>discrete_scatter(X[:, <span class="dv">0</span>], X[:, <span class="dv">1</span>], kmeans.labels_, markers<span class="op">=</span><span class="st">"o"</span>)</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>discrete_scatter(</span>
@@ -649,13 +651,13 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<div id="cell-46" class="cell" data-execution_count="12">
+<div id="cell-45" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>kmeans.predict(new_examples).tolist()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="12">
 <pre><code>[2, 0]</code></pre>
 </div>
 </div>
-<div id="cell-47" class="cell" data-execution_count="13">
+<div id="cell-46" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>discrete_scatter(X[:, <span class="dv">0</span>], X[:, <span class="dv">1</span>], kmeans.labels_, markers<span class="op">=</span><span class="st">"o"</span>)</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>discrete_scatter(</span>
@@ -685,7 +687,7 @@ window.Quarto = {
 <h3 class="anchored" data-anchor-id="a-worked-k-means-example">A worked K-Means example</h3>
 <p>Let’s execute K-Means algorithm on our toy example.</p>
 <p><strong>Input</strong> - The data points <code>X</code></p>
-<div id="cell-52" class="cell" data-execution_count="14">
+<div id="cell-51" class="cell" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>n_examples <span class="op">=</span> X.shape[<span class="dv">0</span>]</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Number of examples: "</span>, n_examples)</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>X</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -708,14 +710,14 @@ window.Quarto = {
 <ul>
 <li>Let K (number of clusters) be 3.</li>
 </ul>
-<div id="cell-54" class="cell" data-execution_count="15">
+<div id="cell-53" class="cell" data-execution_count="15">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> <span class="dv">3</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><strong>Initialization</strong></p>
 <ul>
 <li>Random initialization for K initial centers of the clusters.</li>
 </ul>
-<div id="cell-56" class="cell" data-execution_count="16">
+<div id="cell-55" class="cell" data-execution_count="16">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>np.random.seed(seed<span class="op">=</span><span class="dv">3</span>)</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>centers_idx <span class="op">=</span> np.random.choice(<span class="bu">range</span>(<span class="dv">0</span>, n_examples), size<span class="op">=</span>k)</span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>centers <span class="op">=</span> X[centers_idx]</span>
@@ -739,7 +741,7 @@ window.Quarto = {
 <li><p>First step in the iterative process is assigning examples to the closest center. How to find closest centers?</p></li>
 <li><p>Let’s consider distance of an example to all centers and assign that example to the closest center.</p></li>
 </ul>
-<div id="cell-59" class="cell" data-execution_count="17">
+<div id="cell-58" class="cell" data-execution_count="17">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> panel <span class="im">as</span> pn</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> panel <span class="im">import</span> widgets</span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> panel.interact <span class="im">import</span> interact</span>
@@ -1433,7 +1435,7 @@ if (window.Jupyter !== undefined) {
 <ul>
 <li>Similarly, we can make cluster assignments for all points by calculating distances of all examples to the centers and assigning it to the cluster with smallest distance.</li>
 </ul>
-<div id="cell-61" class="cell" data-execution_count="18">
+<div id="cell-60" class="cell" data-execution_count="18">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> euclidean_distances</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> update_Z(X, centers):</span>
@@ -1447,7 +1449,7 @@ if (window.Jupyter !== undefined) {
 <li><p>With the new cluster assignments for our data points, we update cluster centers. How do we update centers?</p></li>
 <li><p>New cluster centers are means of data points in each cluster.</p></li>
 </ul>
-<div id="cell-63" class="cell" data-execution_count="19">
+<div id="cell-62" class="cell" data-execution_count="19">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> update_centers(X, Z, old_centers, k):</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="co">    returns new centers</span></span>
@@ -1459,7 +1461,7 @@ if (window.Jupyter !== undefined) {
 </div>
 <p>Let’s put these steps together. - Initialize - Iteratively alternate between the following two steps. - <strong>Update assignments</strong> <span class="math inline">\(Z \rightarrow\)</span> Assign each example to the closest center - <strong>Update centers</strong> <span class="math inline">\(\rightarrow\)</span> Estimate new centers as <em>average</em> of examples in a cluster</p>
 <p>Let’s examine the initial centers.</p>
-<div id="cell-66" class="cell" data-execution_count="20">
+<div id="cell-65" class="cell" data-execution_count="20">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>plot_km_initialization(X, centers)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -1470,7 +1472,7 @@ if (window.Jupyter !== undefined) {
 </div>
 </div>
 <p>Here is the path cluster centers took and their cluster assignements in six iterations.</p>
-<div id="cell-68" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="21">
+<div id="cell-67" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="21">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>plot_km_iterative(X, X[centers_idx], <span class="dv">6</span>) <span class="co"># user-defined plotting function defined in code/plotting_functions.py</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -1485,7 +1487,7 @@ if (window.Jupyter !== undefined) {
 <section id="initialization-matters" class="level3">
 <h3 class="anchored" data-anchor-id="initialization-matters">Initialization matters</h3>
 <p>K-Means can converge to different solutions from different initial centres. The next example shows how a poor initialization can produce a worse grouping.</p>
-<div id="cell-71" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="22">
+<div id="cell-70" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="22">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>X_init, y_init <span class="op">=</span> make_blobs(n_samples<span class="op">=</span><span class="dv">20</span>, centers<span class="op">=</span><span class="dv">3</span>, n_features<span class="op">=</span><span class="dv">2</span>, random_state<span class="op">=</span><span class="dv">10</span>)</span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>discrete_scatter(X_init[:, <span class="dv">0</span>], X_init[:, <span class="dv">1</span>], markers<span class="op">=</span><span class="st">"o"</span>)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
@@ -1496,17 +1498,17 @@ if (window.Jupyter !== undefined) {
 </div>
 </div>
 </div>
-<div id="cell-72" class="cell" data-execution_count="23">
+<div id="cell-71" class="cell" data-execution_count="23">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> <span class="dv">3</span></span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>n_examples <span class="op">=</span> X_init.shape[<span class="dv">0</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><strong>Example: Bad initialization</strong></p>
-<div id="cell-74" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-execution_count="24">
+<div id="cell-73" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-execution_count="24">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>np.random.seed(seed<span class="op">=</span><span class="dv">10</span>)</span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>centroids_idx_init <span class="op">=</span> np.random.choice(<span class="bu">range</span>(<span class="dv">0</span>, n_examples), size<span class="op">=</span>k)</span>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>centroids <span class="op">=</span> X_init[centroids_idx_init]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-75" class="cell" data-execution_count="25">
+<div id="cell-74" class="cell" data-execution_count="25">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>plot_km_iterative(X_init, X_init[centroids_idx_init], <span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -1517,7 +1519,7 @@ if (window.Jupyter !== undefined) {
 </div>
 </div>
 <p><strong>Example: Better initialization</strong> The following initialization seems much better.</p>
-<div id="cell-77" class="cell" data-execution_count="26">
+<div id="cell-76" class="cell" data-execution_count="26">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>np.random.seed(seed<span class="op">=</span><span class="dv">2</span>)</span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>centroids_idx <span class="op">=</span> np.random.choice(<span class="bu">range</span>(<span class="dv">0</span>, n_examples), size<span class="op">=</span>k)</span>
 <span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>plot_km_iterative(X_init, X_init[centroids_idx], <span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1692,7 +1694,7 @@ if (window.Jupyter !== undefined) {
 <p>where</p>
 <p><span class="math inline">\(C_1,C_2,C_3\)</span> are the centroids and each <span class="math inline">\(P_i\)</span> is an example assigned to that cluster.</p>
 <p>Scikit-learn stores inertia in the fitted model’s <code>inertia_</code> attribute.</p>
-<div id="cell-98" class="cell" data-execution_count="27">
+<div id="cell-97" class="cell" data-execution_count="27">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>XX, y <span class="op">=</span> make_blobs(centers<span class="op">=</span><span class="dv">3</span>, n_features<span class="op">=</span><span class="dv">2</span>, random_state<span class="op">=</span><span class="dv">10</span>)</span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>discrete_scatter(XX[:, <span class="dv">0</span>], XX[:, <span class="dv">1</span>], markers<span class="op">=</span><span class="st">"o"</span>)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
@@ -1703,14 +1705,14 @@ if (window.Jupyter !== undefined) {
 </div>
 </div>
 </div>
-<div id="cell-99" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-execution_count="28">
+<div id="cell-98" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-execution_count="28">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>d <span class="op">=</span> {<span class="st">"K"</span>: [], <span class="st">"inertia"</span>: []}</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">100</span>, <span class="dv">10</span>):</span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> KMeans(n_clusters<span class="op">=</span>k, n_init<span class="op">=</span><span class="st">'auto'</span>).fit(XX)</span>
 <span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>    d[<span class="st">"K"</span>].append(k)</span>
 <span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>    d[<span class="st">"inertia"</span>].append(model.inertia_)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-100" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="29">
+<div id="cell-99" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="29">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(d)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="29">
 <div>
@@ -1782,7 +1784,7 @@ if (window.Jupyter !== undefined) {
 </div>
 </div>
 <p>Inertia always decreases as <span class="math inline">\(K\)</span> increases; with one cluster per example, it reaches zero. The elbow method therefore looks for a bend after which additional clusters yield only small reductions in inertia. It balances compact clusters against a simpler clustering with fewer groups.</p>
-<div id="cell-102" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;skip&quot;}}" data-execution_count="30">
+<div id="cell-101" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;skip&quot;}}" data-execution_count="30">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_elbow(w, h, inertia_values):</span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>    plt.figure(figsize<span class="op">=</span>(w, h))</span>
 <span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>    plt.axvline(x<span class="op">=</span><span class="dv">3</span>, linestyle<span class="op">=</span><span class="st">"-."</span>, c<span class="op">=</span><span class="st">"black"</span>)</span>
@@ -1792,7 +1794,7 @@ if (window.Jupyter !== undefined) {
 <span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>    ax.set_xlabel(<span class="st">"K"</span>, fontsize<span class="op">=</span>w<span class="op">+</span>h)</span>
 <span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>    ax.set_ylabel(<span class="st">"Inertia"</span>, fontsize<span class="op">=</span>w<span class="op">+</span>h)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-103" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="31">
+<div id="cell-102" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="31">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>inertia_values <span class="op">=</span> <span class="bu">list</span>()</span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">10</span>):</span>
 <span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>    inertia_values.append(KMeans(n_clusters<span class="op">=</span>k, n_init<span class="op">=</span><span class="st">'auto'</span>).fit(XX).inertia_)</span>
@@ -1807,7 +1809,7 @@ if (window.Jupyter !== undefined) {
 </div>
 <p>Here, <span class="math inline">\(K=3\)</span> is a reasonable choice: beyond three clusters, the improvement is comparatively small. Real elbow plots are often ambiguous.</p>
 <p>The <a href="https://www.scikit-yb.org/en/latest/api/cluster/elbow.html"><code>yellowbrick</code></a> package provides a convenient elbow visualizer.</p>
-<div id="cell-106" class="cell" data-execution_count="32">
+<div id="cell-105" class="cell" data-execution_count="32">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> yellowbrick.cluster <span class="im">import</span> KElbowVisualizer</span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> KMeans()</span>
@@ -1836,7 +1838,7 @@ if (window.Jupyter !== undefined) {
 <li>These distances are represented by the black lines in the plot below.</li>
 </ul></li>
 </ul>
-<div id="cell-110" class="cell" data-execution_count="33">
+<div id="cell-109" class="cell" data-execution_count="33">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>plot_silhouette_dist(<span class="dv">6</span>, <span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -1866,10 +1868,10 @@ if (window.Jupyter !== undefined) {
 <ul>
 <li>The plots below show the Silhouette scores for each sample in that cluster.</li>
 </ul>
-<div id="cell-114" class="cell" data-execution_count="34">
+<div id="cell-113" class="cell" data-execution_count="34">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> yellowbrick.cluster <span class="im">import</span> SilhouetteVisualizer</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-115" class="cell" data-execution_count="35">
+<div id="cell-114" class="cell" data-execution_count="35">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> KMeans(<span class="dv">2</span>, n_init<span class="op">=</span><span class="st">'auto'</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
 <span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>visualizer <span class="op">=</span> SilhouetteVisualizer(model, colors<span class="op">=</span><span class="st">"yellowbrick"</span>)</span>
 <span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>visualizer.fit(XX)  <span class="co"># Fit the data to the visualizer</span></span>
@@ -1883,7 +1885,7 @@ if (window.Jupyter !== undefined) {
 </div>
 </div>
 </div>
-<div id="cell-116" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-execution_count="36">
+<div id="cell-115" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;-&quot;}}" data-execution_count="36">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> KMeans(<span class="dv">5</span>, n_init<span class="op">=</span><span class="st">'auto'</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>visualizer <span class="op">=</span> SilhouetteVisualizer(model, colors<span class="op">=</span><span class="st">"yellowbrick"</span>)</span>
 <span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>visualizer.fit(XX)  <span class="co"># Fit the data to the visualizer</span></span>
@@ -1897,7 +1899,7 @@ if (window.Jupyter !== undefined) {
 </div>
 </div>
 </div>
-<div id="cell-117" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="37">
+<div id="cell-116" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;slideshow&quot;,&quot;value&quot;:{&quot;slide_type&quot;:&quot;slide&quot;}}" data-execution_count="37">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> KMeans(<span class="dv">3</span>, n_init<span class="op">=</span><span class="st">'auto'</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>visualizer <span class="op">=</span> SilhouetteVisualizer(model, colors<span class="op">=</span><span class="st">"yellowbrick"</span>)</span>
 <span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>visualizer.fit(XX)  <span class="co"># Fit the data to the visualizer</span></span>
@@ -1984,7 +1986,7 @@ if (window.Jupyter !== undefined) {
 <section id="motivation" class="level3">
 <h3 class="anchored" data-anchor-id="motivation">Motivation</h3>
 <p>K-Means represents every cluster only by a centroid, so it works best for compact, roughly spherical groups. Consider data containing elongated groups instead.</p>
-<div id="cell-127" class="cell" data-execution_count="38">
+<div id="cell-126" class="cell" data-execution_count="38">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> multivariate_normal, norm</span>
 <span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.datasets <span class="im">import</span> make_blobs, make_circles, make_moons</span>
 <span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -2007,7 +2009,7 @@ if (window.Jupyter !== undefined) {
 <pre><code>(350, 2)</code></pre>
 </div>
 </div>
-<div id="cell-128" class="cell" data-execution_count="39">
+<div id="cell-127" class="cell" data-execution_count="39">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>discrete_scatter(X_train[:,<span class="dv">0</span>], X_train[:,<span class="dv">1</span>],s<span class="op">=</span><span class="dv">6</span>)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -2018,7 +2020,7 @@ if (window.Jupyter !== undefined) {
 </div>
 </div>
 <p>How well does K-Means cluster these data?</p>
-<div id="cell-130" class="cell" data-execution_count="40">
+<div id="cell-129" class="cell" data-execution_count="40">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>km <span class="op">=</span> KMeans(n_clusters<span class="op">=</span><span class="dv">3</span>, n_init<span class="op">=</span><span class="st">"auto"</span>)</span>
 <span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>km.fit(X_train)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="40">
@@ -2601,10 +2603,10 @@ document.querySelectorAll('.fa-regular.fa-copy').forEach(function(element) {
 </script>
 </div>
 </div>
-<div id="cell-131" class="cell" data-execution_count="41">
+<div id="cell-130" class="cell" data-execution_count="41">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>km_labels <span class="op">=</span> km.labels_</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-132" class="cell" data-execution_count="42">
+<div id="cell-131" class="cell" data-execution_count="42">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>plot_kmeans_circles(km, X_train, n_clusters<span class="op">=</span><span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -2615,13 +2617,13 @@ document.querySelectorAll('.fa-regular.fa-copy').forEach(function(element) {
 </div>
 </div>
 <p>K-Means divides the space according to distance from the centroids and cannot capture these elongated groups well. A <strong>Gaussian mixture model</strong> (GMM) also models each component’s spread and orientation through a covariance matrix.</p>
-<div id="cell-134" class="cell" data-execution_count="43">
+<div id="cell-133" class="cell" data-execution_count="43">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.mixture <span class="im">import</span> GaussianMixture</span>
 <span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>gmm <span class="op">=</span> GaussianMixture(n_components<span class="op">=</span><span class="dv">3</span>, covariance_type<span class="op">=</span><span class="st">"full"</span>) <span class="co"># more on covariance_type in a bit </span></span>
 <span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>gmm.fit(X_train)</span>
 <span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>gmm_labels <span class="op">=</span> gmm.predict(X_train)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-135" class="cell" data-execution_count="44">
+<div id="cell-134" class="cell" data-execution_count="44">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">4</span>)) </span>
 <span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>discrete_scatter(X_train[:, <span class="dv">0</span>], X_train[:, <span class="dv">1</span>], km_labels, c<span class="op">=</span>gmm_labels, markers<span class="op">=</span><span class="st">"o"</span>, ax<span class="op">=</span>ax[<span class="dv">0</span>])<span class="op">;</span></span>
 <span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_title(<span class="st">'KMeans clustering'</span>)</span>
@@ -2637,7 +2639,7 @@ document.querySelectorAll('.fa-regular.fa-copy').forEach(function(element) {
 </div>
 <p>On this toy dataset, the GMM captures the ellipse-shaped groups more naturally.</p>
 <p>Each component has a mean vector, covariance matrix, and weight.</p>
-<div id="cell-138" class="cell" data-execution_count="45">
+<div id="cell-137" class="cell" data-execution_count="45">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>gmm.means_</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="45">
 <pre><code>array([[ 1.25596947, -5.15011412],
@@ -2646,7 +2648,7 @@ document.querySelectorAll('.fa-regular.fa-copy').forEach(function(element) {
 </div>
 </div>
 <p>Since our dataset is 2d, we get a 2d vector for the mean of each cluster.</p>
-<div id="cell-140" class="cell" data-execution_count="46">
+<div id="cell-139" class="cell" data-execution_count="46">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>gmm.covariances_</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="46">
 <pre><code>array([[[ 1.97803583,  0.26628563],
@@ -2663,14 +2665,14 @@ document.querySelectorAll('.fa-regular.fa-copy').forEach(function(element) {
 <ul>
 <li>There is a non-negative weight associated with each component which represents the proportion of total distribution contributed by that component.</li>
 </ul>
-<div id="cell-143" class="cell" data-execution_count="47">
+<div id="cell-142" class="cell" data-execution_count="47">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>gmm.weights_</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="47">
 <pre><code>array([0.14042383, 0.28682168, 0.57275449])</code></pre>
 </div>
 </div>
 <p>We have trained our model with three components so we have three weights (prior probabilities) associated with each component. The sum of the weights is 1.0.</p>
-<div id="cell-145" class="cell" data-execution_count="48">
+<div id="cell-144" class="cell" data-execution_count="48">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>np.<span class="bu">sum</span>(gmm.weights_)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="48">
 <pre><code>np.float64(1.0)</code></pre>
@@ -2698,7 +2700,7 @@ document.querySelectorAll('.fa-regular.fa-copy').forEach(function(element) {
 <li>Choose example <span class="math inline">\(x\)</span> from the Gaussian distribution associated with the <span class="math inline">\(k^{th}\)</span> component: <span class="math inline">\(\mathcal{N}(x \mid \mu_k, \Sigma_k)\)</span></li>
 </ul>
 <p>How to interpret the weights associated with the Gaussians? Let’s look at a toy example with of a mixture of Gaussians, i.e., a weighted sum of Gaussians.</p>
-<div id="cell-149" class="cell" data-execution_count="49">
+<div id="cell-148" class="cell" data-execution_count="49">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> f(ϕ<span class="dv">1</span>):</span>
 <span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>    fig <span class="op">=</span> plt.figure(figsize<span class="op">=</span>(<span class="dv">6</span>,<span class="dv">4</span>))        </span>
 <span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Gaussian_mixture_1d(ϕ<span class="dv">1</span><span class="op">=</span>ϕ<span class="dv">1</span>, ϕ<span class="dv">2</span><span class="op">=</span><span class="dv">1</span><span class="op">-</span>ϕ<span class="dv">1</span>, fig<span class="op">=</span>fig)</span>
@@ -2797,7 +2799,7 @@ document.querySelectorAll('.fa-regular.fa-copy').forEach(function(element) {
 </ul>
 <p>We can constrain the covariance of the Gaussians using the <code>covariance_type</code> option when creating a <code>GaussianMixture</code> object. This allows us to control the shape and complexity of clusters.</p>
 <p>Let’s look at four types supported in <code>sklearn</code>:</p>
-<div id="cell-153" class="cell" data-execution_count="50">
+<div id="cell-152" class="cell" data-execution_count="50">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>k<span class="op">=</span><span class="dv">3</span></span>
 <span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>estimators <span class="op">=</span> {</span>
 <span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>    cov_type: GaussianMixture(</span>
@@ -2806,13 +2808,13 @@ document.querySelectorAll('.fa-regular.fa-copy').forEach(function(element) {
 <span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> cov_type <span class="kw">in</span> [<span class="st">"spherical"</span>, <span class="st">"diag"</span>, <span class="st">"tied"</span>, <span class="st">"full"</span>]</span>
 <span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="cell-154" class="cell" data-execution_count="51">
+<div id="cell-153" class="cell" data-execution_count="51">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>estimators[<span class="st">'spherical'</span>].fit(X_train).covariances_</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="51">
 <pre><code>array([7.09940051, 6.72515023, 8.24294885])</code></pre>
 </div>
 </div>
-<div id="cell-155" class="cell" data-execution_count="52">
+<div id="cell-154" class="cell" data-execution_count="52">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>estimators[<span class="st">'diag'</span>].fit(X_train).covariances_</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="52">
 <pre><code>array([[ 6.15589073,  6.73691637],
@@ -2820,14 +2822,14 @@ document.querySelectorAll('.fa-regular.fa-copy').forEach(function(element) {
        [ 4.8085368 , 13.59126014]])</code></pre>
 </div>
 </div>
-<div id="cell-156" class="cell" data-execution_count="53">
+<div id="cell-155" class="cell" data-execution_count="53">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>estimators[<span class="st">'tied'</span>].fit(X_train).covariances_</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="53">
 <pre><code>array([[6.6189311 , 0.61972005],
        [0.61972005, 8.18723636]])</code></pre>
 </div>
 </div>
-<div id="cell-157" class="cell" data-execution_count="54">
+<div id="cell-156" class="cell" data-execution_count="54">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>estimators[<span class="st">'full'</span>].fit(X_train).covariances_</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="54">
 <pre><code>array([[[10.95673803, 10.63462235],
@@ -2840,7 +2842,7 @@ document.querySelectorAll('.fa-regular.fa-copy').forEach(function(element) {
         [ 0.26628563,  3.11174164]]])</code></pre>
 </div>
 </div>
-<div id="cell-158" class="cell" data-execution_count="55">
+<div id="cell-157" class="cell" data-execution_count="55">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>plot_gmm_cov_types(estimators, X_train) <span class="co"># user-defined function from code/plotting_functions.py</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -2858,7 +2860,7 @@ document.querySelectorAll('.fa-regular.fa-copy').forEach(function(element) {
 <li><p>full: each component has its own general covariance matrix which results in Gaussian components with different shapes and different orientations</p></li>
 </ul>
 <p>Since GMMs do soft cluster assignment, we can get prediction probabilities. Below are the cluster membership probabilities for a few data points.</p>
-<div id="cell-161" class="cell" data-execution_count="56">
+<div id="cell-160" class="cell" data-execution_count="56">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb72"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(estimators[<span class="st">'full'</span>].predict_proba(X_train)[<span class="dv">10</span>:<span class="dv">20</span>]).<span class="bu">round</span>(<span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="56">
 <div>
@@ -2942,14 +2944,14 @@ document.querySelectorAll('.fa-regular.fa-copy').forEach(function(element) {
 </div>
 <p><strong>Model selection with AIC and BIC</strong></p>
 <p>Since GMM is a generative model, we can get the log likelihood of the model generating this data.</p>
-<div id="cell-163" class="cell" data-execution_count="57">
+<div id="cell-162" class="cell" data-execution_count="57">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb73"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>estimators[<span class="st">'full'</span>].score(X_train)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="57">
 <pre><code>np.float64(-5.073780282241251)</code></pre>
 </div>
 </div>
 <p>It’s possible to do model selection, i.e., selecting the appropriate covariance type and the number of components based on Akaike Information Criterion (AIC) or Bayesian Information Criterion (BIC) which penalize complex models.</p>
-<div id="cell-165" class="cell" data-execution_count="58">
+<div id="cell-164" class="cell" data-execution_count="58">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb75"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>n_components <span class="op">=</span> <span class="bu">range</span>(<span class="dv">1</span>,<span class="dv">15</span>)</span>
 <span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>gmm_models <span class="op">=</span> [GaussianMixture(n_components<span class="op">=</span>k).fit(X_train) <span class="cf">for</span> k <span class="kw">in</span> n_components]</span>
