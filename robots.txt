@@ -1,0 +1,1 @@
+Sitemap: https://UBC-CS.github.io/cpsc330-book/sitemap.xml
