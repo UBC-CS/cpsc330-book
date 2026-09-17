@@ -1,44 +1,75 @@
 project:
-  type: book
+  type: website
+  output-dir: _book
+  # Render published material only; other notebooks remain drafts.
+  render:
+    - index.qmd
+    - learning-objectives.qmd
+    - demos.qmd
+    - book/01_intro.ipynb
+    - book/02_terminology-baselines-decision-trees.ipynb
+    - book/03_ml-fundamentals.ipynb
+    - book/04_kNNs-SVM-RBF.ipynb
+    - book/05_preprocessing-pipelines.ipynb
+    - book/06_column-transformer-text-feats.ipynb
+    - book/07_linear-models.ipynb
+    - book/08_hyperparameter-optimization.ipynb
+    - book/09_classification-metrics.ipynb
+    - book/14_K-Means.ipynb
+    - book/17_natural-language-processing.ipynb
+    - book/chapter-3-demo.ipynb
 
-book:
+website:
   title: "CPSC 330: Applied Machine Learning"
   reader-mode: true
   page-navigation: true
   favicon: "book/img/UBC-CS-logo.png"
 
-  sidebar:
-    style: floating
-    collapse-level: 1
-    logo: "book/img/UBC-CS-logo.png"
-
   navbar:
     background: "#002145"
     foreground: "#FFFFFF"
+    left:
+      - text: Book
+        href: index.qmd
+      - text: Demos
+        href: demos.qmd
 
-  chapters:
-    - index.qmd
-    - learning-objectives.qmd
-    - book/01_intro.ipynb
-    - part: "Foundations and Supervised Learning"
-      chapters:
-        - book/02_terminology-baselines-decision-trees.ipynb
-        - book/03_ml-fundamentals.ipynb
-        - book/04_kNNs-SVM-RBF.ipynb
-        - book/05_preprocessing-pipelines.ipynb
-        - book/06_column-transformer-text-feats.ipynb
-        - book/07_linear-models.ipynb
-        - book/08_hyperparameter-optimization.ipynb
-        - book/09_classification-metrics.ipynb
-    # Add the following parts when their first chapters are ready:
-    - part: Unsupervised Learning and Recommendation
-      chapters:
-        - book/14_K-Means.ipynb
-    - part: Working with Different Data Types
-      chapters:
-        - book/17_natural-language-processing.ipynb
-        
-    # - Responsible Machine Learning in Practice
+  sidebar:
+    - id: book
+      title: Book
+      style: floating
+      collapse-level: 1
+      logo: "book/img/UBC-CS-logo.png"
+      contents:
+        - index.qmd
+        - learning-objectives.qmd
+        - book/01_intro.ipynb
+        - section: "Foundations and Supervised Learning"
+          contents:
+            - book/02_terminology-baselines-decision-trees.ipynb
+            - book/03_ml-fundamentals.ipynb
+            - book/04_kNNs-SVM-RBF.ipynb
+            - book/05_preprocessing-pipelines.ipynb
+            - book/06_column-transformer-text-feats.ipynb
+            - book/07_linear-models.ipynb
+            - book/08_hyperparameter-optimization.ipynb
+            - book/09_classification-metrics.ipynb
+        # Add further sections when their first chapters are ready.
+        - section: Unsupervised Learning and Recommendation
+          contents:
+            - book/14_K-Means.ipynb
+        - section: Working with Different Data Types
+          contents:
+            - book/17_natural-language-processing.ipynb
+
+    - id: demos
+      title: Demos
+      style: floating
+      collapse-level: 1
+      logo: "book/img/UBC-CS-logo.png"
+      contents:
+        - demos.qmd
+        - book/chapter-3-demo.ipynb
 
 format:
   html:

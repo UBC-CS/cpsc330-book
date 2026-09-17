@@ -1,0 +1,12 @@
+---
+title: "Demos"
+sidebar: demos
+---
+
+These practice notebooks reinforce the concepts in the corresponding book chapters. We work through them during lecture, using incomplete code cells and reflection questions to guide discussion. You can also use them to practice independently.
+
+Download the notebook and work locally in JupyterLab or VS Code. Each demo page includes a notebook download and the data needed to run it.
+
+- [Chapter 3 demo: ML fundamentals](book/chapter-3-demo.ipynb): practice data splitting, baselines, model complexity, and cross-validation using housing-price prediction. Review [Chapter 3](book/03_ml-fundamentals.ipynb) before starting.
+
+<a href="downloads/chapter-3-demo.ipynb" download>Download Chapter 3 notebook (.ipynb)</a>
