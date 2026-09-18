@@ -71,7 +71,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../book/14_K-Means.html" rel="next">
+<link href="../book/10_regression-metrics.html" rel="next">
 <link href="../book/08_hyperparameter-optimization.html" rel="prev">
 <link href="../book/img/UBC-CS-logo.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
@@ -281,6 +281,12 @@ window.Quarto = {
   <div class="sidebar-item-container"> 
   <a href="../book/09_classification-metrics.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Chapter 9: Classification Metrics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/10_regression-metrics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10: Regression Metrics</span></a>
   </div>
 </li>
       </ul>
@@ -811,7 +817,7 @@ F_1=2\frac{\text{precision}\times\text{recall}}{\text{precision}+\text{recall}}
 F_1=\frac{2\times71}{2\times71+12+32}=\frac{142}{186}\approx0.763.
 \]</span></p>
 <p>Unlike accuracy, F1 does not include true negatives. Adding more correctly classified legitimate transactions would increase accuracy but leave F1 unchanged. That can be helpful when we care about finding fraud among many legitimate transactions. However, F1 does not encode the bank’s financial costs or investigation capacity. It is one possible summary, not a universal definition of a good detector.</p>
-<p>We can calculate these metrics with scikit-learn’s <code>precision_score</code>, <code>recall_score</code>, and <code>f1_score</code>. For these binary labels, their default positive class is <code>1</code>, which matches our fraud class. The helper below collects the counts and scores so that we can reuse them when comparing predictions later. With <code>labels=[0, 1]</code>, flattening the confusion matrix using <code>.ravel()</code> returns TN, FP, FN, and TP in that order.</p>
+<p>We can calculate these metrics with scikit-learn’s <code>precision_score</code>, <code>recall_score</code>, and <code>f1_score</code>. For these binary labels, their default positive class is <code>1</code>, which matches our fraud class. Use the <code>pos_label</code> parameter when a different label represents the positive class. The helper below collects the counts and scores so that we can reuse them when comparing predictions later. With <code>labels=[0, 1]</code>, flattening the confusion matrix using <code>.ravel()</code> returns TN, FP, FN, and TP in that order.</p>
 <p>The dummy classifier needs one special consideration: because it predicts no positives, its precision has denominator zero and is undefined. We use <code>zero_division=0</code> to report zero in that case. This is a reporting convention, not a measured proportion. Recall is similarly undefined if an evaluation set contains no actual positives. Our validation set does contain positives, so the dummy classifier’s recall and F1 are both zero.</p>
 <div id="ch09-013" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> prediction_metrics(y_true, y_pred):</span>
@@ -1223,6 +1229,8 @@ Figure&nbsp;4: A ROC curve measures false alarms relative to the actual negative
 </div>
 <p>Compare recall with precision, and AP with F1. Does weighting help the ranking, the default decisions, or both? Logistic regression was never directly maximizing accuracy, and weighting need not reduce accuracy in every dataset.</p>
 <p>Imbalance alone is not a reason to change the data or fitting procedure. First ask whether rarity reflects the intended setting or a data-collection problem. If resampling is used, it belongs inside the training folds, not in validation or test data whose prevalence should reflect the evaluation setting. Resampling methods such as undersampling, oversampling, and SMOTE are beyond this chapter’s scope.</p>
+<p>Rare-event problems such as fraud detection can also motivate anomaly detection methods, which look for examples that differ from typical observations. <a href="https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.IsolationForest.html">Isolation forests</a> are one example. An unusual transaction is not necessarily fraudulent, however. These methods are outside the scope of this chapter.</p>
+<p>For further reading on class imbalance, see <em>Imbalanced Learning: Foundations, Algorithms, and Applications</em>.</p>
 </section>
 <section id="comparing-candidate-pipelines" class="level3">
 <h3 class="anchored" data-anchor-id="comparing-candidate-pipelines">Comparing candidate pipelines</h3>
@@ -1926,8 +1934,8 @@ Figure&nbsp;5: PR and ROC curves emphasize different aspects of the same predict
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../book/14_K-Means.html" class="pagination-link" aria-label="Chapter 14: K-Means Clustering">
-        <span class="nav-page-text">Chapter 14: K-Means Clustering</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../book/10_regression-metrics.html" class="pagination-link" aria-label="Chapter 10: Regression Metrics">
+        <span class="nav-page-text">Chapter 10: Regression Metrics</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
