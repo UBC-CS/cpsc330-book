@@ -16,6 +16,7 @@ project:
     - book/08_hyperparameter-optimization.ipynb
     - book/09_classification-metrics.ipynb
     - book/10_regression-metrics.ipynb
+    - book/11_ensembles.ipynb
     - book/14_K-Means.ipynb
     - book/17_natural-language-processing.ipynb
     - book/chapter-3-demo.ipynb
@@ -56,6 +57,7 @@ website:
             - book/08_hyperparameter-optimization.ipynb
             - book/09_classification-metrics.ipynb
             - book/10_regression-metrics.ipynb
+            - book/11_ensembles.ipynb
         # Add further sections when their first chapters are ready.
         - section: Unsupervised Learning and Recommendation
           contents:
