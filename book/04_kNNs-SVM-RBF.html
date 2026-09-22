@@ -1667,6 +1667,7 @@ Exercise 4.1: Distance and model complexity
 <h3 class="anchored" data-anchor-id="practical-trade-offs">Practical trade-offs</h3>
 <p><span class="math inline">\(k\)</span>-NN is attractive because its prediction rule is concrete, it can learn complicated boundaries, and fitting is usually inexpensive: the model mainly validates and stores the training data.</p>
 <p>That design shifts work to prediction. To classify a query, the model may need to compare it with many stored examples, so prediction and storage can become costly as the training set grows. Its performance also depends strongly on feature scale, irrelevant features, the distance measure, and the overall representation.</p>
+<p><strong>Computational note:</strong> A naive <span class="math inline">\(k\)</span>-NN prediction computes the distance from the query point to every training example. Data structures such as <strong>kd-trees</strong> can make neighbour lookup faster in some settings, particularly when there are few features. They tend to become less effective in high-dimensional spaces. See scikit-learn’s <a href="https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KDTree.html"><code>KDTree</code> documentation</a>.</p>
 </section>
 <section id="the-curse-of-dimensionality" class="level3">
 <h3 class="anchored" data-anchor-id="the-curse-of-dimensionality">The curse of dimensionality</h3>
