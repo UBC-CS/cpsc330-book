@@ -19,7 +19,9 @@ project:
     - book/11_ensembles.ipynb
     - book/14_K-Means.ipynb
     - book/17_natural-language-processing.ipynb
-    - book/chapter-3-demo.ipynb
+    - book/chapter-03-ml-fundamentals-demo.ipynb
+    - book/chapter-04-decision-boundaries-KNN-demo.ipynb
+    - book/chapter-05-06-preprocessing-demo.ipynb
 
 website:
   title: "CPSC 330: Applied Machine Learning"
@@ -73,8 +75,9 @@ website:
       logo: "book/img/UBC-CS-logo.png"
       contents:
         - demos.qmd
-        - book/chapter-3-demo.ipynb
-
+        - book/chapter-03-ml-fundamentals-demo.ipynb
+        - book/chapter-04-decision-boundaries-KNN-demo.ipynb
+        - book/chapter-05-06-preprocessing-demo.ipynb
 format:
   html:
     theme: cosmo
