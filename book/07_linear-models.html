@@ -347,8 +347,11 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#what-makes-a-model-linear" id="toc-what-makes-a-model-linear" class="nav-link active" data-scroll-target="#what-makes-a-model-linear">What makes a model linear?</a></li>
+  <li><a href="#how-linear-models-predict-and-learn" id="toc-how-linear-models-predict-and-learn" class="nav-link active" data-scroll-target="#how-linear-models-predict-and-learn">How linear models predict and learn</a>
+  <ul>
+  <li><a href="#what-makes-a-model-linear" id="toc-what-makes-a-model-linear" class="nav-link" data-scroll-target="#what-makes-a-model-linear">What makes a model linear?</a></li>
   <li><a href="#what-happens-during-fit" id="toc-what-happens-during-fit" class="nav-link" data-scroll-target="#what-happens-during-fit">What happens during <code>fit</code>?</a></li>
+  </ul></li>
   <li><a href="#linear-regression-with-ridge" id="toc-linear-regression-with-ridge" class="nav-link" data-scroll-target="#linear-regression-with-ridge">Linear regression with <code>Ridge</code></a>
   <ul>
   <li><a href="#controlling-model-complexity" id="toc-controlling-model-complexity" class="nav-link" data-scroll-target="#controlling-model-complexity">Controlling model complexity</a></li>
@@ -361,15 +364,13 @@ window.Quarto = {
   <li><a href="#log-loss" id="toc-log-loss" class="nav-link" data-scroll-target="#log-loss">Log loss</a></li>
   <li><a href="#confidence-and-model-limitations" id="toc-confidence-and-model-limitations" class="nav-link" data-scroll-target="#confidence-and-model-limitations">Confidence and model limitations</a></li>
   </ul></li>
-  <li><a href="#other-linear-classifiers" id="toc-other-linear-classifiers" class="nav-link" data-scroll-target="#other-linear-classifiers">Other linear classifiers</a></li>
-  <li><a href="#parametric-and-non-parametric-models" id="toc-parametric-and-non-parametric-models" class="nav-link" data-scroll-target="#parametric-and-non-parametric-models">Parametric and non-parametric models</a></li>
-  <li><a href="#strengths-and-limitations-of-linear-models" id="toc-strengths-and-limitations-of-linear-models" class="nav-link" data-scroll-target="#strengths-and-limitations-of-linear-models">Strengths and limitations of linear models</a></li>
+  <li><a href="#when-to-use-linear-models" id="toc-when-to-use-linear-models" class="nav-link" data-scroll-target="#when-to-use-linear-models">When to use linear models</a></li>
   <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a>
   <ul>
   <li><a href="#exercise-7.1-parametric-and-non-parametric-models-multiple-select" id="toc-exercise-7.1-parametric-and-non-parametric-models-multiple-select" class="nav-link" data-scroll-target="#exercise-7.1-parametric-and-non-parametric-models-multiple-select">Exercise 7.1: Parametric and non-parametric models (multiple select)</a></li>
   <li><a href="#exercise-7.2-trace-a-regression-prediction-and-its-loss" id="toc-exercise-7.2-trace-a-regression-prediction-and-its-loss" class="nav-link" data-scroll-target="#exercise-7.2-trace-a-regression-prediction-and-its-loss">Exercise 7.2: Trace a regression prediction and its loss</a></li>
-  <li><a href="#exercise-7.3-regularization-and-model-complexity-multiple-select" id="toc-exercise-7.3-regularization-and-model-complexity-multiple-select" class="nav-link" data-scroll-target="#exercise-7.3-regularization-and-model-complexity-multiple-select">Exercise 7.3: Regularization and model complexity (multiple select)</a></li>
-  <li><a href="#exercise-7.4-scores-probabilities-and-log-loss-multiple-select" id="toc-exercise-7.4-scores-probabilities-and-log-loss-multiple-select" class="nav-link" data-scroll-target="#exercise-7.4-scores-probabilities-and-log-loss-multiple-select">Exercise 7.4: Scores, probabilities, and log loss (multiple select)</a></li>
+  <li><a href="#exercise-7.3-predict-the-effect-of-regularization" id="toc-exercise-7.3-predict-the-effect-of-regularization" class="nav-link" data-scroll-target="#exercise-7.3-predict-the-effect-of-regularization">Exercise 7.3: Predict the effect of regularization</a></li>
+  <li><a href="#exercise-7.4-same-accuracy-different-probabilities" id="toc-exercise-7.4-same-accuracy-different-probabilities" class="nav-link" data-scroll-target="#exercise-7.4-same-accuracy-different-probabilities">Exercise 7.4: Same accuracy, different probabilities</a></li>
   <li><a href="#exercise-7.5-diagnose-an-interpretation" id="toc-exercise-7.5-diagnose-an-interpretation" class="nav-link" data-scroll-target="#exercise-7.5-diagnose-an-interpretation">Exercise 7.5: Diagnose an interpretation</a></li>
   <li><a href="#exercise-7.6-choose-between-linear-models-and-k-nn" id="toc-exercise-7.6-choose-between-linear-models-and-k-nn" class="nav-link" data-scroll-target="#exercise-7.6-choose-between-linear-models-and-k-nn">Exercise 7.6: Choose between linear models and <span class="math inline">\(k\)</span>-NN</a></li>
   </ul></li>
@@ -414,8 +415,9 @@ window.Quarto = {
 <li>Describe important strengths and limitations of linear models.</li>
 </ul>
 </div>
-<p>Linear models summarize the relationship between the features and target using one coefficient per feature and an intercept. Prediction then requires only a weighted sum.</p>
-<p>This compact prediction rule makes linear models fast and often relatively easy to inspect. It also restricts the relationships they can represent. In this chapter, we will develop the common machinery behind linear regression and logistic regression, examine how these models learn their coefficients, and consider when a linear relationship is (and is not) a useful approximation.</p>
+<p>In Chapter 4, <span class="math inline">\(k\)</span>-NN made predictions by finding similar training examples. In Chapter 6, we built feature representations that could contain thousands of columns, such as word counts. Comparing a new example with the training set can become expensive as these datasets grow. Could we instead learn a compact rule that combines the features directly?</p>
+<p>A <strong>linear model</strong> learns one coefficient per feature and an intercept. To predict, it multiplies each feature value by its coefficient, adds the contributions, and adds the intercept. Once fitted, it can predict without searching the training examples. This makes linear models useful when fast predictions or large feature representations matter.</p>
+<p>The simplicity of this rule also limits the relationships it can represent. We will explore that trade-off through regression and classification, using familiar pipelines and cross-validation to evaluate the models. The weighted sums we develop here are also building blocks of neural networks; we will return to that connection at the end of the chapter.</p>
 <div id="cell-3" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-03T19:34:34.736832Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-03T19:34:34.736557Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-03T19:34:35.461026Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-03T19:34:35.460589Z&quot;}}">
 <details class="code-fold">
 <summary>Show imports and setup</summary>
@@ -436,14 +438,16 @@ window.Quarto = {
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>DATA_DIR <span class="op">=</span> Path(<span class="st">"data"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<section id="what-makes-a-model-linear" class="level2">
-<h2 class="anchored" data-anchor-id="what-makes-a-model-linear">What makes a model linear?</h2>
+<section id="how-linear-models-predict-and-learn" class="level2">
+<h2 class="anchored" data-anchor-id="how-linear-models-predict-and-learn">How linear models predict and learn</h2>
+<section id="what-makes-a-model-linear" class="level3">
+<h3 class="anchored" data-anchor-id="what-makes-a-model-linear">What makes a model linear?</h3>
 <p>Suppose we want to predict a student’s exam grade from the number of hours they studied. A linear model represents its prediction as a line:</p>
 <p><span class="math display">\[
 \hat{y} = w_1x_1 + b.
 \]</span></p>
 <p>Here, <span class="math inline">\(x_1\)</span> is the number of study hours, <span class="math inline">\(w_1\)</span> is the <strong>coefficient</strong> (or weight), and <span class="math inline">\(b\)</span> is the <strong>intercept</strong> (or bias). The coefficient tells us how much the prediction changes when the feature increases by one unit (one hour in this example).</p>
-<p>The intercept is the model’s prediction when the feature equals zero. For example, suppose a hypothetical grading rule awards every student 5 points regardless of study time, then adds points based on the number of hours studied. The intercept would be 5: it provides the baseline prediction when study time is zero. Whether the intercept has a meaningful interpretation depends on the problem. From a modelling perspective, the intercept gives the fitted model flexibility to shift its predictions up or down.</p>
+<p>The intercept is the model’s prediction when the feature equals zero: here, the predicted grade at zero study hours. It lets the line shift up or down instead of forcing it to pass through the origin. Whether that prediction is meaningful depends on the data; a fitted line need not be reliable at study times outside the range we observed.</p>
 <div id="cell-5" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-03T19:34:35.462440Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-03T19:34:35.462347Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-03T19:34:35.539932Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-03T19:34:35.539551Z&quot;}}" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>study_data <span class="op">=</span> pd.DataFrame(</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    {</span>
@@ -492,7 +496,7 @@ prediction_for_5.5_hours    76.275862
 dtype: float64</code></pre>
 </div>
 </div>
-<p>The model makes a strong simplifying assumption: the predicted grade changes at a constant rate as study time increases. Because the learned coefficient is positive, it predicts that more study time always produces a higher grade. Is that plausible for every student and any number of hours?</p>
+<p>The model makes a strong simplifying assumption: the predicted grade changes at a constant rate as study time increases. Because the learned coefficient is positive, increasing the study-hours input always increases the predicted grade. Is that plausible for every student and any number of hours?</p>
 <p>In reality, additional study may have diminishing benefits, excessive studying may cause fatigue, and grades depend on many factors absent from this one-feature model. The fitted line would eventually predict grades above 100% if we extrapolated far enough. Moreover, an association between study time and grades does not by itself show that additional studying causes the predicted increase.</p>
 <p>A linear model can still be useful when a straight line is a reasonable approximation over the range where predictions will be made. The line does not need to pass through every training example. Fitting must choose a coefficient and intercept from many possible values; shortly, we will look under the hood of <code>fit</code> and introduce the criterion used to make that choice.</p>
 <p>With more features, each feature makes its own contribution. Suppose a model uses hours studied and practice sets completed. For one student,</p>
@@ -526,28 +530,28 @@ dtype: float64</code></pre>
 </tr>
 </tbody>
 </table>
-<p>so the predicted grade is <span class="math inline">\(20+12+45=77\)</span>. We can collect the feature values and coefficients into vectors:</p>
-<p><span class="math display">\[
-\mathbf{x}=
-\begin{bmatrix}5\\6\end{bmatrix},
-\qquad
-\mathbf{w}=
-\begin{bmatrix}4\\2\end{bmatrix}.
-\]</span></p>
-<p>The dot product <span class="math inline">\(\mathbf{w}^{\mathsf T}\mathbf{x}\)</span> multiplies corresponding entries and adds them. Therefore,</p>
-<p><span class="math display">\[
-\hat{y}
-=\mathbf{w}^{\mathsf T}\mathbf{x}+b
-=
-\begin{bmatrix}4&amp;2\end{bmatrix}
-\begin{bmatrix}5\\6\end{bmatrix}
-+45
-=77.
-\]</span></p>
-<p>In general, this is shorthand for</p>
+<p>so the predicted grade is <span class="math inline">\(20+12+45=77\)</span>. In general, with <span class="math inline">\(d\)</span> features, the rule is</p>
 <p><span class="math display">\[
 \hat{y}=w_1x_1+w_2x_2+\cdots+w_dx_d+b.
 \]</span></p>
+<p>Each term is one feature’s contribution. The model uses the same coefficients for every example.</p>
+<p>We can collect the coefficients into a vector <span class="math inline">\(\mathbf{w}\)</span> and the feature values into a vector <span class="math inline">\(\mathbf{x}\)</span>. Their <strong>dot product</strong>, written <span class="math inline">\(\mathbf{w}^{\mathsf T}\mathbf{x}\)</span>, means multiplying corresponding entries and adding them. For the student above, it is <span class="math inline">\(4\times5+2\times6=32\)</span>. This gives us a shorter way to write the same prediction:</p>
+<p><span class="math display">\[
+\hat{y}=\mathbf{w}^{\mathsf T}\mathbf{x}+b.
+\]</span></p>
+<p>With one feature, this prediction rule describes a line; with two features, a plane; and with more features, a <strong>hyperplane</strong>. You can follow the examples in this chapter by thinking of the rule as a weighted sum.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Optional: Predicting for a whole dataset">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Optional: Predicting for a whole dataset
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
 <p>For a complete dataset, we stack the examples as rows of a feature matrix <span class="math inline">\(X\)</span>:</p>
 <p><span class="math display">\[
 X=
@@ -569,14 +573,16 @@ X=
 \hat{\mathbf{y}}=X\mathbf{w},
 \]</span></p>
 <p>without a separate <span class="math inline">\(b\)</span>. In that convention, <span class="math inline">\(X\)</span> contains an additional feature whose value is always 1, and the corresponding coefficient in <span class="math inline">\(\mathbf{w}\)</span> is the intercept. Because <span class="math inline">\(1\times b=b\)</span>, this adds the intercept to every prediction. We say that the intercept has been <strong>absorbed</strong> into <span class="math inline">\(X\mathbf{w}\)</span>.</p>
-<p>The next section explains how fitting compares <span class="math inline">\(\hat{\mathbf{y}}\)</span> with <span class="math inline">\(\mathbf{y}\)</span> to choose the coefficients and intercept.</p>
-<p>With one feature, this prediction rule describes a line; with two features, a plane; and with more features, a <strong>hyperplane</strong>.</p>
+</div>
+</div>
+</div>
+<p>So far, we have supplied coefficients or let <code>fit</code> choose them. How does fitting decide which values to use?</p>
 </section>
-<section id="what-happens-during-fit" class="level2">
-<h2 class="anchored" data-anchor-id="what-happens-during-fit">What happens during <code>fit</code>?</h2>
+<section id="what-happens-during-fit" class="level3">
+<h3 class="anchored" data-anchor-id="what-happens-during-fit">What happens during <code>fit</code>?</h3>
 <p>So far, we have mostly treated a scikit-learn model as an object with a convenient interface: call <code>fit</code> using training data, then use the fitted model to predict and evaluate new examples. Let us briefly look inside <code>fit</code>.</p>
 <p>During supervised learning, a model uses the feature matrix <span class="math inline">\(X\)</span> and its current parameters to produce predictions <span class="math inline">\(\hat{y}\)</span>. A <strong>loss function</strong> compares those predictions with the observed targets <span class="math inline">\(y\)</span> and returns a number describing how poorly they agree. Low loss means the predictions are close to what the loss function rewards; high loss means they are not.</p>
-<p>An <strong>optimization</strong> procedure searches for parameter values that reduce this loss. It repeatedly evaluates predictions, measures their loss, and updates the parameters. Scikit-learn performs this work when we call <code>fit</code>. The computational details of optimization are beyond the scope of this book; the important idea is that the loss function tells the fitting procedure what counts as a better model.</p>
+<p>An <strong>optimization</strong> procedure finds parameter values that reduce the fitting objective. One common approach repeatedly evaluates predictions, measures their loss, and updates the parameters, as shown below. Some models can instead be fitted by directly solving a system of equations. Scikit-learn handles these computations when we call <code>fit</code>. The computational details of optimization are beyond the scope of this book; the important idea is that the loss function tells the fitting procedure what counts as a better model.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="img/supervised-learning-training.png" class="img-fluid figure-img" style="width:95.0%" alt="The supervised-learning training loop. Features X enter a model, which produces predictions y hat. A loss function compares the predictions with observed targets y. Optimization updates the model parameters and repeats the cycle."></p>
@@ -584,8 +590,10 @@ X=
 </figure>
 </div>
 <p>The choice of loss function depends on the prediction problem and on which kinds of mistakes we want the model to treat as costly. Different loss functions can therefore lead to different fitted models.</p>
-<p>The diagram shows a common choice for regression: <strong>mean squared error</strong>. For each training example, <span class="math inline">\(Xw-\mathbf{y}\)</span> subtracts the observed target from the model’s prediction. The result contains one prediction error for each example. These differences are called <strong>residuals</strong>. Mean squared error squares the residuals and takes their mean. A large mean squared error indicates that the predictions have large squared differences from the targets, on average. A small value indicates that the predictions are closer to the targets according to this particular loss. <strong>Ordinary least squares</strong> fits a linear model by finding coefficients that minimize squared-error loss.</p>
+<p>The diagram shows a common choice for regression: <strong>mean squared error</strong>. For each training example, subtract the prediction from the observed target: <span class="math inline">\(y-\hat{y}\)</span>. We will call this difference the <strong>residual</strong>. A positive residual means the model predicted too low; a negative one means it predicted too high. Mean squared error squares these residuals and takes their mean. The diagram subtracts in the opposite order, but squaring gives the same result. A large mean squared error indicates that the predictions have large squared differences from the targets, on average. A small value indicates that the predictions are closer to the targets according to this particular loss. <strong>Ordinary least squares</strong> fits a linear model by finding coefficients that minimize squared-error loss.</p>
+<p>For example, suppose two students both receive a grade of 70, and the model predicts 68 and 66. Their residuals are 2 and 4, so their squared errors are 4 and 16. The mean squared error is <span class="math inline">\((4+16)/2=10\)</span>. Doubling the size of the error makes its contribution four times as large. Squared-error loss therefore gives especially large weight to large mistakes.</p>
 <p>A low training loss means that the model fits its training examples well; it does not necessarily mean that the model will predict new examples well. We still need validation or cross-validation to assess generalization. Loss is also not necessarily the value reported by a model’s <code>score</code> method: a model can be fitted using one objective and evaluated using another measure. We will see this distinction with <code>Ridge</code> regression.</p>
+</section>
 </section>
 <section id="linear-regression-with-ridge" class="level2">
 <h2 class="anchored" data-anchor-id="linear-regression-with-ridge">Linear regression with <code>Ridge</code></h2>
@@ -745,7 +753,7 @@ X=
 <h3 class="anchored" data-anchor-id="controlling-model-complexity">Controlling model complexity</h3>
 <p>Many sets of coefficients can fit the training data similarly, especially when features are correlated. In those situations, small changes to the training data can produce large changes in the learned coefficients. Regularization makes <code>Ridge</code> prefer less extreme coefficients unless larger values improve the fit enough to justify them. At a high level, this is another way to control model complexity.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Optional: What `Ridge` minimizes">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -754,17 +762,17 @@ X=
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Ordinary least squares chooses coefficients by minimizing squared-error loss. <code>Ridge</code> adds a penalty based on the squared coefficients:</p>
 <p><span class="math display">\[
 \text{quantity minimized by Ridge}
 =
-\text{squared-error loss}
+\sum_{i=1}^{n}(y_i-\hat{y}_i)^2
 +
 \alpha\sum_{j=1}^{d}w_j^2.
 \]</span></p>
-<p>The first term rewards predictions close to the training targets. The second discourages large coefficients. The optimization procedure searches for coefficients that balance these two goals. The details of that optimization are beyond the scope of this book.</p>
+<p>Here, <span class="math inline">\(n\)</span> is the number of training examples. The first term is the <strong>sum</strong> of squared errors. Taking the mean instead gives the same unregularized least-squares fit, but changes the balance with the penalty unless we also adjust <code>alpha</code>. The intercept is not included in the penalty. The first term rewards predictions close to the training targets. The second discourages large coefficients. The optimization procedure searches for coefficients that balance these two goals. The details of that optimization are beyond the scope of this book.</p>
 </div>
 </div>
 </div>
@@ -773,7 +781,7 @@ X=
 <li>A larger <code>alpha</code> discourages large coefficients more strongly, usually producing a less flexible model with a greater risk of underfitting.</li>
 <li>A smaller <code>alpha</code> allows the model to follow the training data more closely, usually producing a more flexible model with a greater risk of overfitting.</li>
 </ul>
-<p>We will use <code>Ridge</code> rather than setting <code>alpha</code> to zero or switching to <code>LinearRegression</code>. The appropriate positive value of <code>alpha</code> is data-dependent and can be selected using cross-validation.</p>
+<p>Regularization changes which coefficients the model prefers; it does not change the weighted-sum prediction rule or remove coefficients from the model. We use <code>Ridge</code> here so that we can control this preference. The appropriate value of <code>alpha</code> is data-dependent and can be selected using cross-validation.</p>
 <p>Scaling matters because regularization acts on coefficient magnitudes. Without scaling, changing a feature from dollars to thousands of dollars changes the size of its coefficient and therefore how strongly that feature is affected by the penalty. This is why our <code>Ridge</code> pipeline includes <code>StandardScaler</code>.</p>
 <div id="cell-18" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-03T19:34:35.589472Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-03T19:34:35.589420Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-03T19:34:35.702850Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-03T19:34:35.702431Z&quot;}}" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>alpha_results <span class="op">=</span> []</span>
@@ -871,7 +879,8 @@ X=
 </div>
 </div>
 </div>
-<p>The effect of regularization is gradual, and the best value is data-dependent. We should not choose <code>alpha</code> by repeatedly checking the test set. Chapter 8 develops methods for selecting hyperparameters using only the training data.</p>
+<p>For this dataset, the training and cross-validation scores barely change across the smaller values of <code>alpha</code>. At very large values, both scores fall toward the mean-prediction baseline: the penalty constrains the coefficients so strongly that the model underfits. More regularization is not always better, and a small difference between training and validation scores is not enough to establish that a model is useful.</p>
+<p>We should not choose <code>alpha</code> by repeatedly checking the test set. Chapter 8 develops methods for selecting hyperparameters using only the training data.</p>
 </section>
 <section id="interpreting-coefficients" class="level3">
 <h3 class="anchored" data-anchor-id="interpreting-coefficients">Interpreting coefficients</h3>
@@ -936,14 +945,14 @@ X=
 </div>
 </div>
 </div>
-<p>A positive coefficient means that increasing the feature, while keeping the other represented features fixed, increases the model’s prediction. A negative coefficient decreases the prediction. After scaling, a larger absolute coefficient generally means that the model’s prediction changes more in response to a comparable change in that feature.</p>
+<p>A positive coefficient means that increasing the feature, while keeping the other represented features fixed, increases the model’s prediction. A negative coefficient decreases the prediction. With <code>StandardScaler</code>, a one-unit increase in a scaled feature corresponds to an increase of one training-set standard deviation in the original feature. Its coefficient is therefore the change in predicted house value, in dollars, for that increase while holding the other represented features fixed. A larger absolute coefficient means a larger prediction change for this particular size of change.</p>
 <p>That interpretation needs several qualifications:</p>
 <ul>
 <li>The coefficient describes the fitted model, not necessarily how the world works. It is not a causal effect.</li>
 <li>Correlated features can share or exchange predictive information, making individual coefficients unstable or surprising.</li>
 <li>Without comparable scaling, coefficient magnitudes cannot be compared directly because a one-unit change means something different for each feature.</li>
 <li>A coefficient gives a constant change per unit. If the real relationship curves or depends on another feature, that summary may be inadequate.</li>
-<li>The intercept may not have a useful real-world interpretation if an all-zero feature vector is impossible or far outside the observed data.</li>
+<li>In this standardized pipeline, zero represents each feature’s training mean. The intercept is the prediction at that combination of means, which need not describe an actual block group.</li>
 </ul>
 <p>Coefficients can help us understand how a model computes predictions, but they should be treated as evidence about the model rather than automatic feature importance or causal evidence.</p>
 <div class="callout-reflection">
@@ -1111,6 +1120,7 @@ z = \mathbf{w}^{\mathsf T}\mathbf{x}+b.
 \sigma(z)=\frac{1}{1+e^{-z}}.
 \]</span></p>
 <p>The sigmoid maps any real-valued score to a number between 0 and 1. This number is the model’s estimated probability of <code>classes_[1]</code>. A score of zero maps to 0.5, so thresholding the probability at 0.5 is equivalent to thresholding the score at zero.</p>
+<p>The sigmoid is a nonlinear function, but it does not bend the decision boundary: the boundary is still where the linear score equals zero. This is why logistic regression is called a linear classifier even though its predicted probability is not a linear function of the features.</p>
 <div id="cell-33" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-03T19:34:35.791067Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-03T19:34:35.791013Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-03T19:34:35.906853Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-03T19:34:35.906418Z&quot;}}" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sigmoid(z):</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">1</span> <span class="op">/</span> (<span class="dv">1</span> <span class="op">+</span> np.exp(<span class="op">-</span>z))</span>
@@ -1154,7 +1164,7 @@ dtype: float64</code></pre>
 <p><span class="math display">\[
 -\log\left(p_{\text{observed}}\right).
 \]</span></p>
-<p>The loss is small when the model assigns high probability to the observed class. It grows as that probability approaches zero, so a confident incorrect prediction receives a particularly large penalty. During fitting, logistic regression minimizes the mean log loss across the training examples.</p>
+<p>The loss is small when the model assigns high probability to the observed class. It grows as that probability approaches zero, so a confident incorrect prediction receives a particularly large penalty. During fitting, regularized logistic regression balances log loss across the training examples against a penalty on the coefficients. As with <code>Ridge</code>, the aim is to fit the data without making the coefficients unnecessarily large.</p>
 <div id="cell-37" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-03T19:34:35.911775Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-03T19:34:35.911724Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-03T19:34:35.957149Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-03T19:34:35.956820Z&quot;}}" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>probability_observed <span class="op">=</span> np.linspace(<span class="fl">0.01</span>, <span class="fl">0.99</span>, <span class="dv">500</span>)</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>example_loss <span class="op">=</span> <span class="op">-</span>np.log(probability_observed)</span>
@@ -1302,6 +1312,7 @@ dtype: float64</code></pre>
 </div>
 </div>
 </div>
+<p>At the smallest values of <code>C</code>, both training and cross-validation accuracy are low, indicating underfitting. Accuracy improves as the penalty weakens, then changes little across the larger values. Weakening regularization further does not necessarily improve validation performance. Also, these tables report accuracy, whereas fitting uses log loss plus a penalty: probabilities can change even when the predicted classes stay the same.</p>
 </section>
 <section id="confidence-and-model-limitations" class="level3">
 <h3 class="anchored" data-anchor-id="confidence-and-model-limitations">Confidence and model limitations</h3>
@@ -1454,21 +1465,33 @@ dtype: float64</code></pre>
 </div>
 </div>
 </div>
-<p>The second table deliberately searches for confident mistakes rather than relying on hard-coded row numbers. Some cities in Alaska can be geographically far from the model’s straight boundary even though they belong to the United States. The model can therefore be confidently wrong because its linear representation cannot express the actual geography.</p>
+<p>The second table shows the incorrect training predictions with the highest predicted probabilities. Some cities in Alaska can be geographically far from the model’s straight boundary even though they belong to the United States. The model can therefore be confidently wrong because its linear representation cannot express the actual geography.</p>
 <p>This is a general lesson: probability estimates are conditional on the model, its features, and the data used to fit it. A high value from <code>predict_proba</code> is not a guarantee.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Other linear classifiers">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Other linear classifiers
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>A linear SVM uses the same weighted-sum form as logistic regression, but learns its coefficients using a different loss function. Logistic regression uses log loss and naturally provides probabilities; a linear SVM uses a margin-based loss. Their boundaries can therefore differ even on the same training data.</p>
+<p>In scikit-learn, <code>LinearSVC</code> is designed specifically for linear classification, while <code>SVC(kernel="linear")</code> is a linear-kernel version of the SVM introduced in Chapter 4. Logistic regression will be our main linear classifier when probability estimates are useful.</p>
+</div>
+</div>
+</div>
 </section>
 </section>
-<section id="other-linear-classifiers" class="level2">
-<h2 class="anchored" data-anchor-id="other-linear-classifiers">Other linear classifiers</h2>
-<p>A support vector machine can also use a linear decision boundary. Logistic regression and a linear SVM both compute a weighted sum and can expose coefficients and an intercept, but they learn them using different loss functions. Logistic regression uses log loss and naturally provides probabilities. A linear SVM uses hinge loss and emphasizes whether examples lie on the correct side of a margin.</p>
-<p>In scikit-learn, <code>LinearSVC</code> is designed specifically for linear classification, while <code>SVC(kernel="linear")</code> provides a linear-kernel version of the kernel SVM introduced in Chapter 4. The models may produce similar-looking boundaries, but their coefficients need not be identical because their fitting objectives differ. Logistic regression will be our main linear classifier when probability estimates are useful.</p>
-<p>Now that we have seen what linear models learn and how they make predictions, we can compare their fitted representation with the <span class="math inline">\(k\)</span>-NN approach from Chapter 4.</p>
-</section>
-<section id="parametric-and-non-parametric-models" class="level2">
-<h2 class="anchored" data-anchor-id="parametric-and-non-parametric-models">Parametric and non-parametric models</h2>
-<p>Linear models are commonly described as <strong>parametric</strong>. Once the feature representation has been fixed, a linear model has a fixed-size prediction rule. A model with 100 features learns 100 coefficients and an intercept whether the training set contains 1,000 examples or one million.</p>
-<p><span class="math inline">\(k\)</span>-NN is commonly described as <strong>non-parametric</strong>. It does not compress the training data into a fixed collection of coefficients. Fitting mainly stores the training examples, and prediction searches those examples for nearby points. As the training set grows, the stored model and the work required for a straightforward neighbour search also grow.</p>
-<p>“Non-parametric” does not mean that a method has no settings: <span class="math inline">\(k\)</span>, the distance measure, and neighbour weighting are hyperparameters. Similarly, “parametric” does not necessarily mean small or unable to overfit. A linear model applied to 100,000 features learns 100,001 parameters, and it may still overfit without enough data or regularization.</p>
+<section id="when-to-use-linear-models" class="level2">
+<h2 class="anchored" data-anchor-id="when-to-use-linear-models">When to use linear models</h2>
+<p>Recall that <span class="math inline">\(k\)</span>-NN retains training examples and searches for neighbours when predicting. A fitted linear model instead retains coefficients and an intercept. This difference helps explain when each approach is useful.</p>
+<p>Linear models are commonly described as <strong>parametric</strong>: once the feature representation is fixed, the prediction rule has a fixed number of learned parameters. A linear regression or binary logistic-regression model with 100 features learns 100 coefficients and an intercept whether it has 1,000 training examples or one million. By contrast, <span class="math inline">\(k\)</span>-NN is <strong>non-parametric</strong>: its stored representation grows with the training set.</p>
+<p>In statistics, “parametric” often describes a family of probability distributions specified by a fixed number of parameters. Here, we focus on the fixed-size prediction rule. Calling linear regression parametric does not mean that its features or target must follow a normal distribution. Fitting a least-squares prediction rule does not itself require normally distributed errors either; additional distributional assumptions arise in some statistical uses of the model. Likewise, non-parametric does not mean assumption-free: <span class="math inline">\(k\)</span>-NN relies on nearby examples having similar targets under the chosen representation and distance.</p>
+<p>“Non-parametric” also does not mean that a method has no hyperparameters: <span class="math inline">\(k\)</span>, the distance measure, and neighbour weighting are all choices we make. Nor does “parametric” mean small or unable to overfit. With 100,000 features, a linear regression model learns 100,001 parameters and may still overfit without enough data or regularization.</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 33%">
@@ -1510,13 +1533,9 @@ dtype: float64</code></pre>
 </tr>
 </tbody>
 </table>
-<p>These are tendencies, not guarantees about which model will perform better. A linear model can be a strong choice when the linear approximation is appropriate, when the feature matrix is large and sparse, or when fast prediction matters. <span class="math inline">\(k\)</span>-NN can capture local structure that a linear model misses, but distance becomes difficult to use effectively in some high-dimensional representations.</p>
-</section>
-<section id="strengths-and-limitations-of-linear-models" class="level2">
-<h2 class="anchored" data-anchor-id="strengths-and-limitations-of-linear-models">Strengths and limitations of linear models</h2>
-<p>Linear models are often strong baselines. They are typically fast to predict with, scale to many examples and features, and work well with sparse representations such as bag-of-words. Their coefficients make the calculation behind a prediction relatively transparent. Regularization provides a direct way to control model complexity.</p>
-<p>Their central restriction is also clear: the prediction is linear in the represented features. Logistic regression separates classes with a hyperplane, and linear regression assigns the same coefficient to a feature throughout the feature space. Curved relationships, local patterns, and interactions may therefore be missed unless useful transformed or interaction features are supplied.</p>
-<p>This limitation does not mean the raw data must literally follow a straight line. A linear model is linear in its <strong>features</strong>. Later feature-engineering techniques can create features that let a linear model represent some nonlinear relationships, although every transformation introduces new assumptions and potential complexity.</p>
+<p>These comparisons suggest useful starting points, not guaranteed winners. Try a regularized linear model early when fast prediction matters or the feature matrix is large and sparse, as with bag-of-words. Its coefficients also make the prediction calculation relatively transparent, subject to the interpretation cautions discussed earlier. For a small dataset with useful local structure and a curved boundary, <span class="math inline">\(k\)</span>-NN may be a better starting point. Compare validation performance and computation time before choosing.</p>
+<p>A linear model’s central restriction concerns its <strong>represented features</strong>: linear regression assigns each feature a constant coefficient, and logistic regression uses a linear boundary. Curved relationships and interactions can be missed. Later feature-engineering techniques can supply transformed or interaction features that let a linear model represent some nonlinear relationships, although these choices introduce their own assumptions and complexity.</p>
+<p>The weighted sum also appears inside neural networks. A neural-network layer can compute several weighted sums, each with its own coefficients and intercept, and then apply nonlinear functions to the results. Subsequent layers use those outputs as their inputs. Combining these operations allows networks to represent more complicated relationships. Simply stacking weighted sums with intercepts, without nonlinear functions between them, would still give a linear prediction rule.</p>
 </section>
 <section id="exercises" class="level2">
 <h2 class="anchored" data-anchor-id="exercises">Exercises</h2>
@@ -1541,63 +1560,6 @@ dtype: float64</code></pre>
 </ol></li>
 </ul>
 <div class="callout callout-style-default callout-tip callout-titled" title="Solution">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Solution
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-2" class="callout-2-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>A, C, and E are true. For a fixed feature representation, logistic regression learns one coefficient per feature and an intercept, regardless of the number of training examples. In contrast, <span class="math inline">\(k\)</span>-NN retains the training examples. Non-parametric models can still have hyperparameters such as <span class="math inline">\(k\)</span>.</p>
-</div>
-</div>
-</div>
-</section>
-<section id="exercise-7.2-trace-a-regression-prediction-and-its-loss" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-7.2-trace-a-regression-prediction-and-its-loss">Exercise 7.2: Trace a regression prediction and its loss</h3>
-<p>A linear model uses <span class="math inline">\(\hat y=3x+10\)</span>. Compute its predictions for <span class="math inline">\(x=2\)</span> and <span class="math inline">\(x=5\)</span>. If the observed targets are 18 and 20, compute each residual, each squared error, and the mean squared error. Which example has more influence on the squared-error loss?</p>
-<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Solution
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-3" class="callout-3-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>For <span class="math inline">\(x=2\)</span>, the prediction is 16, the residual is <span class="math inline">\(18-16=2\)</span>, and the squared error is 4. For <span class="math inline">\(x=5\)</span>, the prediction is 25, the residual is <span class="math inline">\(20-25=-5\)</span>, and the squared error is 25. The mean squared error is <span class="math inline">\((4+25)/2=14.5\)</span>. The second example has more influence because its error has the larger magnitude.</p>
-</div>
-</div>
-</div>
-</section>
-<section id="exercise-7.3-regularization-and-model-complexity-multiple-select" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-7.3-regularization-and-model-complexity-multiple-select">Exercise 7.3: Regularization and model complexity (multiple select)</h3>
-<p><strong>Select all statements that are true.</strong></p>
-<ul>
-<li><ol type="A">
-<li>Increasing <code>alpha</code> usually makes a <code>Ridge</code> model less flexible.</li>
-</ol></li>
-<li><ol start="2" type="A">
-<li>Increasing <code>C</code> strengthens regularization in <code>LogisticRegression</code>.</li>
-</ol></li>
-<li><ol start="3" type="A">
-<li>Scaling helps ensure that the regularization penalty treats coefficient magnitudes comparably across features.</li>
-</ol></li>
-<li><ol start="4" type="A">
-<li>We should choose <code>alpha</code> by finding the value with the best test score.</li>
-</ol></li>
-<li><ol start="5" type="A">
-<li>Extremely strong regularization can cause underfitting.</li>
-</ol></li>
-</ul>
-<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
@@ -1609,31 +1571,14 @@ dtype: float64</code></pre>
 </div>
 <div id="callout-4" class="callout-4-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>A, C, and E are true. Larger <code>alpha</code> means stronger regularization for <code>Ridge</code>, but larger <code>C</code> means weaker regularization for <code>LogisticRegression</code>. Hyperparameters should be selected using training data and validation or cross-validation, not the test set.</p>
+<p>A, C, and E are true. For a fixed feature representation, logistic regression learns one coefficient per feature and an intercept, regardless of the number of training examples. In contrast, <span class="math inline">\(k\)</span>-NN retains the training examples. Non-parametric models can still have hyperparameters such as <span class="math inline">\(k\)</span>.</p>
 </div>
 </div>
 </div>
 </section>
-<section id="exercise-7.4-scores-probabilities-and-log-loss-multiple-select" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-7.4-scores-probabilities-and-log-loss-multiple-select">Exercise 7.4: Scores, probabilities, and log loss (multiple select)</h3>
-<p><strong>Select all statements that are true for a fitted binary logistic-regression model.</strong></p>
-<ul>
-<li><ol type="A">
-<li>A negative decision score predicts <code>classes_[0]</code>.</li>
-</ol></li>
-<li><ol start="2" type="A">
-<li>A decision score of zero corresponds to a probability of 0.5 for <code>classes_[1]</code>.</li>
-</ol></li>
-<li><ol start="3" type="A">
-<li>A decision score of 2 gives <code>classes_[1]</code> a higher probability than a score of -3.</li>
-</ol></li>
-<li><ol start="4" type="A">
-<li>A decision score of -3 is closer to the decision boundary than a score of zero.</li>
-</ol></li>
-<li><ol start="5" type="A">
-<li>A confident incorrect prediction receives less log loss than a hesitant incorrect prediction.</li>
-</ol></li>
-</ul>
+<section id="exercise-7.2-trace-a-regression-prediction-and-its-loss" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-7.2-trace-a-regression-prediction-and-its-loss">Exercise 7.2: Trace a regression prediction and its loss</h3>
+<p>A linear model uses <span class="math inline">\(\hat y=3x+10\)</span>. Compute its predictions for <span class="math inline">\(x=2\)</span> and <span class="math inline">\(x=5\)</span>. If the observed targets are 18 and 20, compute each residual, each squared error, and the mean squared error. Which example has more influence on the squared-error loss?</p>
 <div class="callout callout-style-default callout-tip callout-titled" title="Solution">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -1646,14 +1591,14 @@ dtype: float64</code></pre>
 </div>
 <div id="callout-5" class="callout-5-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>A, B, and C are true. The decision boundary is at a score of zero, and the sigmoid function increases as the score increases. A confident incorrect prediction assigns very little probability to the observed class and therefore receives a large log loss.</p>
+<p>For <span class="math inline">\(x=2\)</span>, the prediction is 16, the residual is <span class="math inline">\(18-16=2\)</span>, and the squared error is 4. For <span class="math inline">\(x=5\)</span>, the prediction is 25, the residual is <span class="math inline">\(20-25=-5\)</span>, and the squared error is 25. The mean squared error is <span class="math inline">\((4+25)/2=14.5\)</span>. The second example has more influence because its error has the larger magnitude.</p>
 </div>
 </div>
 </div>
 </section>
-<section id="exercise-7.5-diagnose-an-interpretation" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-7.5-diagnose-an-interpretation">Exercise 7.5: Diagnose an interpretation</h3>
-<p>A fitted housing model gives <code>distance_to_downtown</code> a negative coefficient. A report concludes: “Moving a house one kilometre farther from downtown will cause its price to fall by exactly the coefficient.” Identify at least three problems with this conclusion. Consider scaling, correlated features, the distinction between prediction and causation, and whether the relationship is plausibly linear.</p>
+<section id="exercise-7.3-predict-the-effect-of-regularization" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-7.3-predict-the-effect-of-regularization">Exercise 7.3: Predict the effect of regularization</h3>
+<p>A scaled <code>Ridge</code> model performs well on its training data but much worse in cross-validation. A classmate proposes increasing <code>alpha</code> by a large amount and selecting the value with the best test score. Before running anything, explain what increasing <code>alpha</code> encourages the model to do. Could it help? Could it make both training and validation performance worse? How would you revise the classmate’s selection procedure? What direction would you change <code>C</code> to strengthen regularization in logistic regression?</p>
 <div class="callout callout-style-default callout-tip callout-titled" title="Solution">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -1666,14 +1611,14 @@ dtype: float64</code></pre>
 </div>
 <div id="callout-6" class="callout-6-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>The coefficient describes the fitted model, not a causal effect of moving a house. If the feature was standardized, the coefficient does not represent a one-kilometre change. Its interpretation also holds the other represented features fixed, which may be unrealistic when features are correlated. Omitted variables, sampling variation, and a nonlinear relationship could further affect the coefficient.</p>
+<p>Increasing <code>alpha</code> encourages smaller coefficients. This may reduce overfitting and improve validation performance, but excessive regularization can make the model underfit, worsening both training and validation performance. Select <code>alpha</code> using cross-validation on the training data, keeping the test set for final evaluation. For logistic regression, decrease <code>C</code> to strengthen regularization.</p>
 </div>
 </div>
 </div>
 </section>
-<section id="exercise-7.6-choose-between-linear-models-and-k-nn" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-7.6-choose-between-linear-models-and-k-nn">Exercise 7.6: Choose between linear models and <span class="math inline">\(k\)</span>-NN</h3>
-<p>Consider (a) a small two-dimensional dataset with a strongly curved class boundary and (b) a bag-of-words dataset with 100,000 sparse features and strict prediction-time requirements. Which of <span class="math inline">\(k\)</span>-NN and logistic regression would you try first in each case? State the assumptions behind your choices and describe evidence that could change your mind.</p>
+<section id="exercise-7.4-same-accuracy-different-probabilities" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-7.4-same-accuracy-different-probabilities">Exercise 7.4: Same accuracy, different probabilities</h3>
+<p>Two binary classifiers predict the observed class correctly for each of two examples. Model A assigns the observed class probabilities of 0.6 and 0.6; model B assigns probabilities of 0.9 and 0.9. Compare their accuracy and log loss without calculating logarithms. Now both models encounter a third example and predict the wrong class: A assigns the observed class probability 0.4, while B assigns it probability 0.01. Which model receives the larger loss on this example, and why? Does a high predicted probability guarantee correctness?</p>
 <div class="callout callout-style-default callout-tip callout-titled" title="Solution">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -1685,6 +1630,46 @@ dtype: float64</code></pre>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
 <div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Both models have 100% accuracy on the first two examples, but B has lower log loss because it assigns higher probabilities to the observed classes. On the third example, B receives a much larger loss because it assigns almost no probability to the class that actually occurred. Both models now have accuracy of two out of three. High predicted probability reflects the model’s estimate; it does not guarantee that the prediction is correct.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-7.5-diagnose-an-interpretation" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-7.5-diagnose-an-interpretation">Exercise 7.5: Diagnose an interpretation</h3>
+<p>A fitted housing model gives <code>distance_to_downtown</code> a negative coefficient. A report concludes: “Moving a house one kilometre farther from downtown will cause its price to fall by exactly the coefficient.” Identify at least three problems with this conclusion. Consider scaling, correlated features, the distinction between prediction and causation, and whether the relationship is plausibly linear.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The coefficient describes the fitted model, not a causal effect of moving a house. If the feature was standardized, the coefficient does not represent a one-kilometre change. Its interpretation also holds the other represented features fixed, which may be unrealistic when features are correlated. Omitted variables, sampling variation, and a nonlinear relationship could further affect the coefficient.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-7.6-choose-between-linear-models-and-k-nn" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-7.6-choose-between-linear-models-and-k-nn">Exercise 7.6: Choose between linear models and <span class="math inline">\(k\)</span>-NN</h3>
+<p>Consider (a) a small two-dimensional dataset with a strongly curved class boundary and (b) a bag-of-words dataset with 100,000 sparse features and strict prediction-time requirements. Which of <span class="math inline">\(k\)</span>-NN and logistic regression would you try first in each case? State the assumptions behind your choices and describe evidence that could change your mind.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>For the small two-dimensional dataset, <span class="math inline">\(k\)</span>-NN is a reasonable first choice because it can represent a curved, locally determined boundary. For the high-dimensional sparse dataset, logistic regression is a better first choice because linear models often work well with sparse features and predict quickly without searching the training set. These are starting points rather than guaranteed winners; cross-validation results, computation time, and an examination of model errors could change the choice.</p>
 </div>
