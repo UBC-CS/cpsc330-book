@@ -1,0 +1,2242 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Chapter 13: Feature Engineering and Selection – CPSC 330: Applied Machine Learning</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../book/14_K-Means.html" rel="next">
+<link href="../book/12_feat-importances.html" rel="prev">
+<link href="../book/img/UBC-CS-logo.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-420b07ff392561fc7da875fbdf660b67.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">CPSC 330: Applied Machine Learning</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../index.html" aria-current="page"> 
+<span class="menu-text">Book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../demos.html"> 
+<span class="menu-text">Demos</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/02_terminology-baselines-decision-trees.html">Foundations and Supervised Learning</a></li><li class="breadcrumb-item"><a href="../book/13_feature-engineering-selection.html">Chapter 13: Feature Engineering and Selection</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../book/img/UBC-CS-logo.png" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../book/img/UBC-CS-logo.png" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../learning-objectives.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Detailed Learning Objectives</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/01_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1: Course Introduction</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Foundations and Supervised Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/02_terminology-baselines-decision-trees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2: From Data to a First Model</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/03_ml-fundamentals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3: Machine Learning Fundamentals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/04_kNNs-SVM-RBF.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4: Similarity-Based Models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/05_preprocessing-pipelines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5: Preprocessing and Pipelines</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/06_column-transformer-text-feats.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6: Column Transformers and Text Features</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/07_linear-models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7: Linear Models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/08_hyperparameter-optimization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8: Hyperparameter Optimization</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/09_classification-metrics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9: Classification Metrics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/10_regression-metrics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10: Regression Metrics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/11_ensembles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11: Ensembles</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/12_feat-importances.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 12: Feature Importances and Model Interpretation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/13_feature-engineering-selection.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Chapter 13: Feature Engineering and Selection</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Unsupervised Learning and Recommendation</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/14_K-Means.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 14: K-Means Clustering</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">Working with Different Data Types</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/17_natural-language-processing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 17: Natural Language Processing</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#why-change-the-feature-representation" id="toc-why-change-the-feature-representation" class="nav-link active" data-scroll-target="#why-change-the-feature-representation">Why change the feature representation?</a></li>
+  <li><a href="#creating-interaction-features" id="toc-creating-interaction-features" class="nav-link" data-scroll-target="#creating-interaction-features">Creating interaction features</a>
+  <ul>
+  <li><a href="#generating-interactions-in-a-pipeline" id="toc-generating-interactions-in-a-pipeline" class="nav-link" data-scroll-target="#generating-interactions-in-a-pipeline">Generating interactions in a pipeline</a></li>
+  <li><a href="#interactions-between-categories" id="toc-interactions-between-categories" class="nav-link" data-scroll-target="#interactions-between-categories">Interactions between categories</a></li>
+  <li><a href="#iclicker-13.1-what-did-the-new-feature-add" id="toc-iclicker-13.1-what-did-the-new-feature-add" class="nav-link" data-scroll-target="#iclicker-13.1-what-did-the-new-feature-add">iClicker 13.1: What did the new feature add?</a></li>
+  </ul></li>
+  <li><a href="#engineering-numeric-features" id="toc-engineering-numeric-features" class="nav-link" data-scroll-target="#engineering-numeric-features">Engineering numeric features</a>
+  <ul>
+  <li><a href="#ratios-describing-a-typical-household" id="toc-ratios-describing-a-typical-household" class="nav-link" data-scroll-target="#ratios-describing-a-typical-household">Ratios: describing a typical household</a></li>
+  <li><a href="#binning-allowing-different-effects-in-different-ranges" id="toc-binning-allowing-different-effects-in-different-ranges" class="nav-link" data-scroll-target="#binning-allowing-different-effects-in-different-ranges">Binning: allowing different effects in different ranges</a></li>
+  <li><a href="#iclicker-13.2-predict-what-binning-changes" id="toc-iclicker-13.2-predict-what-binning-changes" class="nav-link" data-scroll-target="#iclicker-13.2-predict-what-binning-changes">iClicker 13.2: Predict what binning changes</a></li>
+  </ul></li>
+  <li><a href="#why-remove-features" id="toc-why-remove-features" class="nav-link" data-scroll-target="#why-remove-features">Why remove features?</a></li>
+  <li><a href="#selecting-features-with-models" id="toc-selecting-features-with-models" class="nav-link" data-scroll-target="#selecting-features-with-models">Selecting features with models</a>
+  <ul>
+  <li><a href="#model-based-selection" id="toc-model-based-selection" class="nav-link" data-scroll-target="#model-based-selection">Model-based selection</a></li>
+  <li><a href="#when-irrelevant-inputs-get-in-the-way" id="toc-when-irrelevant-inputs-get-in-the-way" class="nav-link" data-scroll-target="#when-irrelevant-inputs-get-in-the-way">When irrelevant inputs get in the way</a></li>
+  <li><a href="#when-keeping-all-features-works-better" id="toc-when-keeping-all-features-works-better" class="nav-link" data-scroll-target="#when-keeping-all-features-works-better">When keeping all features works better</a></li>
+  <li><a href="#recursive-feature-elimination" id="toc-recursive-feature-elimination" class="nav-link" data-scroll-target="#recursive-feature-elimination">Recursive feature elimination</a></li>
+  <li><a href="#choosing-how-many-features-to-keep" id="toc-choosing-how-many-features-to-keep" class="nav-link" data-scroll-target="#choosing-how-many-features-to-keep">Choosing how many features to keep</a></li>
+  </ul></li>
+  <li><a href="#making-and-evaluating-feature-decisions" id="toc-making-and-evaluating-feature-decisions" class="nav-link" data-scroll-target="#making-and-evaluating-feature-decisions">Making and evaluating feature decisions</a>
+  <ul>
+  <li><a href="#iclicker-13.3-find-the-leakage" id="toc-iclicker-13.3-find-the-leakage" class="nav-link" data-scroll-target="#iclicker-13.3-find-the-leakage">iClicker 13.3: Find the leakage</a></li>
+  </ul></li>
+  <li><a href="#chapter-summary" id="toc-chapter-summary" class="nav-link" data-scroll-target="#chapter-summary">Chapter summary</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/02_terminology-baselines-decision-trees.html">Foundations and Supervised Learning</a></li><li class="breadcrumb-item"><a href="../book/13_feature-engineering-selection.html">Chapter 13: Feature Engineering and Selection</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Chapter 13: Feature Engineering and Selection</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="callout-lo">
+<p>By the end of this chapter, you will be able to:</p>
+<ul>
+<li>Distinguish feature engineering, feature selection, and feature importance.</li>
+<li>Explain how interaction features and binning change what a linear model can learn.</li>
+<li>Construct numeric features and evaluate their effect on model performance using cross-validation.</li>
+<li>Use pipelines to fit learned transformations and feature selection within each cross-validation fold.</li>
+<li>Compare model-based selection and recursive feature elimination.</li>
+<li>Choose the number of selected features using cross-validation without leaking validation information.</li>
+<li>Explain why a selected feature set depends on the model, data, and other available features.</li>
+</ul>
+</div>
+<section id="why-change-the-feature-representation" class="level2">
+<h2 class="anchored" data-anchor-id="why-change-the-feature-representation">Why change the feature representation?</h2>
+<p>So far, we have compared models and investigated how they use their inputs. But what if the limitation is how we represent those inputs? Changing the representation can make a useful relationship easier to learn, even without changing the model.</p>
+<p>We already do this through scaling, one-hot encoding, and bag-of-words. <strong>Feature engineering</strong> extends that work by constructing inputs using our understanding of the problem. Later, <strong>feature selection</strong> will let us ask whether we need all the available columns. The question throughout this chapter is: what inputs help this model solve this task?</p>
+<div class="callout-reflection">
+<p>Suppose we predict flight delays before departure. We know the scheduled departure time and expected flight duration. Delays seem more common during evening rush hours. What feature could help a linear model represent that pattern?</p>
+</div>
+<p>An indicator for a scheduled departure during rush hour is one possibility. It lets the model distinguish that period without assuming that each additional hour has the same effect. We would use scheduled rather than actual departure time, which is unavailable when we make the prediction.</p>
+<p>Feature engineering makes existing information more accessible to a particular model. We will create interactions and numeric transformations, then investigate when keeping fewer features helps—and when it hurts.</p>
+<div id="bc4b23e4" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-18T14:53:19.828318Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-18T14:53:19.828217Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-18T14:53:28.864426Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-18T14:53:28.864057Z&quot;}}" data-execution_count="1">
+<details class="code-fold">
+<summary>Show imports and setup</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.base <span class="im">import</span> clone</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.compose <span class="im">import</span> make_column_transformer</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.datasets <span class="im">import</span> load_breast_cancer</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.dummy <span class="im">import</span> DummyClassifier</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestClassifier</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_selection <span class="im">import</span> RFE, SelectFromModel</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.impute <span class="im">import</span> SimpleImputer</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression, Ridge</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> (</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    GridSearchCV, KFold, StratifiedKFold, cross_validate, train_test_split,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> make_pipeline</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> KBinsDiscretizer, PolynomialFeatures, StandardScaler</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>DATA_DIR <span class="op">=</span> Path(<span class="st">"data"</span>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>plt.rcParams.update({<span class="st">"figure.figsize"</span>: (<span class="dv">7</span>, <span class="dv">4</span>)})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Matplotlib is building the font cache; this may take a moment.</code></pre>
+</div>
+</div>
+</section>
+<section id="creating-interaction-features" class="level2">
+<h2 class="anchored" data-anchor-id="creating-interaction-features">Creating interaction features</h2>
+<p>A linear classifier uses a weighted sum of its features. With two inputs, its decision boundary is a straight line. Consider the following pattern, called <strong>exclusive OR (XOR)</strong>: the target is 1 when the signs of the two inputs differ and 0 when they agree.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th><span class="math inline">\(x_1\)</span></th>
+<th><span class="math inline">\(x_2\)</span></th>
+<th>Target</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>−1</td>
+<td>−1</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>−1</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>−1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>No straight line separates these two classes in the original plane. But their product, <span class="math inline">\(x_1x_2\)</span>, is negative exactly when the signs differ. Adding that product gives the model a useful new input. We call it an <strong>interaction feature</strong>, or feature cross: it represents a combination of inputs.</p>
+<div id="40ea462f" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-18T14:53:28.865737Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-18T14:53:28.865634Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-18T14:53:28.870170Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-18T14:53:28.869829Z&quot;}}" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>xor_table <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"x1"</span>: [<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>],</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"x2"</span>: [<span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>],</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"target"</span>: [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>],</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>xor_table[<span class="st">"x1_x2"</span>] <span class="op">=</span> xor_table[<span class="st">"x1"</span>] <span class="op">*</span> xor_table[<span class="st">"x2"</span>]</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>xor_table</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">x1</th>
+<th data-quarto-table-cell-role="th">x2</th>
+<th data-quarto-table-cell-role="th">target</th>
+<th data-quarto-table-cell-role="th">x1_x2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>-1</td>
+<td>-1</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>1</td>
+<td>-1</td>
+<td>1</td>
+<td>-1</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>-1</td>
+<td>1</td>
+<td>1</td>
+<td>-1</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="efc8d114" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-18T14:53:28.870949Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-18T14:53:28.870901Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-18T14:53:28.994033Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-18T14:53:28.993657Z&quot;}}" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">9</span>, <span class="fl">3.5</span>))</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> label, marker <span class="kw">in</span> [(<span class="dv">0</span>, <span class="st">"o"</span>), (<span class="dv">1</span>, <span class="st">"^"</span>)]:</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    rows <span class="op">=</span> xor_table[xor_table[<span class="st">"target"</span>] <span class="op">==</span> label]</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    axes[<span class="dv">0</span>].scatter(rows[<span class="st">"x1"</span>], rows[<span class="st">"x2"</span>], marker<span class="op">=</span>marker, s<span class="op">=</span><span class="dv">100</span>, label<span class="op">=</span><span class="ss">f"Class </span><span class="sc">{</span>label<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    axes[<span class="dv">1</span>].scatter(rows[<span class="st">"x1"</span>], rows[<span class="st">"x1_x2"</span>], marker<span class="op">=</span>marker, s<span class="op">=</span><span class="dv">100</span>, label<span class="op">=</span><span class="ss">f"Class </span><span class="sc">{</span>label<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"$x_1$"</span>, ylabel<span class="op">=</span><span class="st">"$x_2$"</span>, title<span class="op">=</span><span class="st">"Original features"</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"$x_1$"</span>, ylabel<span class="op">=</span><span class="st">"$x_1 x_2$"</span>, title<span class="op">=</span><span class="st">"With an interaction"</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].axhline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">"grey"</span>, linestyle<span class="op">=</span><span class="st">"--"</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> axes:</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    ax.<span class="bu">set</span>(xlim<span class="op">=</span>(<span class="op">-</span><span class="fl">1.5</span>, <span class="fl">1.5</span>), ylim<span class="op">=</span>(<span class="op">-</span><span class="fl">1.5</span>, <span class="fl">1.5</span>))</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    ax.legend()</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="13_feature-engineering-selection_files/figure-html/cell-4-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The dashed line separates the classes in the transformed space. The model remains linear in its supplied features, but its boundary need not be linear in the original inputs. This is a useful distinction: a linear model does not require us to supply only the raw measurements.</p>
+<section id="generating-interactions-in-a-pipeline" class="level3">
+<h3 class="anchored" data-anchor-id="generating-interactions-in-a-pipeline">Generating interactions in a pipeline</h3>
+<p>Let’s use a larger sample with the same rule. We compare logistic regression with and without the product feature on identical cross-validation folds.</p>
+<div id="a55b0d69" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-18T14:53:28.994937Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-18T14:53:28.994880Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-18T14:53:29.026402Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-18T14:53:29.026100Z&quot;}}" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">0</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>X_xor <span class="op">=</span> pd.DataFrame(rng.normal(size<span class="op">=</span>(<span class="dv">400</span>, <span class="dv">2</span>)), columns<span class="op">=</span>[<span class="st">"x1"</span>, <span class="st">"x2"</span>])</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>y_xor <span class="op">=</span> (X_xor[<span class="st">"x1"</span>] <span class="op">&gt;</span> <span class="dv">0</span>) <span class="op">!=</span> (X_xor[<span class="st">"x2"</span>] <span class="op">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>xor_cv <span class="op">=</span> StratifiedKFold(n_splits<span class="op">=</span><span class="dv">5</span>, shuffle<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span><span class="dv">123</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>xor_models <span class="op">=</span> {</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Original features"</span>: make_pipeline(StandardScaler(), LogisticRegression()),</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"With interaction"</span>: make_pipeline(</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        PolynomialFeatures(degree<span class="op">=</span><span class="dv">2</span>, interaction_only<span class="op">=</span><span class="va">True</span>, include_bias<span class="op">=</span><span class="va">False</span>),</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        StandardScaler(),</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        LogisticRegression(),</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>xor_results <span class="op">=</span> {}</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, model <span class="kw">in</span> xor_models.items():</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> cross_validate(model, X_xor, y_xor, cv<span class="op">=</span>xor_cv, scoring<span class="op">=</span><span class="st">"accuracy"</span>)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    xor_results[name] <span class="op">=</span> {</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Mean validation accuracy"</span>: scores[<span class="st">"test_score"</span>].mean(),</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Fold standard deviation"</span>: scores[<span class="st">"test_score"</span>].std(),</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(xor_results).T.<span class="bu">round</span>(<span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Mean validation accuracy</th>
+<th data-quarto-table-cell-role="th">Fold standard deviation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Original features</th>
+<td>0.515</td>
+<td>0.046</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">With interaction</th>
+<td>0.972</td>
+<td>0.027</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Here, the interaction substantially improves validation accuracy. <code>PolynomialFeatures</code> with <code>degree=2</code> and <code>interaction_only=True</code> retains the original inputs and adds pairwise products, omitting squares such as <span class="math inline">\(x_1^2\)</span>. We set <code>include_bias=False</code> because logistic regression already fits an intercept. Scaling follows feature creation so the generated feature is scaled too.</p>
+<p>Inspecting the transformed names makes the extra column explicit.</p>
+<div id="a1a01abc" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-18T14:53:29.027336Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-18T14:53:29.027281Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-18T14:53:29.030727Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-18T14:53:29.030355Z&quot;}}" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>xor_models[<span class="st">"With interaction"</span>].fit(X_xor, y_xor)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>xor_models[<span class="st">"With interaction"</span>].named_steps[<span class="st">"polynomialfeatures"</span>].get_feature_names_out()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<pre><code>array(['x1', 'x2', 'x1 x2'], dtype=object)</code></pre>
+</div>
+</div>
+<p>An interaction does not introduce new measurements: its value is determined by the original inputs. It changes which relationships the model can express easily. A tree can already represent this XOR rule through successive splits, so the same transformation need not help every model.</p>
+</section>
+<section id="interactions-between-categories" class="level3">
+<h3 class="anchored" data-anchor-id="interactions-between-categories">Interactions between categories</h3>
+<p>Suppose we predict parking availability from location (UBC campus or Rogers Arena) and time (9 a.m. or 7 p.m.). An additive linear model gives each time the same effect at both locations. But evenings may be quiet on campus and busy near an arena during an event.</p>
+<p>Multiplying one-hot indicators creates a feature that is 1 only when both conditions hold, such as “Rogers Arena <strong>and</strong> 7 p.m.” An interaction lets that combination have an additional effect. Another option is to construct a combined category and one-hot encode it. Either way, retain enough observations of each combination to learn something useful.</p>
+<p>Generating every possible cross can quickly create many columns, including combinations that never occur. Start with interactions motivated by the task, compare them using validation data, and consider whether a model that already captures interactions would be a better fit.</p>
+</section>
+<section id="iclicker-13.1-what-did-the-new-feature-add" class="level3">
+<h3 class="anchored" data-anchor-id="iclicker-13.1-what-did-the-new-feature-add">iClicker 13.1: What did the new feature add?</h3>
+<p>Logistic regression performs much better on XOR after we add <span class="math inline">\(x_1x_2\)</span>. Which explanation is most accurate? <strong>Choose one.</strong></p>
+<ul>
+<li><ol type="A">
+<li>We collected a new measurement that was missing from the data.</li>
+</ol></li>
+<li><ol start="2" type="A">
+<li>The product makes the pattern representable by a linear classifier in the transformed space.</li>
+</ol></li>
+<li><ol start="3" type="A">
+<li>Adding any feature must improve validation accuracy.</li>
+</ol></li>
+<li><ol start="4" type="A">
+<li>The product will improve every model, including trees, by the same amount.</li>
+</ol></li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled" title="Answer and explanation">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Answer and explanation
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>B.</strong> The product is calculated from existing inputs, so it adds no new measurements. It changes what a linear classifier can express. Extra features can also fit noise, and trees can already capture interactions through successive splits. The benefit depends on the model and data.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="engineering-numeric-features" class="level2">
+<h2 class="anchored" data-anchor-id="engineering-numeric-features">Engineering numeric features</h2>
+<p>We now return to the California housing data. Each row describes a census block group, rather than an individual property; the target is its median house value. We will use a deliberately small set of inputs to make changes in representation easy to inspect. This is not an attempt to build the strongest housing model.</p>
+<p>The file belongs in <code>data/california_housing.csv</code>, relative to this notebook. We reserve a test set before exploring the training data. A random split is useful for this illustration; predicting in entirely new geographic areas would require a validation design that holds out areas.</p>
+<div id="c0fdb436" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-18T14:53:29.031534Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-18T14:53:29.031472Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-18T14:53:29.041021Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-18T14:53:29.040730Z&quot;}}" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>housing <span class="op">=</span> pd.read_csv(DATA_DIR <span class="op">/</span> <span class="st">"california_housing.csv"</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>housing_train, housing_test <span class="op">=</span> train_test_split(housing, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">123</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>housing_train[[<span class="st">"longitude"</span>, <span class="st">"latitude"</span>, <span class="st">"total_rooms"</span>, <span class="st">"households"</span>, <span class="st">"median_house_value"</span>]].head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">longitude</th>
+<th data-quarto-table-cell-role="th">latitude</th>
+<th data-quarto-table-cell-role="th">total_rooms</th>
+<th data-quarto-table-cell-role="th">households</th>
+<th data-quarto-table-cell-role="th">median_house_value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">9950</th>
+<td>-122.33</td>
+<td>38.38</td>
+<td>1020.0</td>
+<td>164.0</td>
+<td>287500.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3547</th>
+<td>-118.60</td>
+<td>34.26</td>
+<td>6154.0</td>
+<td>1034.0</td>
+<td>271500.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4448</th>
+<td>-118.21</td>
+<td>34.07</td>
+<td>1346.0</td>
+<td>371.0</td>
+<td>191700.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">6984</th>
+<td>-118.02</td>
+<td>33.96</td>
+<td>2071.0</td>
+<td>404.0</td>
+<td>219700.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4432</th>
+<td>-118.20</td>
+<td>34.08</td>
+<td>1320.0</td>
+<td>328.0</td>
+<td>114000.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<section id="ratios-describing-a-typical-household" class="level3">
+<h3 class="anchored" data-anchor-id="ratios-describing-a-typical-household">Ratios: describing a typical household</h3>
+<p>A block group with many rooms may simply have many households. Dividing total rooms by households gives a rough measure of rooms per household. It answers a different question from the total count.</p>
+<p>This is a fixed calculation on each row: it learns no averages or other quantities from the dataset. We can apply the same rule to training and test rows. If a denominator is zero, we treat the ratio as missing rather than creating infinity; the pipeline will learn how to impute it using its training fold.</p>
+<div id="04da0944" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-18T14:53:29.041842Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-18T14:53:29.041797Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-18T14:53:29.043960Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-18T14:53:29.043713Z&quot;}}" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> add_rooms_per_household(frame):</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> frame.assign(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>        rooms_per_household<span class="op">=</span>frame[<span class="st">"total_rooms"</span>] <span class="op">/</span> frame[<span class="st">"households"</span>].replace(<span class="dv">0</span>, np.nan)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>housing_train <span class="op">=</span> add_rooms_per_household(housing_train)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>housing_test <span class="op">=</span> add_rooms_per_household(housing_test)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>housing_features <span class="op">=</span> [<span class="st">"latitude"</span>, <span class="st">"longitude"</span>, <span class="st">"rooms_per_household"</span>]</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>X_housing <span class="op">=</span> housing_train[housing_features]</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>y_housing <span class="op">=</span> housing_train[<span class="st">"median_house_value"</span>]</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>housing_cv <span class="op">=</span> KFold(n_splits<span class="op">=</span><span class="dv">5</span>, shuffle<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span><span class="dv">123</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>A deployment would need this same calculation on every new row. For a larger workflow, we could package it as a pipeline transformation. Here, keeping the small function visible helps distinguish a fixed row calculation from learned transformations such as imputation and scaling.</p>
+<p>To check whether the ratio is useful, compare it with the two counts from which it was made. Both candidates also include latitude and longitude.</p>
+<div id="ccb6a39c" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-18T14:53:29.044773Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-18T14:53:29.044726Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-18T14:53:29.104418Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-18T14:53:29.104070Z&quot;}}" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>count_features <span class="op">=</span> [<span class="st">"latitude"</span>, <span class="st">"longitude"</span>, <span class="st">"total_rooms"</span>, <span class="st">"households"</span>]</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>count_model <span class="op">=</span> make_pipeline(</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    make_column_transformer(</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>        (make_pipeline(SimpleImputer(strategy<span class="op">=</span><span class="st">"median"</span>), StandardScaler()), count_features)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    Ridge(alpha<span class="op">=</span><span class="fl">1.0</span>),</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>ratio_model <span class="op">=</span> make_pipeline(</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    SimpleImputer(strategy<span class="op">=</span><span class="st">"median"</span>), StandardScaler(), Ridge(alpha<span class="op">=</span><span class="fl">1.0</span>)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>housing_results <span class="op">=</span> {}</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> evaluate_housing(name, model, X):</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> cross_validate(</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>        model, X, y_housing, cv<span class="op">=</span>housing_cv, scoring<span class="op">=</span><span class="st">"r2"</span>, return_train_score<span class="op">=</span><span class="va">True</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    housing_results[name] <span class="op">=</span> {</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Mean training R²"</span>: scores[<span class="st">"train_score"</span>].mean(),</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Mean validation R²"</span>: scores[<span class="st">"test_score"</span>].mean(),</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Validation standard deviation"</span>: scores[<span class="st">"test_score"</span>].std(),</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>evaluate_housing(<span class="st">"Raw counts"</span>, count_model, housing_train[count_features])</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>evaluate_housing(<span class="st">"Ratio, continuous inputs"</span>, ratio_model, X_housing)</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(housing_results).T.<span class="bu">round</span>(<span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Mean training R²</th>
+<th data-quarto-table-cell-role="th">Mean validation R²</th>
+<th data-quarto-table-cell-role="th">Validation standard deviation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Raw counts</th>
+<td>0.313</td>
+<td>0.312</td>
+<td>0.004</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Ratio, continuous inputs</th>
+<td>0.306</td>
+<td>0.301</td>
+<td>0.019</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The ratio is a plausible feature, but here replacing the counts lowers mean validation <span class="math inline">\(R^2\)</span> slightly, from about 0.312 to 0.301. Plausibility alone does not establish an improvement. Replacing the counts also discards their separate values; another candidate could retain both the counts and the ratio. Next, we hold these three inputs fixed and investigate how a linear model represents their effects. This separates the choice of quantity from the choice of representation.</p>
+</section>
+<section id="binning-allowing-different-effects-in-different-ranges" class="level3">
+<h3 class="anchored" data-anchor-id="binning-allowing-different-effects-in-different-ranges">Binning: allowing different effects in different ranges</h3>
+<p>With continuous latitude and longitude, ridge regression assigns a constant change in prediction to each additional degree, holding the other inputs fixed. That is restrictive: moving north does not have to change housing prices at the same rate throughout California.</p>
+<p><strong>Binning</strong>, also called discretization, divides a numeric feature into intervals. One-hot encoding those intervals gives a linear model a separate coefficient for each interval. Its contribution is constant within a bin and can jump at the boundary.</p>
+<p><code>KBinsDiscretizer</code> learns the boundaries during fitting. We use 20 quantile bins, which aim for similar numbers of training observations per bin; ties can prevent an exact balance. Because the boundaries depend on data, the discretizer belongs inside the cross-validated pipeline. See the <a href="https://scikit-learn.org/stable/auto_examples/preprocessing/plot_discretization.html">scikit-learn binning example</a> for a visual comparison with continuous inputs.</p>
+<div id="9f3ef215" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-18T14:53:29.105347Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-18T14:53:29.105295Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-18T14:53:29.223166Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-18T14:53:29.222790Z&quot;}}" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_bins():</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> KBinsDiscretizer(</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>        n_bins<span class="op">=</span><span class="dv">20</span>, encode<span class="op">=</span><span class="st">"onehot-dense"</span>, strategy<span class="op">=</span><span class="st">"quantile"</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>        quantile_method<span class="op">=</span><span class="st">"averaged_inverted_cdf"</span>, subsample<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>location_preprocessor <span class="op">=</span> make_column_transformer(</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    (make_bins(), [<span class="st">"latitude"</span>, <span class="st">"longitude"</span>]),</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    (make_pipeline(SimpleImputer(strategy<span class="op">=</span><span class="st">"median"</span>), StandardScaler()), [<span class="st">"rooms_per_household"</span>]),</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>location_model <span class="op">=</span> make_pipeline(location_preprocessor, Ridge(alpha<span class="op">=</span><span class="fl">1.0</span>))</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>all_binned_model <span class="op">=</span> make_pipeline(</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    SimpleImputer(strategy<span class="op">=</span><span class="st">"median"</span>), make_bins(), Ridge(alpha<span class="op">=</span><span class="fl">1.0</span>)</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>evaluate_housing(<span class="st">"Binned location"</span>, location_model, X_housing)</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>evaluate_housing(<span class="st">"All three inputs binned"</span>, all_binned_model, X_housing)</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(housing_results).T.<span class="bu">round</span>(<span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Mean training R²</th>
+<th data-quarto-table-cell-role="th">Mean validation R²</th>
+<th data-quarto-table-cell-role="th">Validation standard deviation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Raw counts</th>
+<td>0.313</td>
+<td>0.312</td>
+<td>0.004</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Ratio, continuous inputs</th>
+<td>0.306</td>
+<td>0.301</td>
+<td>0.019</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Binned location</th>
+<td>0.456</td>
+<td>0.448</td>
+<td>0.021</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">All three inputs binned</th>
+<td>0.577</td>
+<td>0.572</td>
+<td>0.010</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Compare each change with the preceding representation. Binning improves validation scores in this example, but it also changes the model’s flexibility. We have held ridge’s <code>alpha</code> fixed to isolate the workflow; a more complete comparison would tune regularization for each representation. The fold standard deviations show how much the validation scores vary across the cross-validation folds.</p>
+<p>We use dense one-hot output because this example has only about 60 transformed columns. For many features or bins, sparse output can save memory. The location columns in this file have no missing values; the ratio branch includes imputation for missing ratios.</p>
+<p>Let’s inspect the learned room-ratio boundaries and the contribution of each bin. We fit on the training data for inspection, leaving the test set aside.</p>
+<div id="6e914031" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-18T14:53:29.224026Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-18T14:53:29.223977Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-18T14:53:29.236038Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-18T14:53:29.235769Z&quot;}}" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>all_binned_model.fit(X_housing, y_housing)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>binner <span class="op">=</span> all_binned_model.named_steps[<span class="st">"kbinsdiscretizer"</span>]</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>transformed_names <span class="op">=</span> binner.get_feature_names_out(housing_features)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>room_edges <span class="op">=</span> binner.bin_edges_[<span class="dv">2</span>]</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>room_start <span class="op">=</span> <span class="bu">int</span>(binner.n_bins_[:<span class="dv">2</span>].<span class="bu">sum</span>())</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>room_coefficients <span class="op">=</span> all_binned_model.named_steps[<span class="st">"ridge"</span>].coef_[room_start:]</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>room_bins <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Lower boundary"</span>: room_edges[:<span class="op">-</span><span class="dv">1</span>],</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Upper boundary"</span>: room_edges[<span class="dv">1</span>:],</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Coefficient"</span>: room_coefficients,</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>room_bins.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Lower boundary</th>
+<th data-quarto-table-cell-role="th">Upper boundary</th>
+<th data-quarto-table-cell-role="th">Coefficient</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>0.846154</td>
+<td>3.430645</td>
+<td>-50826.779079</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>3.430645</td>
+<td>3.783954</td>
+<td>-51103.894396</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>3.783954</td>
+<td>4.040000</td>
+<td>-47669.848233</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>4.040000</td>
+<td>4.254021</td>
+<td>-41998.907527</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>4.254021</td>
+<td>4.430466</td>
+<td>-40770.918428</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="c546fd53" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-18T14:53:29.236998Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-18T14:53:29.236948Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-18T14:53:29.274918Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-18T14:53:29.274575Z&quot;}}" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>ax.bar(np.arange(<span class="bu">len</span>(room_coefficients)), room_coefficients)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    xlabel<span class="op">=</span><span class="st">"Rooms-per-household bin (from low to high)"</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    ylabel<span class="op">=</span><span class="st">"Coefficient (dollars)"</span>,</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">"A separate contribution for each interval"</span>,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="13_feature-engineering-selection_files/figure-html/cell-12-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>These coefficients need not rise at a constant rate. As in Chapter 12, differences between one-hot coefficients describe changes between categories, holding other inputs fixed. They describe the fitted model, not the causal effect of adding rooms. New values beyond the fitted range go into an end bin, so this representation does not extrapolate a trend beyond that range.</p>
+<p>Binning also loses distinctions within each interval and creates abrupt changes at boundaries. More bins allow finer changes but leave fewer observations to estimate each contribution. The bin count is a hyperparameter to choose through validation.</p>
+<p>Separately binning latitude and longitude still gives an additive model: each latitude band’s contribution is shared across all longitudes. Crossing the two sets of indicators would allow different contributions for geographic cells, but many cells could have little or no data.</p>
+</section>
+<section id="iclicker-13.2-predict-what-binning-changes" class="level3">
+<h3 class="anchored" data-anchor-id="iclicker-13.2-predict-what-binning-changes">iClicker 13.2: Predict what binning changes</h3>
+<p>Two otherwise identical observations have rooms-per-household values of 4.01 and 4.09 in the same bin. A third has a value of 4.10, just across a bin boundary. How does the binned ridge model treat these values? <strong>Choose one.</strong></p>
+<ul>
+<li><ol type="A">
+<li>Each increase of 0.01 must have the same effect on the prediction.</li>
+</ol></li>
+<li><ol start="2" type="A">
+<li>All three must have the same contribution because their values are close.</li>
+</ol></li>
+<li><ol start="3" type="A">
+<li>The first two have the same contribution; the third can have a different contribution.</li>
+</ol></li>
+<li><ol start="4" type="A">
+<li>The third must have a higher prediction because it has a larger value.</li>
+</ol></li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled" title="Answer and explanation">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Answer and explanation
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>C.</strong> Values within a bin share an indicator and its coefficient. Crossing a boundary can change the contribution abruptly, in either direction. More bins allow finer changes but leave fewer observations per bin, so they do not necessarily improve validation performance.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="why-remove-features" class="level2">
+<h2 class="anchored" data-anchor-id="why-remove-features">Why remove features?</h2>
+<p>Interactions and bins can create many columns; datasets can also arrive with many measurements already recorded. Some inputs may duplicate information or offer opportunities to fit accidental patterns. <strong>Feature selection</strong> keeps a subset of columns and refits the predictor using them.</p>
+<p>A smaller model may be easier to inspect and cheaper to use. Removing an expensive measurement can reduce collection cost, although dropping a few one-hot columns may still require collecting their original variable. Fewer columns also do not guarantee an understandable model: their meaning matters.</p>
+<p>Can selection improve prediction too? We will first construct a case with irrelevant inputs, then examine a dataset where removing features hurts. In both cases, the comparison is with an all-features baseline. Regularization remains another way to control flexibility without explicitly removing columns.</p>
+</section>
+<section id="selecting-features-with-models" class="level2">
+<h2 class="anchored" data-anchor-id="selecting-features-with-models">Selecting features with models</h2>
+<p>Chapter 12 introduced coefficients and tree feature importances. These can propose a subset, but the practical question is how well a predictor performs after being refitted on that subset.</p>
+<section id="model-based-selection" class="level3">
+<h3 class="anchored" data-anchor-id="model-based-selection">Model-based selection</h3>
+<p>The procedure has two model roles. First, fit a <strong>selection model</strong> to obtain feature importances and keep columns that reach a threshold. Then fit the <strong>final predictor</strong> using those columns. The selection model chooses inputs; its predictions are not passed to the final predictor.</p>
+<p><a href="https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.SelectFromModel.html"><code>SelectFromModel</code></a> implements the selection as a transformer. During <code>fit</code>, it learns which columns to keep; during <code>transform</code>, it keeps those same columns. Our pipeline is:</p>
+<p><strong>Scale inputs <span class="math inline">\(\to\)</span> forest selects columns <span class="math inline">\(\to\)</span> logistic regression predicts.</strong></p>
+<p>Scaling serves logistic regression; the forest does not require it. Keeping the selector inside the pipeline ensures that each validation fold learns its selection using only that fold’s training data.</p>
+</section>
+<section id="when-irrelevant-inputs-get-in-the-way" class="level3">
+<h3 class="anchored" data-anchor-id="when-irrelevant-inputs-get-in-the-way">When irrelevant inputs get in the way</h3>
+<p>We generate 300 observations with 100 independent numeric features. Only the first three determine the target, with additional random noise. The remaining 97 are unrelated to the target, although some will appear associated by chance in a finite sample. In real data, we would not know which features generated the outcome.</p>
+<p>Compare logistic regression on the three relevant inputs, on all 100 inputs, and after forest-based selection. We use the mean forest importance as the threshold, fixed for this demonstration, and identical validation folds.</p>
+<div id="8d891938" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-18T14:53:29.275709Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-18T14:53:29.275655Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-18T14:53:29.599995Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-18T14:53:29.599623Z&quot;}}" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">42</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>X_noise <span class="op">=</span> pd.DataFrame(rng.normal(size<span class="op">=</span>(<span class="dv">300</span>, <span class="dv">100</span>)), columns<span class="op">=</span>[<span class="ss">f"x</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">"</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">100</span>)])</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>y_noise <span class="op">=</span> (<span class="dv">3</span> <span class="op">*</span> X_noise[<span class="st">"x0"</span>] <span class="op">-</span> <span class="dv">3</span> <span class="op">*</span> X_noise[<span class="st">"x1"</span>] <span class="op">+</span> <span class="dv">2</span> <span class="op">*</span> X_noise[<span class="st">"x2"</span>]</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>           <span class="op">+</span> rng.normal(size<span class="op">=</span><span class="dv">300</span>)) <span class="op">&gt;</span> <span class="dv">0</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>noise_cv <span class="op">=</span> StratifiedKFold(n_splits<span class="op">=</span><span class="dv">5</span>, shuffle<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span><span class="dv">123</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>noise_selector <span class="op">=</span> make_pipeline(</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    StandardScaler(),</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    SelectFromModel(RandomForestClassifier(n_estimators<span class="op">=</span><span class="dv">100</span>, random_state<span class="op">=</span><span class="dv">42</span>), threshold<span class="op">=</span><span class="st">"mean"</span>),</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    LogisticRegression(max_iter<span class="op">=</span><span class="dv">2000</span>),</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>noise_results <span class="op">=</span> {}</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, model, inputs <span class="kw">in</span> [</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"Known relevant inputs"</span>, make_pipeline(StandardScaler(), LogisticRegression()), X_noise.iloc[:, :<span class="dv">3</span>]),</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"All inputs"</span>, make_pipeline(StandardScaler(), LogisticRegression()), X_noise),</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"Forest-selected inputs"</span>, noise_selector, X_noise),</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>]:</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> cross_validate(model, inputs, y_noise, cv<span class="op">=</span>noise_cv, return_estimator<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>    counts <span class="op">=</span> ([m.named_steps[<span class="st">"selectfrommodel"</span>].get_support().<span class="bu">sum</span>() <span class="cf">for</span> m <span class="kw">in</span> scores[<span class="st">"estimator"</span>]]</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>              <span class="cf">if</span> name <span class="op">==</span> <span class="st">"Forest-selected inputs"</span> <span class="cf">else</span> [inputs.shape[<span class="dv">1</span>]])</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>    noise_results[name] <span class="op">=</span> {</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Mean validation accuracy"</span>: scores[<span class="st">"test_score"</span>].mean(),</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Fold standard deviation"</span>: scores[<span class="st">"test_score"</span>].std(),</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Mean features retained"</span>: np.mean(counts),</span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(noise_results).T.<span class="bu">round</span>(<span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Mean validation accuracy</th>
+<th data-quarto-table-cell-role="th">Fold standard deviation</th>
+<th data-quarto-table-cell-role="th">Mean features retained</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Known relevant inputs</th>
+<td>0.920</td>
+<td>0.034</td>
+<td>3.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">All inputs</th>
+<td>0.803</td>
+<td>0.051</td>
+<td>100.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Forest-selected inputs</th>
+<td>0.907</td>
+<td>0.065</td>
+<td>15.6</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Adding unrelated inputs lowers mean validation accuracy here, and selection recovers much of the loss using fewer columns. The known-relevant-inputs result is a reference available only because we constructed the data. Selection does not necessarily recover exactly those three features, and different folds can retain different counts.</p>
+<p>This is a controlled illustration, not a guarantee. The benefit depends on the sample size, irrelevant inputs, model, and regularization. A smaller set gives us fewer contributions to inspect; whether we can explain them still depends on what the features mean.</p>
+</section>
+<section id="when-keeping-all-features-works-better" class="level3">
+<h3 class="anchored" data-anchor-id="when-keeping-all-features-works-better">When keeping all features works better</h3>
+<p>Now use the breast-cancer dataset: 30 numeric measurements derived from images of cell nuclei, with malignant and benign labels. This compact dataset lets us study selection without additional preprocessing machinery. We establish the all-features baseline before selecting anything.</p>
+<div id="4cbf99bb" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-18T14:53:29.600943Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-18T14:53:29.600893Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-18T14:53:29.629333Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-18T14:53:29.629018Z&quot;}}" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>cancer <span class="op">=</span> load_breast_cancer(as_frame<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    cancer.data, cancer.target, test_size<span class="op">=</span><span class="fl">0.5</span>, random_state<span class="op">=</span><span class="dv">0</span>, stratify<span class="op">=</span>cancer.target</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>selection_cv <span class="op">=</span> StratifiedKFold(n_splits<span class="op">=</span><span class="dv">5</span>, shuffle<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span><span class="dv">123</span>)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>all_features_model <span class="op">=</span> make_pipeline(StandardScaler(), LogisticRegression(max_iter<span class="op">=</span><span class="dv">2000</span>))</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>selection_results <span class="op">=</span> {}</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> evaluate_selection(name, model):</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> cross_validate(</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>        model, X_train, y_train, cv<span class="op">=</span>selection_cv, scoring<span class="op">=</span><span class="st">"accuracy"</span>, return_train_score<span class="op">=</span><span class="va">True</span>, return_estimator<span class="op">=</span><span class="va">True</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    selection_results[name] <span class="op">=</span> {</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Mean features retained"</span>: np.mean([</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>            m[:<span class="op">-</span><span class="dv">1</span>].transform(X_train).shape[<span class="dv">1</span>] <span class="cf">if</span> <span class="bu">hasattr</span>(m, <span class="st">"steps"</span>) <span class="cf">else</span> X_train.shape[<span class="dv">1</span>]</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> m <span class="kw">in</span> scores[<span class="st">"estimator"</span>]</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>        ]),</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Mean training accuracy"</span>: scores[<span class="st">"train_score"</span>].mean(),</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Mean validation accuracy"</span>: scores[<span class="st">"test_score"</span>].mean(),</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Validation standard deviation"</span>: scores[<span class="st">"test_score"</span>].std(),</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>evaluate_selection(<span class="st">"Dummy baseline"</span>, DummyClassifier(strategy<span class="op">=</span><span class="st">"most_frequent"</span>))</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>evaluate_selection(<span class="st">"All 30 features"</span>, all_features_model)</span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(selection_results).T.<span class="bu">round</span>(<span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Mean features retained</th>
+<th data-quarto-table-cell-role="th">Mean training accuracy</th>
+<th data-quarto-table-cell-role="th">Mean validation accuracy</th>
+<th data-quarto-table-cell-role="th">Validation standard deviation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Dummy baseline</th>
+<td>30.0</td>
+<td>0.627</td>
+<td>0.627</td>
+<td>0.007</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">All 30 features</th>
+<td>30.0</td>
+<td>0.989</td>
+<td>0.979</td>
+<td>0.013</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="2fb7170c" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-18T14:53:29.630386Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-18T14:53:29.630331Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-18T14:53:29.867107Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-18T14:53:29.866759Z&quot;}}" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>model_based <span class="op">=</span> make_pipeline(</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    StandardScaler(),</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    SelectFromModel(</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>        RandomForestClassifier(n_estimators<span class="op">=</span><span class="dv">100</span>, random_state<span class="op">=</span><span class="dv">42</span>), threshold<span class="op">=</span><span class="st">"median"</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    LogisticRegression(max_iter<span class="op">=</span><span class="dv">2000</span>),</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>evaluate_selection(<span class="st">"Forest-based selection"</span>, model_based)</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(selection_results).T.<span class="bu">round</span>(<span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Mean features retained</th>
+<th data-quarto-table-cell-role="th">Mean training accuracy</th>
+<th data-quarto-table-cell-role="th">Mean validation accuracy</th>
+<th data-quarto-table-cell-role="th">Validation standard deviation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Dummy baseline</th>
+<td>30.0</td>
+<td>0.627</td>
+<td>0.627</td>
+<td>0.007</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">All 30 features</th>
+<td>30.0</td>
+<td>0.989</td>
+<td>0.979</td>
+<td>0.013</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Forest-based selection</th>
+<td>15.0</td>
+<td>0.974</td>
+<td>0.961</td>
+<td>0.036</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Here we use <code>threshold="median"</code>, retaining roughly half the columns; ties can retain more. The forest’s preferred inputs need not be the best subset for logistic regression. Its importances also inherit the limitations discussed in Chapter 12.</p>
+<p>After evaluation, fit on the training split to inspect the threshold and selected columns. This is one fitted selection; cross-validation fitted a separate selector in each fold.</p>
+<div id="dcbd4bbb" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-18T14:53:29.868097Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-18T14:53:29.868047Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-18T14:53:29.918891Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-18T14:53:29.918555Z&quot;}}" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>model_based.fit(X_train, y_train)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>selector <span class="op">=</span> model_based.named_steps[<span class="st">"selectfrommodel"</span>]</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Feature"</span>: X_train.columns,</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Forest importance"</span>: selector.estimator_.feature_importances_,</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Retained"</span>: selector.get_support(),</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>}).sort_values(<span class="st">"Forest importance"</span>, ascending<span class="op">=</span><span class="va">False</span>).assign(Threshold<span class="op">=</span>selector.threshold_)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Feature</th>
+<th data-quarto-table-cell-role="th">Forest importance</th>
+<th data-quarto-table-cell-role="th">Retained</th>
+<th data-quarto-table-cell-role="th">Threshold</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">23</th>
+<td>worst area</td>
+<td>0.134191</td>
+<td>True</td>
+<td>0.011402</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">27</th>
+<td>worst concave points</td>
+<td>0.116113</td>
+<td>True</td>
+<td>0.011402</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">20</th>
+<td>worst radius</td>
+<td>0.106872</td>
+<td>True</td>
+<td>0.011402</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">22</th>
+<td>worst perimeter</td>
+<td>0.096692</td>
+<td>True</td>
+<td>0.011402</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>mean perimeter</td>
+<td>0.081823</td>
+<td>True</td>
+<td>0.011402</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>mean concave points</td>
+<td>0.077008</td>
+<td>True</td>
+<td>0.011402</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>mean radius</td>
+<td>0.074356</td>
+<td>True</td>
+<td>0.011402</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">6</th>
+<td>mean concavity</td>
+<td>0.073012</td>
+<td>True</td>
+<td>0.011402</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">3</th>
+<td>mean area</td>
+<td>0.040202</td>
+<td>True</td>
+<td>0.011402</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>area error</td>
+<td>0.034153</td>
+<td>True</td>
+<td>0.011402</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">26</th>
+<td>worst concavity</td>
+<td>0.030915</td>
+<td>True</td>
+<td>0.011402</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">25</th>
+<td>worst compactness</td>
+<td>0.015500</td>
+<td>True</td>
+<td>0.011402</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>radius error</td>
+<td>0.014004</td>
+<td>True</td>
+<td>0.011402</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">12</th>
+<td>perimeter error</td>
+<td>0.013632</td>
+<td>True</td>
+<td>0.011402</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">21</th>
+<td>worst texture</td>
+<td>0.011418</td>
+<td>True</td>
+<td>0.011402</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>mean compactness</td>
+<td>0.011385</td>
+<td>False</td>
+<td>0.011402</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">24</th>
+<td>worst smoothness</td>
+<td>0.008290</td>
+<td>False</td>
+<td>0.011402</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">28</th>
+<td>worst symmetry</td>
+<td>0.007687</td>
+<td>False</td>
+<td>0.011402</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>mean smoothness</td>
+<td>0.007317</td>
+<td>False</td>
+<td>0.011402</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>mean texture</td>
+<td>0.006978</td>
+<td>False</td>
+<td>0.011402</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>mean symmetry</td>
+<td>0.005352</td>
+<td>False</td>
+<td>0.011402</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">15</th>
+<td>compactness error</td>
+<td>0.004882</td>
+<td>False</td>
+<td>0.011402</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">11</th>
+<td>texture error</td>
+<td>0.004805</td>
+<td>False</td>
+<td>0.011402</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">14</th>
+<td>smoothness error</td>
+<td>0.004401</td>
+<td>False</td>
+<td>0.011402</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">19</th>
+<td>fractal dimension error</td>
+<td>0.004111</td>
+<td>False</td>
+<td>0.011402</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">18</th>
+<td>symmetry error</td>
+<td>0.003895</td>
+<td>False</td>
+<td>0.011402</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">16</th>
+<td>concavity error</td>
+<td>0.003881</td>
+<td>False</td>
+<td>0.011402</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">29</th>
+<td>worst fractal dimension</td>
+<td>0.003405</td>
+<td>False</td>
+<td>0.011402</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">9</th>
+<td>mean fractal dimension</td>
+<td>0.002129</td>
+<td>False</td>
+<td>0.011402</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">17</th>
+<td>concave points error</td>
+<td>0.001592</td>
+<td>False</td>
+<td>0.011402</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>By default, the selection estimator needs <code>coef_</code> or <code>feature_importances_</code>. KNN and an RBF-kernel SVC do not supply these; a linear SVC does. For coefficients, magnitude matters: a large negative coefficient can be important.</p>
+</section>
+<section id="recursive-feature-elimination" class="level3">
+<h3 class="anchored" data-anchor-id="recursive-feature-elimination">Recursive feature elimination</h3>
+<p>Selecting once uses importances calculated with all features present. But two related measurements might substitute for one another: after removing one, the other may become more important. What if we refit after each removal?</p>
+<p><strong>Recursive feature elimination (RFE)</strong> does this. Fit a model, remove its least important remaining feature, refit, and repeat until the desired count remains. Removing several features per step is faster but follows a coarser elimination path.</p>
+<p>Below, logistic regression inside RFE guides elimination; the final logistic regression fits the retained inputs. Scaling makes coefficient magnitudes comparable. We start with five features as an illustrative choice.</p>
+<div id="2063d959" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-18T14:53:29.919797Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-18T14:53:29.919743Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-18T14:53:30.021737Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-18T14:53:30.021318Z&quot;}}" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>rfe_model <span class="op">=</span> make_pipeline(</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    StandardScaler(),</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    RFE(LogisticRegression(max_iter<span class="op">=</span><span class="dv">2000</span>), n_features_to_select<span class="op">=</span><span class="dv">5</span>, step<span class="op">=</span><span class="dv">1</span>),</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    LogisticRegression(max_iter<span class="op">=</span><span class="dv">2000</span>),</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>evaluate_selection(<span class="st">"RFE: 5 features"</span>, rfe_model)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(selection_results).T.<span class="bu">round</span>(<span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="16">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Mean features retained</th>
+<th data-quarto-table-cell-role="th">Mean training accuracy</th>
+<th data-quarto-table-cell-role="th">Mean validation accuracy</th>
+<th data-quarto-table-cell-role="th">Validation standard deviation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Dummy baseline</th>
+<td>30.0</td>
+<td>0.627</td>
+<td>0.627</td>
+<td>0.007</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">All 30 features</th>
+<td>30.0</td>
+<td>0.989</td>
+<td>0.979</td>
+<td>0.013</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Forest-based selection</th>
+<td>15.0</td>
+<td>0.974</td>
+<td>0.961</td>
+<td>0.036</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">RFE: 5 features</th>
+<td>5.0</td>
+<td>0.962</td>
+<td>0.947</td>
+<td>0.025</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="442af7e9" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-18T14:53:30.022682Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-18T14:53:30.022629Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-18T14:53:30.044075Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-18T14:53:30.043728Z&quot;}}" data-execution_count="17">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>rfe_model.fit(X_train, y_train)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>rfe <span class="op">=</span> rfe_model.named_steps[<span class="st">"rfe"</span>]</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>rfe_ranking <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Feature"</span>: X_train.columns,</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Selected"</span>: rfe.support_,</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"RFE rank"</span>: rfe.ranking_,</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>rfe_ranking.sort_values(<span class="st">"RFE rank"</span>).head(<span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="17">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Feature</th>
+<th data-quarto-table-cell-role="th">Selected</th>
+<th data-quarto-table-cell-role="th">RFE rank</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">22</th>
+<td>worst perimeter</td>
+<td>True</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>mean concave points</td>
+<td>True</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">23</th>
+<td>worst area</td>
+<td>True</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">20</th>
+<td>worst radius</td>
+<td>True</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">27</th>
+<td>worst concave points</td>
+<td>True</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">21</th>
+<td>worst texture</td>
+<td>False</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>mean concavity</td>
+<td>False</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">10</th>
+<td>radius error</td>
+<td>False</td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">13</th>
+<td>area error</td>
+<td>False</td>
+<td>5</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">26</th>
+<td>worst concavity</td>
+<td>False</td>
+<td>6</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>All retained features have rank 1. The other ranks describe the elimination process; they are not the original model’s importance order, and they do not measure how much worse one feature is than another.</p>
+<p>Here, mean validation accuracy falls from about 0.979 with all features to 0.961 with forest-based selection and 0.947 with five-feature RFE. Removing features has not improved predictive performance in this comparison. Unlike the noise example, these smaller feature sets perform worse in validation. A smaller subset might still be worthwhile if it reduces a real cost, but it is not an accuracy improvement.</p>
+</section>
+<section id="choosing-how-many-features-to-keep" class="level3">
+<h3 class="anchored" data-anchor-id="choosing-how-many-features-to-keep">Choosing how many features to keep</h3>
+<p>Five was an illustrative choice. We can treat the number of selected features as a hyperparameter, using the search workflow from Chapter 8. Searching the <strong>whole pipeline</strong> ensures that scaling and selection are refitted inside each search fold.</p>
+<div id="452f0bf2" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-18T14:53:30.044998Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-18T14:53:30.044947Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-18T14:53:30.355085Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-18T14:53:30.354678Z&quot;}}" data-execution_count="18">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>selection_search <span class="op">=</span> GridSearchCV(</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    clone(rfe_model),</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    param_grid<span class="op">=</span>{<span class="st">"rfe__n_features_to_select"</span>: [<span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">20</span>, <span class="dv">30</span>]},</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    cv<span class="op">=</span>selection_cv,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    scoring<span class="op">=</span><span class="st">"accuracy"</span>,</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>selection_search.fit(X_train, y_train)</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>search_results <span class="op">=</span> pd.DataFrame(selection_search.cv_results_)</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>search_results[[</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"param_rfe__n_features_to_select"</span>, <span class="st">"mean_test_score"</span>, <span class="st">"std_test_score"</span>, <span class="st">"rank_test_score"</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>]].sort_values(<span class="st">"rank_test_score"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="18">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">param_rfe__n_features_to_select</th>
+<th data-quarto-table-cell-role="th">mean_test_score</th>
+<th data-quarto-table-cell-role="th">std_test_score</th>
+<th data-quarto-table-cell-role="th">rank_test_score</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>30</td>
+<td>0.978822</td>
+<td>0.013264</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>10</td>
+<td>0.971742</td>
+<td>0.014365</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>15</td>
+<td>0.971742</td>
+<td>0.014365</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>20</td>
+<td>0.971742</td>
+<td>0.014365</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>5</td>
+<td>0.947055</td>
+<td>0.025258</td>
+<td>5</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Including 30 features gives the search an option that removes nothing. The best cross-validation score helped us choose the feature count, so it is not an independent evaluation of that choice. Once the candidate set and selection rule are fixed, evaluate the selected pipeline once on the held-out test data.</p>
+<div id="bc77ec7f" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-18T14:53:30.355884Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-18T14:53:30.355834Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-18T14:53:30.358696Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-18T14:53:30.358421Z&quot;}}" data-execution_count="19">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>pd.Series({</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Chosen number of features"</span>: selection_search.best_params_[<span class="st">"rfe__n_features_to_select"</span>],</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Best mean CV accuracy"</span>: selection_search.best_score_,</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Final test accuracy"</span>: selection_search.score(X_test, y_test),</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="19">
+<pre><code>Chosen number of features    30.000000
+Best mean CV accuracy         0.978822
+Final test accuracy           0.978947
+dtype: float64</code></pre>
+</div>
+</div>
+<p>The search selects all 30 features, and final test accuracy is about 0.979. Keeping every feature is a legitimate outcome: there is no requirement that a feature-selection experiment end by removing something. Use this test result to report the completed workflow, not to choose a different feature count. If we wanted to estimate the entire search procedure through cross-validation instead, we would need outer folds that hold out data from the inner search.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Optional: RFECV and sequential selection">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Optional: RFECV and sequential selection
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><a href="https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.RFECV.html"><code>RFECV</code></a> combines recursive elimination with cross-validation to choose the number of features. Its internal folds need the same care as any other validation split. In particular, placing a scaler before <code>RFECV</code> fits that scaler before RFECV creates its internal folds. The whole-pipeline grid search above makes the fitting boundary explicit and also lets us evaluate only a short list of feature counts.</p>
+<p>Forward selection starts with no features and adds the candidate that gives the best validation score at each step. Backward selection starts with all features and compares candidate removals. Unlike RFE’s importance-based removal, these methods compare predictive scores for candidate subsets. They can be expensive and do not guarantee the globally best subset. They are useful alternatives when the estimator does not supply feature importances.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="making-and-evaluating-feature-decisions" class="level2">
+<h2 class="anchored" data-anchor-id="making-and-evaluating-feature-decisions">Making and evaluating feature decisions</h2>
+<p>The two selection examples give different answers: removing inputs can improve generalization or discard useful information. Judge the trade-off using validation performance, ease of inspection, and actual measurement costs. Correlated features can substitute for one another, and weak individual features can matter together, as XOR illustrates. A selected set is neither a unique list of relevant features nor evidence of causality.</p>
+<p>Keep the distinction between <strong>fixed rules</strong> and <strong>learned decisions</strong> clear. Calculating rooms per household uses only values in one row. Fitting bin boundaries, imputing medians, and selecting columns from targets learn from a dataset. Those operations must be fitted within each training fold. Even a fixed formula can overfit the development process if we try many formulas and keep whichever happens to score best.</p>
+<section id="iclicker-13.3-find-the-leakage" class="level3">
+<h3 class="anchored" data-anchor-id="iclicker-13.3-find-the-leakage">iClicker 13.3: Find the leakage</h3>
+<p>A student fits <code>SelectFromModel</code> on all the available labelled data, transforms the inputs, and then cross-validates logistic regression on the reduced matrix. Is this evaluation valid? <strong>Choose one.</strong></p>
+<ul>
+<li><ol type="A">
+<li>Yes, because logistic regression never sees validation targets during fitting.</li>
+</ol></li>
+<li><ol start="2" type="A">
+<li>Yes, because feature selection is a transformation rather than the final predictor.</li>
+</ol></li>
+<li><ol start="3" type="A">
+<li>No, because cross-validation requires every fold to use the same selected features.</li>
+</ol></li>
+<li><ol start="4" type="A">
+<li>No, because validation targets helped choose the columns before cross-validation began.</li>
+</ol></li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled" title="Answer and explanation">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Answer and explanation
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>D.</strong> The selector learns from targets too. Reserve the test set first, then cross-validate a pipeline containing preprocessing, selection, and the classifier on the training split. Different folds may legitimately select different features because of sampling variation and interchangeable correlated inputs.</p>
+</div>
+</div>
+</div>
+<p>For discussion: selection improved accuracy in the noise example but reduced it in the breast-cancer example. What would you compare before deciding to use selection on a new dataset?</p>
+<p>The scikit-learn guide to <a href="https://scikit-learn.org/stable/common_pitfalls.html#data-leakage-during-pre-processing">data leakage during feature selection</a> includes an example where selection before splitting creates misleading performance even with random labels.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Situation</th>
+<th>Useful starting choice</th>
+<th>What to check</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>An effect depends on a combination of inputs</td>
+<td>Add a motivated interaction</td>
+<td>Are combinations well represented, and does validation improve?</td>
+</tr>
+<tr class="even">
+<td>A linear effect is too restrictive</td>
+<td>Try bins or another transformation</td>
+<td>Lost detail, abrupt boundaries, and model complexity</td>
+</tr>
+<tr class="odd">
+<td>There are many potentially redundant inputs</td>
+<td>Compare selection with an all-features baseline</td>
+<td>Predictive performance, selection stability, and actual measurement costs</td>
+</tr>
+<tr class="even">
+<td>The current model works well with all inputs</td>
+<td>Keep it as a serious candidate</td>
+<td>Selection adds fitting cost and can remove useful information</td>
+</tr>
+<tr class="odd">
+<td>An importance plot suggests dropping a feature</td>
+<td>Refit and evaluate the proposed subset</td>
+<td>Importance for one fitted model does not establish performance after removal</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="chapter-summary" class="level2">
+<h2 class="anchored" data-anchor-id="chapter-summary">Chapter summary</h2>
+<ul>
+<li><strong>Feature engineering changes the representation available to a model.</strong> Ratios express quantities that raw counts can obscure, interactions represent combinations of inputs, and bins allow different contributions over different ranges.</li>
+<li>These choices change what a model can learn and may discard information. Evaluate their effect rather than assuming they help.</li>
+<li><strong>Feature selection keeps a subset of columns.</strong> Model-based selection uses an importance threshold; RFE refits and removes features repeatedly.</li>
+<li>More features do not guarantee better predictions, and removing features can help or hurt. Compare selection with an all-features baseline.</li>
+<li>Fit learned transformations and selection within each training fold, and choose selection settings using cross-validation. Reserve the test set for the final evaluation.</li>
+<li>Judge feature decisions by predictive performance, ease of inspection, and actual measurement costs. A selected subset is not a permanent ranking of which features matter.</li>
+</ul>
+
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/UBC-CS\.github\.io\/cpsc330-book\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../book/12_feat-importances.html" class="pagination-link" aria-label="Chapter 12: Feature Importances and Model Interpretation">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Chapter 12: Feature Importances and Model Interpretation</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../book/14_K-Means.html" class="pagination-link" aria-label="Chapter 14: K-Means Clustering">
+        <span class="nav-page-text">Chapter 14: K-Means Clustering</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
