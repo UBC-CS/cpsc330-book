@@ -83,7 +83,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-420b07ff392561fc7da875fbdf660b67.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-149c8d5d0a593e58c95e8ae976210832.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -674,8 +674,8 @@ window.Quarto = {
 <section id="interpreting-linear-model-coefficients" class="level2">
 <h2 class="anchored" data-anchor-id="interpreting-linear-model-coefficients">Interpreting linear-model coefficients</h2>
 <p>Recall the prediction rule for linear regression:</p>
-<p><span class="math display">\[\hat{y} = b + \sum_{j=1}^{p} w_j z_j.\]</span></p>
-<p>Here, <span class="math inline">\(z_j\)</span> is a <strong>transformed input</strong>, <span class="math inline">\(w_j\)</span> is its coefficient, and <span class="math inline">\(b\)</span> is the intercept. If we increase just <span class="math inline">\(z_j\)</span> by one, the prediction changes by <span class="math inline">\(w_j\)</span>. This is an exact statement about the fitted linear model. The harder part is translating a change in the original input into a change in <span class="math inline">\(z_j\)</span>.</p>
+<p><span class="math display">\[\hat{y} = b + \sum_{j=1}^{d} w_j z_j.\]</span></p>
+<p>Here, <span class="math inline">\(d\)</span> is the number of transformed input features, <span class="math inline">\(z_j\)</span> is a <strong>transformed input</strong>, <span class="math inline">\(w_j\)</span> is its coefficient, and <span class="math inline">\(b\)</span> is the intercept. If we increase just <span class="math inline">\(z_j\)</span> by one, the prediction changes by <span class="math inline">\(w_j\)</span>. This is an exact statement about the fitted linear model. The harder part is translating a change in the original input into a change in <span class="math inline">\(z_j\)</span>.</p>
 <p>We fit ridge regression with <code>alpha=100</code>, a fixed demonstration setting rather than the result of a new search. First, compare it with a baseline using cross-validation. Preprocessing is fitted within each fold. A weak model can still be inspected to diagnose mistakes, but its coefficients should not be treated as strong evidence about useful predictive relationships.</p>
 <div id="a788e539" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-09-26T16:53:24.747740Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-09-26T16:53:24.747684Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-09-26T16:53:24.884917Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-09-26T16:53:24.884511Z&quot;}}" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>house_pipe <span class="op">=</span> make_pipeline(clone(preprocessor), Ridge(alpha<span class="op">=</span><span class="dv">100</span>))</span>
@@ -1221,7 +1221,7 @@ Name: Log-odds coefficient, dtype: float64</code></pre>
 <h2 class="anchored" data-anchor-id="explaining-individual-predictions-with-shap">Explaining individual predictions with SHAP</h2>
 <p>The importance plots summarize model behaviour across rows. Suppose instead we want to inspect why one person receives a high predicted probability of income above $50,000. A global ranking cannot tell us which values contributed to that particular prediction.</p>
 <p>For a linear model, we can directly examine weighted input values. For a more complex model, <strong>SHAP</strong> provides a way to allocate the difference between a reference output and an individual model output among the features:</p>
-<p><span class="math display">\[f(x) = \text{base value} + \sum_{j=1}^{p}\phi_j(x).\]</span></p>
+<p><span class="math display">\[f(x) = \text{base value} + \sum_{j=1}^{d}\phi_j(x).\]</span></p>
 <p>Here, <span class="math inline">\(f(x)\)</span> is the output we are explaining and <span class="math inline">\(\phi_j(x)\)</span> is the SHAP contribution assigned to feature <span class="math inline">\(j\)</span> for example <span class="math inline">\(x\)</span>. A positive contribution pushes the explained output above the reference; a negative one pushes it below. The same feature can have contributions with different signs for different examples.</p>
 <p>The idea comes from <strong>Shapley values</strong> in game theory. Imagine sharing a team’s total reward by asking how much each player adds when joining different subsets of the team. In a prediction explanation, the features play the role of the players. SHAP averages contributions over different combinations of available features, using a specified way to represent the unavailable information. We will focus on using and interpreting the explanations rather than deriving the algorithm.</p>
 <p>The reference and the treatment of unavailable features matter, especially when inputs are related. SHAP is not a unique explanation independent of those choices, and the word “contribution” does not mean a causal effect.</p>
