@@ -419,7 +419,7 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="why-look-beyond-predictive-performance">Why look beyond predictive performance?</h2>
 <p>In Chapter 11, we combined models to improve predictions. But does strong predictive performance tell us enough to trust a model’s use?</p>
 <div class="callout-reflection">
-<p>Suppose a classifier achieves 98% cross-validation accuracy and 97% test accuracy. Assume the evaluation was appropriate, the data represent the intended prediction setting, and these scores substantially beat a simple baseline.</p>
+<p>Suppose a classifier achieves strong cross-validation and test scores on metrics appropriate for the application. Assume the evaluation was appropriate, the data represent the intended prediction setting, and these scores substantially beat a simple baseline.</p>
 <p>A teammate says, “It predicts well on new examples. We can use it without investigating why it makes its predictions.”</p>
 <p>How comfortable would you be with that decision in each situation?</p>
 <table class="caption-top table">
@@ -450,8 +450,8 @@ window.Quarto = {
 </table>
 <p>What could go wrong despite the strong score? Who might need an explanation, and why? Would an explanation address your concern, or would you need other evidence?</p>
 </div>
-<p>The consequences of errors and opportunities for review differ. Explaining every photo label may offer little benefit, while a clinician may want to check which measurements contributed to a recommendation. An applicant may need to understand and challenge a loan rejection. Overall accuracy alone does not answer these needs.</p>
-<p><strong>Model interpretation</strong> helps us investigate how a fitted model produces predictions. It can reveal unexpected dependencies and help us communicate model behaviour. But a plausible explanation does not establish accuracy, fairness, or suitability for use; those require additional evidence.</p>
+<p>The consequences of errors and opportunities for review differ. Explaining every photo label may offer little benefit, while a clinician may want to check which measurements contributed to a recommendation. An applicant may need to understand and challenge a loan rejection. Strong predictive performance alone does not answer these needs.</p>
+<p><strong>Model interpretation</strong> helps us investigate how a fitted model produces predictions. It can reveal unexpected dependencies and help us communicate model behaviour. But a plausible explanation does not establish predictive performance, fairness, or suitability for use; those require additional evidence.</p>
 <p>To investigate a model’s behaviour, we first need to be clear about what we want to explain. Are we asking about relationships in the data, the model’s overall behaviour, or one particular prediction? Different approaches answer different questions.</p>
 <table class="caption-top table">
 <colgroup>
