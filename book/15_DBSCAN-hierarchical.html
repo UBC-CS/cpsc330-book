@@ -1,0 +1,1823 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Chapter 15: DBSCAN and Hierarchical Clustering – CPSC 330: Applied Machine Learning</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../book/17_natural-language-processing.html" rel="next">
+<link href="../book/14_K-Means.html" rel="prev">
+<link href="../book/img/UBC-CS-logo.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-420b07ff392561fc7da875fbdf660b67.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">CPSC 330: Applied Machine Learning</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../index.html" aria-current="page"> 
+<span class="menu-text">Book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../demos.html"> 
+<span class="menu-text">Demos</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/14_K-Means.html">Unsupervised Learning and Recommendation</a></li><li class="breadcrumb-item"><a href="../book/15_DBSCAN-hierarchical.html">Chapter 15: DBSCAN and Hierarchical Clustering</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../book/img/UBC-CS-logo.png" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../book/img/UBC-CS-logo.png" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../learning-objectives.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Detailed Learning Objectives</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/01_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1: Course Introduction</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Foundations and Supervised Learning</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/02_terminology-baselines-decision-trees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2: From Data to a First Model</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/03_ml-fundamentals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3: Machine Learning Fundamentals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/04_kNNs-SVM-RBF.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4: Similarity-Based Models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/05_preprocessing-pipelines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5: Preprocessing and Pipelines</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/06_column-transformer-text-feats.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6: Column Transformers and Text Features</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/07_linear-models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7: Linear Models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/08_hyperparameter-optimization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8: Hyperparameter Optimization</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/09_classification-metrics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9: Classification Metrics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/10_regression-metrics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10: Regression Metrics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/11_ensembles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11: Ensembles</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/12_feat-importances.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 12: Feature Importances and Model Interpretation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/13_feature-engineering-selection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 13: Feature Engineering and Selection</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Unsupervised Learning and Recommendation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/14_K-Means.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 14: K-Means Clustering</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/15_DBSCAN-hierarchical.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Chapter 15: DBSCAN and Hierarchical Clustering</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+ <span class="menu-text">book/16_recommender-systems.ipynb</span>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">Working with Different Data Types</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/17_natural-language-processing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 17: Natural Language Processing</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#why-move-beyond-k-means" id="toc-why-move-beyond-k-means" class="nav-link active" data-scroll-target="#why-move-beyond-k-means">Why move beyond K-Means?</a></li>
+  <li><a href="#dbscan-clustering-by-density" id="toc-dbscan-clustering-by-density" class="nav-link" data-scroll-target="#dbscan-clustering-by-density">DBSCAN: clustering by density</a>
+  <ul>
+  <li><a href="#core-border-and-noise-points" id="toc-core-border-and-noise-points" class="nav-link" data-scroll-target="#core-border-and-noise-points">Core, border, and noise points</a></li>
+  <li><a href="#how-dbscan-grows-clusters" id="toc-how-dbscan-grows-clusters" class="nav-link" data-scroll-target="#how-dbscan-grows-clusters">How DBSCAN grows clusters</a></li>
+  <li><a href="#the-effect-of-eps-and-min_samples" id="toc-the-effect-of-eps-and-min_samples" class="nav-link" data-scroll-target="#the-effect-of-eps-and-min_samples">The effect of <code>eps</code> and <code>min_samples</code></a></li>
+  <li><a href="#choosing-eps-and-min_samples-in-practice" id="toc-choosing-eps-and-min_samples-in-practice" class="nav-link" data-scroll-target="#choosing-eps-and-min_samples-in-practice">Choosing <code>eps</code> and <code>min_samples</code> in practice</a></li>
+  <li><a href="#when-dbscan-struggles" id="toc-when-dbscan-struggles" class="nav-link" data-scroll-target="#when-dbscan-struggles">When DBSCAN struggles</a></li>
+  <li><a href="#exercise-1-reasoning-about-dbscan" id="toc-exercise-1-reasoning-about-dbscan" class="nav-link" data-scroll-target="#exercise-1-reasoning-about-dbscan">Exercise 1: Reasoning about DBSCAN</a></li>
+  </ul></li>
+  <li><a href="#hierarchical-clustering" id="toc-hierarchical-clustering" class="nav-link" data-scroll-target="#hierarchical-clustering">Hierarchical clustering</a>
+  <ul>
+  <li><a href="#reading-a-dendrogram" id="toc-reading-a-dendrogram" class="nav-link" data-scroll-target="#reading-a-dendrogram">Reading a dendrogram</a></li>
+  <li><a href="#cutting-the-hierarchy" id="toc-cutting-the-hierarchy" class="nav-link" data-scroll-target="#cutting-the-hierarchy">Cutting the hierarchy</a></li>
+  <li><a href="#linkage-criteria-and-distance-metric" id="toc-linkage-criteria-and-distance-metric" class="nav-link" data-scroll-target="#linkage-criteria-and-distance-metric">Linkage criteria and distance metric</a></li>
+  <li><a href="#truncating-dendrograms" id="toc-truncating-dendrograms" class="nav-link" data-scroll-target="#truncating-dendrograms">Truncating dendrograms</a></li>
+  <li><a href="#exercise-2-linkage-and-dendrograms" id="toc-exercise-2-linkage-and-dendrograms" class="nav-link" data-scroll-target="#exercise-2-linkage-and-dendrograms">Exercise 2: Linkage and dendrograms</a></li>
+  </ul></li>
+  <li><a href="#choosing-a-clustering-method" id="toc-choosing-a-clustering-method" class="nav-link" data-scroll-target="#choosing-a-clustering-method">Choosing a clustering method</a></li>
+  <li><a href="#evaluating-and-interpreting-clusters" id="toc-evaluating-and-interpreting-clusters" class="nav-link" data-scroll-target="#evaluating-and-interpreting-clusters">Evaluating and interpreting clusters</a>
+  <ul>
+  <li><a href="#exercise-3-choosing-a-method" id="toc-exercise-3-choosing-a-method" class="nav-link" data-scroll-target="#exercise-3-choosing-a-method">Exercise 3: Choosing a method</a></li>
+  </ul></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  <li><a href="#resources" id="toc-resources" class="nav-link" data-scroll-target="#resources">Resources</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/14_K-Means.html">Unsupervised Learning and Recommendation</a></li><li class="breadcrumb-item"><a href="../book/15_DBSCAN-hierarchical.html">Chapter 15: DBSCAN and Hierarchical Clustering</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Chapter 15: DBSCAN and Hierarchical Clustering</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="callout-lo">
+<p>By the end of this chapter, you will be able to:</p>
+<ul>
+<li>Explain when K-Means may be unsuitable.</li>
+<li>Explain and apply DBSCAN, including its point types and density parameters.</li>
+<li>Explore DBSCAN settings and recognize its limitations.</li>
+<li>Interpret dendrograms and extract flat clusters using appropriate distances and linkage criteria.</li>
+<li>Choose and assess clustering methods using representation, stability, and domain knowledge.</li>
+</ul>
+</div>
+<p>K-Means represents each cluster by a centre. This makes it fast and useful, but not every group is well described by its centre. In this chapter, we explore two alternatives. DBSCAN searches for connected regions of high density, while hierarchical clustering builds a sequence of nested groupings.</p>
+<div id="f0dd7cde" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-25T15:07:17.130715Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-25T15:07:17.130572Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-25T15:07:17.978489Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-25T15:07:17.978085Z&quot;}}" data-execution_count="1">
+<details class="code-fold">
+<summary>Show imports and plotting helpers</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.patches <span class="im">import</span> Circle</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.cluster.hierarchy <span class="im">import</span> dendrogram, fcluster, linkage</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> DBSCAN, KMeans</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.datasets <span class="im">import</span> make_blobs, make_circles, make_moons</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> adjusted_rand_score</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>plt.rcParams.update({<span class="st">"font.size"</span>: <span class="dv">12</span>, <span class="st">"figure.figsize"</span>: (<span class="dv">6</span>, <span class="dv">4</span>)})</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_cluster_labels(X, labels, ax<span class="op">=</span><span class="va">None</span>, title<span class="op">=</span><span class="va">None</span>, annotate<span class="op">=</span><span class="va">False</span>):</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Plot a partition, with noise shown as grey crosses."""</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> ax <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        _, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    labels <span class="op">=</span> np.asarray(labels)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> label <span class="kw">in</span> np.unique(labels):</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        mask <span class="op">=</span> labels <span class="op">==</span> label</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        colour <span class="op">=</span> <span class="st">"grey"</span> <span class="cf">if</span> label <span class="op">==</span> <span class="op">-</span><span class="dv">1</span> <span class="cf">else</span> <span class="ss">f"C</span><span class="sc">{</span><span class="bu">int</span>(label) <span class="op">%</span> <span class="dv">10</span><span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>        ax.scatter(</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>            X[mask, <span class="dv">0</span>], X[mask, <span class="dv">1</span>], s<span class="op">=</span><span class="dv">70</span>, color<span class="op">=</span>colour,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>            marker<span class="op">=</span><span class="st">"x"</span> <span class="cf">if</span> label <span class="op">==</span> <span class="op">-</span><span class="dv">1</span> <span class="cf">else</span> <span class="st">"o"</span>,</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>            <span class="op">**</span>({<span class="st">"edgecolors"</span>: <span class="st">"black"</span>, <span class="st">"linewidths"</span>: <span class="fl">0.6</span>} <span class="cf">if</span> label <span class="op">!=</span> <span class="op">-</span><span class="dv">1</span> <span class="cf">else</span> {}),</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>            label<span class="op">=</span><span class="st">"noise"</span> <span class="cf">if</span> label <span class="op">==</span> <span class="op">-</span><span class="dv">1</span> <span class="cf">else</span> <span class="ss">f"cluster </span><span class="sc">{</span>label<span class="sc">}</span><span class="ss">"</span>,</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> annotate:</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i, point <span class="kw">in</span> <span class="bu">enumerate</span>(X):</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>            ax.annotate(<span class="bu">str</span>(i), point, xytext<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">6</span>), textcoords<span class="op">=</span><span class="st">"offset points"</span>)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    ax.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"Feature 0"</span>, ylabel<span class="op">=</span><span class="st">"Feature 1"</span>, title<span class="op">=</span>title)</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    ax.set_aspect(<span class="st">"equal"</span>, adjustable<span class="op">=</span><span class="st">"box"</span>)</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ax</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_dbscan(X, model, ax, title):</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Use colour for cluster membership and marker size for point type."""</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    labels <span class="op">=</span> model.labels_</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    core <span class="op">=</span> np.zeros(<span class="bu">len</span>(X), dtype<span class="op">=</span><span class="bu">bool</span>)</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    core[model.core_sample_indices_] <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> label <span class="kw">in</span> <span class="bu">sorted</span>(<span class="bu">set</span>(labels) <span class="op">-</span> {<span class="op">-</span><span class="dv">1</span>}):</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>        colour <span class="op">=</span> <span class="ss">f"C</span><span class="sc">{</span><span class="bu">int</span>(label) <span class="op">%</span> <span class="dv">10</span><span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> is_core, size <span class="kw">in</span> [(<span class="va">True</span>, <span class="dv">55</span>), (<span class="va">False</span>, <span class="dv">22</span>)]:</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>            mask <span class="op">=</span> (labels <span class="op">==</span> label) <span class="op">&amp;</span> (core <span class="op">==</span> is_core)</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>            ax.scatter(X[mask, <span class="dv">0</span>], X[mask, <span class="dv">1</span>], s<span class="op">=</span>size, color<span class="op">=</span>colour,</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>                       edgecolor<span class="op">=</span><span class="st">"black"</span>, linewidth<span class="op">=</span><span class="fl">0.4</span>)</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>    noise <span class="op">=</span> labels <span class="op">==</span> <span class="op">-</span><span class="dv">1</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>    ax.scatter(X[noise, <span class="dv">0</span>], X[noise, <span class="dv">1</span>], color<span class="op">=</span><span class="st">"grey"</span>, marker<span class="op">=</span><span class="st">"x"</span>, s<span class="op">=</span><span class="dv">35</span>)</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>    n_clusters <span class="op">=</span> <span class="bu">len</span>(<span class="bu">set</span>(labels) <span class="op">-</span> {<span class="op">-</span><span class="dv">1</span>})</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>    cluster_word <span class="op">=</span> <span class="st">"cluster"</span> <span class="cf">if</span> n_clusters <span class="op">==</span> <span class="dv">1</span> <span class="cf">else</span> <span class="st">"clusters"</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>    ax.set_title(<span class="ss">f"</span><span class="sc">{</span>title<span class="sc">}</span><span class="ch">\n</span><span class="sc">{</span>n_clusters<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>cluster_word<span class="sc">}</span><span class="ss">; </span><span class="sc">{</span>noise<span class="sc">.</span>mean()<span class="sc">:.0%}</span><span class="ss"> noise"</span>)</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>    ax.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"Feature 0"</span>, ylabel<span class="op">=</span><span class="st">"Feature 1"</span>)</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>    ax.set_aspect(<span class="st">"equal"</span>, adjustable<span class="op">=</span><span class="st">"box"</span>)</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_hierarchy_cut(X, Z, labels, height, title):</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Match dendrogram branch colours to flat-cluster colours."""</span></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> <span class="bu">len</span>(X)</span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>    members <span class="op">=</span> {i: [i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n)}</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i, row <span class="kw">in</span> <span class="bu">enumerate</span>(Z):</span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>        members[n <span class="op">+</span> i] <span class="op">=</span> members[<span class="bu">int</span>(row[<span class="dv">0</span>])] <span class="op">+</span> members[<span class="bu">int</span>(row[<span class="dv">1</span>])]</span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> branch_colour(node):</span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>        groups <span class="op">=</span> np.unique(labels[members[node]])</span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="ss">f"C</span><span class="sc">{</span><span class="bu">int</span>(groups[<span class="dv">0</span>]) <span class="op">%</span> <span class="dv">10</span><span class="sc">}</span><span class="ss">"</span> <span class="cf">if</span> <span class="bu">len</span>(groups) <span class="op">==</span> <span class="dv">1</span> <span class="cf">else</span> <span class="st">"grey"</span></span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>    fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">11</span>, <span class="fl">4.5</span>))</span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>    dendrogram(Z, ax<span class="op">=</span>axes[<span class="dv">0</span>], link_color_func<span class="op">=</span>branch_colour,</span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>               leaf_font_size<span class="op">=</span><span class="dv">11</span>)</span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>    axes[<span class="dv">0</span>].axhline(height, color<span class="op">=</span><span class="st">"black"</span>, linestyle<span class="op">=</span><span class="st">"--"</span>, label<span class="op">=</span><span class="ss">f"cut = </span><span class="sc">{</span>height<span class="sc">:.2f}</span><span class="ss">"</span>)</span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a>    axes[<span class="dv">0</span>].<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"Sample index"</span>, ylabel<span class="op">=</span><span class="st">"Merge height"</span>, title<span class="op">=</span>title)</span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a>    axes[<span class="dv">0</span>].legend()</span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a>    plot_cluster_labels(X, labels, ax<span class="op">=</span>axes[<span class="dv">1</span>], title<span class="op">=</span><span class="st">"Flat clusters"</span>, annotate<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>    plt.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<section id="why-move-beyond-k-means" class="level2">
+<h2 class="anchored" data-anchor-id="why-move-beyond-k-means">Why move beyond K-Means?</h2>
+<p>Recall that K-Means assigns every example to its nearest cluster centre and moves the centres to reduce the total squared distance within clusters. It is a useful starting point when groups are compact and represented well by their means. Its strengths come with some limitations:</p>
+<ul>
+<li><strong>Cluster geometry:</strong> boundaries between centres are linear, so curved or elongated groups can be split apart. Groups with very different sizes or densities can also be divided or combined in unwanted ways.</li>
+<li><strong>Outliers and forced assignments:</strong> every point joins a cluster, and extreme values can pull its centre away from the main group.</li>
+<li><strong>Choosing <span class="math inline">\(K\)</span>:</strong> we must specify the number of clusters. Elbow and silhouette plots offer evidence, but not always a clear answer.</li>
+<li><strong>Initialization:</strong> different starting centres can lead to different solutions. Multiple initializations help, but do not remove the geometric limitations.</li>
+<li><strong>Representation and scaling:</strong> distances depend on the features and their units. This issue also affects the methods introduced in this chapter.</li>
+</ul>
+<p>Consider the following examples. We give K-Means the intended number of groups, so choosing <span class="math inline">\(K\)</span> is not the difficulty here.</p>
+<div id="634c36df" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-25T15:07:17.979650Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-25T15:07:17.979560Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-25T15:07:18.189963Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-25T15:07:18.189289Z&quot;}}" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>X_moons, _ <span class="op">=</span> make_moons(n_samples<span class="op">=</span><span class="dv">180</span>, noise<span class="op">=</span><span class="fl">0.07</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>X_rings, _ <span class="op">=</span> make_circles(n_samples<span class="op">=</span><span class="dv">180</span>, noise<span class="op">=</span><span class="fl">0.04</span>, factor<span class="op">=</span><span class="fl">0.4</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>X_elongated, _ <span class="op">=</span> make_blobs(n_samples<span class="op">=</span><span class="dv">180</span>, centers<span class="op">=</span><span class="dv">3</span>, random_state<span class="op">=</span><span class="dv">170</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>X_elongated <span class="op">=</span> X_elongated <span class="op">@</span> np.array([[<span class="fl">0.6</span>, <span class="op">-</span><span class="fl">0.6</span>], [<span class="op">-</span><span class="fl">0.4</span>, <span class="fl">0.8</span>]])</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">7</span>))</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> col, (X, k, name) <span class="kw">in</span> <span class="bu">enumerate</span>([</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    (X_moons, <span class="dv">2</span>, <span class="st">"Half-moons"</span>),</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    (X_rings, <span class="dv">2</span>, <span class="st">"Concentric rings"</span>),</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    (X_elongated, <span class="dv">3</span>, <span class="st">"Elongated groups"</span>),</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>]):</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    axes[<span class="dv">0</span>, col].scatter(X[:, <span class="dv">0</span>], X[:, <span class="dv">1</span>], s<span class="op">=</span><span class="dv">30</span>, color<span class="op">=</span><span class="st">"grey"</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    axes[<span class="dv">0</span>, col].set_title(name)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    axes[<span class="dv">0</span>, col].set_aspect(<span class="st">"equal"</span>, adjustable<span class="op">=</span><span class="st">"box"</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    labels <span class="op">=</span> KMeans(n_clusters<span class="op">=</span>k, n_init<span class="op">=</span><span class="dv">10</span>, random_state<span class="op">=</span><span class="dv">42</span>).fit_predict(X)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    plot_cluster_labels(X, labels, ax<span class="op">=</span>axes[<span class="dv">1</span>, col], title<span class="op">=</span><span class="ss">f"K-Means, K=</span><span class="sc">{</span>k<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="15_DBSCAN-hierarchical_files/figure-html/cell-3-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The nearest-centre rule cuts across the moons and rings, and can split elongated groups. More initializations cannot make that rule follow a curved shape. What if a cluster instead meant a region of nearby points, connected through crowded neighbourhoods?</p>
+</section>
+<section id="dbscan-clustering-by-density" class="level2">
+<h2 class="anchored" data-anchor-id="dbscan-clustering-by-density">DBSCAN: clustering by density</h2>
+<p><strong>DBSCAN</strong> stands for density-based spatial clustering of applications with noise. Its central idea is that a cluster is a connected region containing many nearby examples. Sparse examples can be left unassigned as noise.</p>
+<p>On the half-moons data, DBSCAN can follow the curved shapes rather than dividing the plane according to the nearest centre.</p>
+<div id="6ce5a5ec" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-25T15:07:18.191264Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-25T15:07:18.191192Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-25T15:07:18.237056Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-25T15:07:18.236512Z&quot;}}" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>dbscan <span class="op">=</span> DBSCAN(eps<span class="op">=</span><span class="fl">0.22</span>, min_samples<span class="op">=</span><span class="dv">6</span>).fit(X_moons)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>plot_dbscan(X_moons, dbscan, ax, <span class="st">"DBSCAN on the half-moons data"</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="15_DBSCAN-hierarchical_files/figure-html/cell-4-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We did not tell DBSCAN to find two clusters. The number of clusters emerged from two other choices:</p>
+<ul>
+<li><code>eps</code> specifies the radius of a point’s neighbourhood.</li>
+<li><code>min_samples</code> specifies how many examples, <strong>including the point itself</strong>, must fall in that neighbourhood for the point to be considered a core point.</li>
+</ul>
+<p>These parameters express what “locally dense” means. Their numerical values depend on the scale and representation of the features.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Working with DBSCAN labels">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Working with DBSCAN labels
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>fit_predict(X)</code> returns one cluster label per row; after <code>fit(X)</code>, the same labels are available as <code>labels_</code>. Label <code>-1</code> means noise. Other integers identify groups, with no order or inherent meaning.</p>
+<p>Unlike K-Means, standard scikit-learn DBSCAN has no <code>predict</code> method for new examples. To cluster an expanded dataset, fit again; adding points can change the density relationships.</p>
+</div>
+</div>
+<section id="core-border-and-noise-points" class="level3">
+<h3 class="anchored" data-anchor-id="core-border-and-noise-points">Core, border, and noise points</h3>
+<p>DBSCAN distinguishes three kinds of examples:</p>
+<ul>
+<li>A <strong>core point</strong> has at least <code>min_samples</code> examples in its <code>eps</code>-neighbourhood, <strong>counting itself</strong>.</li>
+<li>A <strong>border point</strong> is not core, but lies within <code>eps</code> of a core point.</li>
+<li>A <strong>noise point</strong> is neither core nor within <code>eps</code> of any core point.</li>
+</ul>
+<p>Having too few neighbours does <strong>not</strong> by itself make a point noise: it might be a border point. These roles depend on the chosen parameters.</p>
+<p>The small example below uses <code>eps=0.5</code> and <code>min_samples=4</code>. Dashed circles show the neighbourhood of a core point and a border point.</p>
+<div id="97f037e5" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-25T15:07:18.238133Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-25T15:07:18.238080Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-25T15:07:18.290544Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-25T15:07:18.289909Z&quot;}}" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>X_points <span class="op">=</span> np.array([</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">0.0</span>, <span class="fl">0.0</span>], [<span class="fl">0.1</span>, <span class="fl">0.1</span>], [<span class="op">-</span><span class="fl">0.1</span>, <span class="fl">0.1</span>], [<span class="fl">0.0</span>, <span class="op">-</span><span class="fl">0.15</span>],</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">0.55</span>, <span class="fl">0.0</span>], [<span class="fl">1.05</span>, <span class="fl">0.0</span>],</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>point_model <span class="op">=</span> DBSCAN(eps<span class="op">=</span><span class="fl">0.5</span>, min_samples<span class="op">=</span><span class="dv">4</span>).fit(X_points)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>point_types <span class="op">=</span> np.full(<span class="bu">len</span>(X_points), <span class="st">"border"</span>, dtype<span class="op">=</span><span class="bu">object</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>point_types[point_model.labels_ <span class="op">==</span> <span class="op">-</span><span class="dv">1</span>] <span class="op">=</span> <span class="st">"noise"</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>point_types[point_model.core_sample_indices_] <span class="op">=</span> <span class="st">"core"</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">4</span>))</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> kind, marker, colour, size <span class="kw">in</span> [</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"core"</span>, <span class="st">"o"</span>, <span class="st">"C0"</span>, <span class="dv">150</span>), (<span class="st">"border"</span>, <span class="st">"s"</span>, <span class="st">"C1"</span>, <span class="dv">95</span>), (<span class="st">"noise"</span>, <span class="st">"x"</span>, <span class="st">"grey"</span>, <span class="dv">100</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>]:</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    mask <span class="op">=</span> point_types <span class="op">==</span> kind</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    ax.scatter(X_points[mask, <span class="dv">0</span>], X_points[mask, <span class="dv">1</span>], marker<span class="op">=</span>marker,</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>               color<span class="op">=</span>colour, s<span class="op">=</span>size, label<span class="op">=</span>kind)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, point <span class="kw">in</span> <span class="bu">enumerate</span>(X_points):</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    ax.annotate(<span class="bu">str</span>(i), point, xytext<span class="op">=</span>(<span class="dv">5</span>, <span class="dv">6</span>), textcoords<span class="op">=</span><span class="st">"offset points"</span>)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> index, colour <span class="kw">in</span> [(<span class="dv">1</span>, <span class="st">"C0"</span>), (<span class="dv">4</span>, <span class="st">"C1"</span>)]:</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    ax.add_patch(Circle(X_points[index], <span class="fl">0.5</span>, fill<span class="op">=</span><span class="va">False</span>, linestyle<span class="op">=</span><span class="st">"--"</span>, color<span class="op">=</span>colour))</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xlim<span class="op">=</span>(<span class="op">-</span><span class="fl">0.65</span>, <span class="fl">1.35</span>), ylim<span class="op">=</span>(<span class="op">-</span><span class="fl">0.65</span>, <span class="fl">0.7</span>), title<span class="op">=</span><span class="st">"Who can extend the group?"</span>)</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>ax.set_aspect(<span class="st">"equal"</span>)</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>ax.legend(loc<span class="op">=</span><span class="st">"upper left"</span>, bbox_to_anchor<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="15_DBSCAN-hierarchical_files/figure-html/cell-5-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Points 0–3 are core points. Point 4 is a border point: it is close to core point 1, but its own neighbourhood contains fewer than four points. Point 5 is close to border point 4 but outside every core point’s neighbourhood, so it remains noise. <strong>A chain of border points cannot extend a cluster.</strong></p>
+<div class="callout-reflection">
+<p>If we increase <code>eps</code>, could point 5 change from noise to a border point? Would changing the parameter change the data, or just our definition of a dense region?</p>
+</div>
+</section>
+<section id="how-dbscan-grows-clusters" class="level3">
+<h3 class="anchored" data-anchor-id="how-dbscan-grows-clusters">How DBSCAN grows clusters</h3>
+<p>At a high level, DBSCAN proceeds as follows:</p>
+<ol type="1">
+<li>Visit an example that has not yet been processed.</li>
+<li>If it is a core point, begin a new cluster and add its neighbours.</li>
+<li>Whenever a newly added neighbour is also a core point, add that point’s neighbours as well.</li>
+<li>Continue until no more density-connected points can be reached, then visit another unprocessed example.</li>
+<li>Leave examples that are not reachable from a core point labelled as noise.</li>
+</ol>
+<p>The connected core points determine the clusters. Results are therefore generally deterministic for a fixed dataset and parameters. One subtle exception is a border point lying within reach of core points from two different clusters: its assignment can depend on the order in which the data are processed. The core clusters themselves do not change.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/DBSCAN_search.gif" class="img-fluid figure-img" width="600"></p>
+<figcaption>DBSCAN expanding clusters through neighbouring core points.</figcaption>
+</figure>
+</div>
+<p>Watch how expansion continues through core points. Border points can receive a cluster label, but do not spread it further. A point initially left unassigned can later be reached from a core point; noise is the final status of points that never join a cluster.</p>
+<p>Animation source: <a href="https://dashee87.github.io/data%20science/general/Clustering-with-Scikit-with-GIFs/">Clustering with Scikit with GIFs</a>.</p>
+</section>
+<section id="the-effect-of-eps-and-min_samples" class="level3">
+<h3 class="anchored" data-anchor-id="the-effect-of-eps-and-min_samples">The effect of <code>eps</code> and <code>min_samples</code></h3>
+<p>A larger <code>eps</code> makes neighbourhoods wider. More points become neighbours, so clusters may grow or merge. A larger <code>min_samples</code> makes the core-point requirement stricter; fewer points qualify as core and more may become noise.</p>
+<p>We will reuse the noisy moons and add four isolated observations. Across all panels, <strong>large coloured dots are core points, small coloured dots are border points, and grey crosses are noise</strong>. Colours identify clusters within a panel; their numeric identities need not match across settings.</p>
+<p>First, hold <code>min_samples</code> fixed and change <code>eps</code>. Predict which setting will fragment the moons and which will merge them.</p>
+<div id="43842e84" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-25T15:07:18.291806Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-25T15:07:18.291720Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-25T15:07:18.404894Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-25T15:07:18.404416Z&quot;}}" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>X_density <span class="op">=</span> np.vstack([</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    X_moons, [[<span class="op">-</span><span class="fl">1.5</span>, <span class="fl">1.5</span>], [<span class="fl">2.4</span>, <span class="fl">1.4</span>], [<span class="fl">0.5</span>, <span class="op">-</span><span class="fl">1.0</span>], [<span class="fl">1.6</span>, <span class="op">-</span><span class="fl">0.9</span>]]</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">4</span>), sharex<span class="op">=</span><span class="va">True</span>, sharey<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, eps <span class="kw">in</span> <span class="bu">zip</span>(axes, [<span class="fl">0.12</span>, <span class="fl">0.22</span>, <span class="fl">0.40</span>]):</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> DBSCAN(eps<span class="op">=</span>eps, min_samples<span class="op">=</span><span class="dv">6</span>).fit(X_density)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    plot_dbscan(X_density, model, ax, <span class="ss">f"eps=</span><span class="sc">{</span>eps<span class="sc">}</span><span class="ss">, min_samples=6"</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="15_DBSCAN-hierarchical_files/figure-html/cell-6-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>At <code>eps=0.12</code>, neighbourhoods are too small to connect each moon. At <code>eps=0.22</code>, we recover two groups and leave the isolated points as noise. At <code>eps=0.40</code>, core points connect across the gap and the moons merge.</p>
+<p>Now hold <code>eps=0.22</code> fixed. Increasing <code>min_samples</code> from 3 to 6 leaves the same two groups here, but increasing it to 12 breaks them into smaller pieces. Parameter changes need not change the partition immediately.</p>
+<div id="830a7778" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-25T15:07:18.406101Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-25T15:07:18.406027Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-25T15:07:18.500451Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-25T15:07:18.500100Z&quot;}}" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">4</span>), sharex<span class="op">=</span><span class="va">True</span>, sharey<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, min_samples <span class="kw">in</span> <span class="bu">zip</span>(axes, [<span class="dv">3</span>, <span class="dv">6</span>, <span class="dv">12</span>]):</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> DBSCAN(eps<span class="op">=</span><span class="fl">0.22</span>, min_samples<span class="op">=</span>min_samples).fit(X_density)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    plot_dbscan(X_density, model, ax, <span class="ss">f"eps=0.22, min_samples=</span><span class="sc">{</span>min_samples<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="15_DBSCAN-hierarchical_files/figure-html/cell-7-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="choosing-eps-and-min_samples-in-practice" class="level3">
+<h3 class="anchored" data-anchor-id="choosing-eps-and-min_samples-in-practice">Choosing <code>eps</code> and <code>min_samples</code> in practice</h3>
+<p>Treat tuning as a short cycle of trying settings and inspecting the resulting groups:</p>
+<ol type="1">
+<li><strong>Fix the representation and distance metric.</strong> Distances depend on the features and their scale. For documents, choose a numerical text representation and a distance that reflects the similarity you care about; cosine distance is one option. An <code>eps</code> value that works for one representation or metric may be unsuitable for another.</li>
+<li><strong>Try a small grid of settings.</strong> Choose a few <code>min_samples</code> values, explore a coarse range of <code>eps</code>, then refine around promising values. The numbers below suit our toy data; do not copy them blindly to document data.</li>
+<li><strong>Inspect the result.</strong> Compare cluster counts, cluster sizes, and the fraction of points labelled as noise. For documents, read several examples from each cluster and ask whether they share a useful theme.</li>
+</ol>
+<p>For our moons, we can collect a compact table like this:</p>
+<div id="fa63e936" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-25T15:07:18.501289Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-25T15:07:18.501237Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-25T15:07:18.513312Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-25T15:07:18.512948Z&quot;}}" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>rows <span class="op">=</span> []</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> min_samples <span class="kw">in</span> [<span class="dv">3</span>, <span class="dv">6</span>, <span class="dv">12</span>]:</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> eps <span class="kw">in</span> [<span class="fl">0.18</span>, <span class="fl">0.22</span>, <span class="fl">0.26</span>]:</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        labels <span class="op">=</span> DBSCAN(eps<span class="op">=</span>eps, min_samples<span class="op">=</span>min_samples).fit_predict(X_density)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        rows.append({</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">"eps"</span>: eps,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>            <span class="st">"min_samples"</span>: min_samples,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>            <span class="st">"clusters"</span>: <span class="bu">len</span>(<span class="bu">set</span>(labels) <span class="op">-</span> {<span class="op">-</span><span class="dv">1</span>}),</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>            <span class="st">"noise fraction"</span>: np.mean(labels <span class="op">==</span> <span class="op">-</span><span class="dv">1</span>),</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>            <span class="st">"cluster sizes"</span>: pd.Series(labels[labels <span class="op">!=</span> <span class="op">-</span><span class="dv">1</span>]).value_counts().sort_index().tolist(),</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>        })</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>parameter_results <span class="op">=</span> pd.DataFrame(rows)</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>parameter_results.<span class="bu">round</span>(<span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">eps</th>
+<th data-quarto-table-cell-role="th">min_samples</th>
+<th data-quarto-table-cell-role="th">clusters</th>
+<th data-quarto-table-cell-role="th">noise fraction</th>
+<th data-quarto-table-cell-role="th">cluster sizes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>0.18</td>
+<td>3</td>
+<td>3</td>
+<td>0.022</td>
+<td>[33, 57, 90]</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>0.22</td>
+<td>3</td>
+<td>2</td>
+<td>0.022</td>
+<td>[90, 90]</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>0.26</td>
+<td>3</td>
+<td>1</td>
+<td>0.022</td>
+<td>[180]</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>0.18</td>
+<td>6</td>
+<td>3</td>
+<td>0.033</td>
+<td>[32, 56, 90]</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>0.22</td>
+<td>6</td>
+<td>2</td>
+<td>0.022</td>
+<td>[90, 90]</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>0.26</td>
+<td>6</td>
+<td>2</td>
+<td>0.022</td>
+<td>[90, 90]</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>0.18</td>
+<td>12</td>
+<td>1</td>
+<td>0.935</td>
+<td>[12]</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>0.22</td>
+<td>12</td>
+<td>8</td>
+<td>0.109</td>
+<td>[24, 15, 16, 32, 26, 19, 25, 7]</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>0.26</td>
+<td>12</td>
+<td>2</td>
+<td>0.033</td>
+<td>[88, 90]</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The two parameters work together. At <code>eps=0.26</code>, <code>min_samples=3</code> joins the moons, while <code>min_samples=6</code> keeps them apart. Inspect the corresponding plots above rather than choosing by cluster count alone.</p>
+<p>If <strong>almost everything is noise</strong>, try a larger <code>eps</code> or smaller <code>min_samples</code>. If <strong>everything joins one large cluster</strong>, try a smaller <code>eps</code> or larger <code>min_samples</code>. These are diagnostic directions, not guarantees: one large group or many noise points may reflect the data, and varying densities can make a useful setting hard to find.</p>
+<p>For document clustering, prefer settings for which you can explain the main groups using representative documents, while checking exceptions and documents marked as noise. Check nearby settings too: does the interpretation persist? There is usually no target-based cross-validation score to optimize, and a high silhouette score alone does not establish that the groups are useful.</p>
+<div class="callout-reflection">
+<p>Two settings produce the same number of document clusters. One labels half the documents as noise; the other labels almost none as noise. What would you read and compare before choosing between them?</p>
+</div>
+</section>
+<section id="when-dbscan-struggles" class="level3">
+<h3 class="anchored" data-anchor-id="when-dbscan-struggles">When DBSCAN struggles</h3>
+<p>DBSCAN uses one definition of density across the whole dataset. If groups have very different densities, a radius suitable for one can be unsuitable for another. The following dataset contains two tight groups and one much more spread-out group.</p>
+<div id="e6ace9e6" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-25T15:07:18.514172Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-25T15:07:18.514120Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-25T15:07:18.621167Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-25T15:07:18.620621Z&quot;}}" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>X_varied, _ <span class="op">=</span> make_blobs(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    n_samples<span class="op">=</span><span class="dv">200</span>, cluster_std<span class="op">=</span>[<span class="fl">1.0</span>, <span class="fl">5.0</span>, <span class="fl">1.0</span>], random_state<span class="op">=</span><span class="dv">10</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">4</span>, figsize<span class="op">=</span>(<span class="dv">14</span>, <span class="dv">4</span>), sharex<span class="op">=</span><span class="va">True</span>, sharey<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].scatter(X_varied[:, <span class="dv">0</span>], X_varied[:, <span class="dv">1</span>], s<span class="op">=</span><span class="dv">25</span>, color<span class="op">=</span><span class="st">"grey"</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_title(<span class="st">"Data: unequal densities"</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_aspect(<span class="st">"equal"</span>, adjustable<span class="op">=</span><span class="st">"box"</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, eps <span class="kw">in</span> <span class="bu">zip</span>(axes[<span class="dv">1</span>:<span class="dv">3</span>], [<span class="fl">0.7</span>, <span class="fl">3.0</span>]):</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> DBSCAN(eps<span class="op">=</span>eps, min_samples<span class="op">=</span><span class="dv">5</span>).fit(X_varied)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    plot_dbscan(X_varied, model, ax, <span class="ss">f"DBSCAN, eps=</span><span class="sc">{</span>eps<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>kmeans_labels <span class="op">=</span> KMeans(n_clusters<span class="op">=</span><span class="dv">3</span>, n_init<span class="op">=</span><span class="dv">10</span>, random_state<span class="op">=</span><span class="dv">42</span>).fit_predict(X_varied)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>plot_cluster_labels(X_varied, kmeans_labels, ax<span class="op">=</span>axes[<span class="dv">3</span>], title<span class="op">=</span><span class="st">"K-Means, K=3"</span>)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="15_DBSCAN-hierarchical_files/figure-html/cell-9-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>With <code>eps=0.7</code>, DBSCAN discards much of the spread-out group. Increasing <code>eps</code> to 3.0 keeps many more points, but joins the groups into one. K-Means offers a useful alternative partition here, although it receives the extra information that we want three groups and still follows its nearest-centre rule.</p>
+<p>Another failure can arise when a sufficiently dense bridge connects two groups. DBSCAN may then treat them as one, even if we would prefer separate groups. This requires a chain of <strong>core</strong> points, not just a few border points.</p>
+<div id="375ce01a" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-25T15:07:18.622333Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-25T15:07:18.622259Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-25T15:07:18.680041Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-25T15:07:18.679636Z&quot;}}" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">42</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>X_groups <span class="op">=</span> np.vstack([</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    rng.normal(loc<span class="op">=</span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>), scale<span class="op">=</span><span class="fl">0.13</span>, size<span class="op">=</span>(<span class="dv">60</span>, <span class="dv">2</span>)),</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    rng.normal(loc<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">0</span>), scale<span class="op">=</span><span class="fl">0.13</span>, size<span class="op">=</span>(<span class="dv">60</span>, <span class="dv">2</span>)),</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>bridge_x <span class="op">=</span> np.linspace(<span class="op">-</span><span class="fl">0.8</span>, <span class="fl">0.8</span>, <span class="dv">35</span>)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>bridge <span class="op">=</span> np.column_stack([bridge_x, rng.normal(<span class="dv">0</span>, <span class="fl">0.02</span>, <span class="bu">len</span>(bridge_x))])</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>X_bridge <span class="op">=</span> np.vstack([X_groups, bridge])</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">4</span>), sharex<span class="op">=</span><span class="va">True</span>, sharey<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, X, title <span class="kw">in</span> <span class="bu">zip</span>(axes, [X_groups, X_bridge], [<span class="st">"Without a bridge"</span>, <span class="st">"With a dense bridge"</span>]):</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> DBSCAN(eps<span class="op">=</span><span class="fl">0.22</span>, min_samples<span class="op">=</span><span class="dv">5</span>).fit(X)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    plot_dbscan(X, model, ax, title)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="15_DBSCAN-hierarchical_files/figure-html/cell-10-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>These are limitations of what “density-connected” means, rather than problems that parameter tuning can always fix. Distances can also become less informative with many features. DBSCAN does not remove the need for careful representation and domain interpretation.</p>
+</section>
+<section id="exercise-1-reasoning-about-dbscan" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-1-reasoning-about-dbscan">Exercise 1: Reasoning about DBSCAN</h3>
+<p>For each change below, predict the likely effect before running any code.</p>
+<ol type="1">
+<li>Decrease <code>eps</code> while holding <code>min_samples</code> fixed.</li>
+<li>Increase <code>min_samples</code> while holding <code>eps</code> fixed.</li>
+<li>Multiply one feature by 1,000 without scaling the data.</li>
+<li>Add a new point halfway between two existing dense regions.</li>
+</ol>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>Neighbourhoods shrink, so we generally get more noise or more disconnected clusters.</li>
+<li>The density requirement becomes stricter, so there are generally fewer core points and more noise.</li>
+<li>That feature is likely to dominate the distance calculation and may substantially change the clusters.</li>
+<li>One isolated point will usually be noise or a border point. If enough points are added between the regions, however, they may create a density-connected bridge and merge the clusters.</li>
+</ol>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="hierarchical-clustering" class="level2">
+<h2 class="anchored" data-anchor-id="hierarchical-clustering">Hierarchical clustering</h2>
+<p>Choosing the number of clusters is often difficult. We may want to explore broad groups first, then look for smaller groups within them. Rather than committing to one partition immediately, <strong>hierarchical clustering</strong> lets us examine several levels of detail.</p>
+<p>We will use <strong>agglomerative hierarchical clustering</strong>. It starts with every example in its own cluster, then repeatedly merges the two closest clusters until all examples belong to one group. After <span class="math inline">\(n-1\)</span> merges, we have a complete hierarchy of nested groups. Once made, a merge is not undone.</p>
+<section id="reading-a-dendrogram" class="level3">
+<h3 class="anchored" data-anchor-id="reading-a-dendrogram">Reading a dendrogram</h3>
+<p>A <strong>dendrogram</strong> displays this merge sequence. The numbered points below let us connect each leaf in the tree to an example in the data.</p>
+<div id="fffa1e18" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-25T15:07:18.681305Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-25T15:07:18.681221Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-25T15:07:18.791807Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-25T15:07:18.791444Z&quot;}}" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>X_hier_original, _ <span class="op">=</span> make_blobs(n_samples<span class="op">=</span><span class="dv">11</span>, centers<span class="op">=</span><span class="dv">3</span>, random_state<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>X_hier <span class="op">=</span> StandardScaler().fit_transform(X_hier_original)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>Z <span class="op">=</span> linkage(X_hier, method<span class="op">=</span><span class="st">"ward"</span>, metric<span class="op">=</span><span class="st">"euclidean"</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">11</span>, <span class="fl">4.5</span>))</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].scatter(X_hier[:, <span class="dv">0</span>], X_hier[:, <span class="dv">1</span>], s<span class="op">=</span><span class="dv">110</span>, color<span class="op">=</span><span class="st">"grey"</span>, edgecolor<span class="op">=</span><span class="st">"black"</span>, linewidth<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, point <span class="kw">in</span> <span class="bu">enumerate</span>(X_hier):</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    axes[<span class="dv">0</span>].annotate(<span class="bu">str</span>(i), point, xytext<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">6</span>), textcoords<span class="op">=</span><span class="st">"offset points"</span>)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"Feature 0"</span>, ylabel<span class="op">=</span><span class="st">"Feature 1"</span>, title<span class="op">=</span><span class="st">"Eleven numbered examples"</span>)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_aspect(<span class="st">"equal"</span>, adjustable<span class="op">=</span><span class="st">"box"</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>dendrogram(Z, ax<span class="op">=</span>axes[<span class="dv">1</span>], leaf_font_size<span class="op">=</span><span class="dv">11</span>, color_threshold<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"Sample index"</span>, ylabel<span class="op">=</span><span class="st">"Merge height"</span>, title<span class="op">=</span><span class="st">"Ward-linkage dendrogram"</span>)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="15_DBSCAN-hierarchical_files/figure-html/cell-11-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Read the dendrogram from the leaves upward:</p>
+<ul>
+<li>Each leaf represents one example, identified by its original row number.</li>
+<li>Each U-shaped connection records a merge of two points or groups.</li>
+<li>The connection’s height indicates how dissimilar the groups were under the chosen distance and linkage rule.</li>
+</ul>
+<p>Here, points 0 and 2 merge first, then points 5 and 9, followed by points 4 and 7. Find these pairs in the scatter plot. Each merge reduces the number of clusters by one.</p>
+<p>Groups that merge low in the tree are more similar under the chosen rule. Large vertical gaps suggest possible levels at which to cut. The <strong>horizontal distance between leaves does not measure similarity</strong>: branches can rotate without changing the hierarchy. For Ward linkage, used here, merge height is related to the increase in within-cluster squared deviation; it is not simply a distance between two individual points.</p>
+</section>
+<section id="cutting-the-hierarchy" class="level3">
+<h3 class="anchored" data-anchor-id="cutting-the-hierarchy">Cutting the hierarchy</h3>
+<p>A dendrogram contains many possible flat clusterings. Imagine drawing a horizontal line across the tree. Every connected component below that line becomes one cluster. We can choose a cut by requesting a maximum number of clusters or by setting a distance threshold.</p>
+<div id="62f5902d" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-25T15:07:18.792712Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-25T15:07:18.792639Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-25T15:07:18.795485Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-25T15:07:18.795119Z&quot;}}" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Request at most three clusters from the already fitted hierarchy.</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>labels_three <span class="op">=</span> fcluster(Z, t<span class="op">=</span><span class="dv">3</span>, criterion<span class="op">=</span><span class="st">"maxclust"</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({<span class="st">"sample"</span>: np.arange(<span class="bu">len</span>(X_hier)), <span class="st">"cluster"</span>: labels_three})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">sample</th>
+<th data-quarto-table-cell-role="th">cluster</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>0</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>3</td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>4</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>5</td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>6</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>7</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>8</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>9</td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>10</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="5e07c066" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-25T15:07:18.796241Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-25T15:07:18.796189Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-25T15:07:18.868723Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-25T15:07:18.868375Z&quot;}}" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># For this tree, a cut between the last two relevant merge heights gives three groups.</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>cut_three <span class="op">=</span> (Z[<span class="op">-</span><span class="dv">3</span>, <span class="dv">2</span>] <span class="op">+</span> Z[<span class="op">-</span><span class="dv">2</span>, <span class="dv">2</span>]) <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>plot_hierarchy_cut(X_hier, Z, labels_three, cut_three, <span class="st">"At most three clusters"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="15_DBSCAN-hierarchical_files/figure-html/cell-13-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="a11fe4af" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-25T15:07:18.869572Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-25T15:07:18.869521Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-25T15:07:18.950843Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-25T15:07:18.950521Z&quot;}}" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Alternatively, specify a merge-height threshold directly.</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>cut_height <span class="op">=</span> <span class="fl">0.7</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>labels_distance <span class="op">=</span> fcluster(Z, t<span class="op">=</span>cut_height, criterion<span class="op">=</span><span class="st">"distance"</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>plot_hierarchy_cut(X_hier, Z, labels_distance, cut_height, <span class="st">"Cut at merge height 0.7"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="15_DBSCAN-hierarchical_files/figure-html/cell-14-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Both calls reuse the same <code>Z</code>; they do not rebuild the hierarchy. <code>criterion="maxclust"</code> requests <strong>at most</strong> the specified number of clusters, while <code>criterion="distance"</code> specifies a merge-height threshold. The threshold’s meaning depends on the linkage rule.</p>
+<p>Labels are returned in original row order, even though the dendrogram rearranges leaves for display. SciPy’s <code>fcluster</code> labels start at 1 and are simply group identifiers. The colours above match the flat labels, and the dashed line shows the cut. Changing dendrogram colours alone does not extract labels. See the <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.cluster.hierarchy.fcluster.html">SciPy <code>fcluster</code> documentation</a> for the two criteria.</p>
+</section>
+<section id="linkage-criteria-and-distance-metric" class="level3">
+<h3 class="anchored" data-anchor-id="linkage-criteria-and-distance-metric">Linkage criteria and distance metric</h3>
+<p>What does “merge the closest clusters” mean once a cluster contains several points? We need two choices:</p>
+<ul>
+<li>A <strong>distance metric</strong> measures dissimilarity between individual examples.</li>
+<li>A <strong>linkage criterion</strong> determines how to compare whole clusters.</li>
+</ul>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Linkage</th>
+<th>Which two clusters merge next?</th>
+<th>Typical behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Single</td>
+<td>Those with the smallest <strong>minimum</strong> cross-cluster distance</td>
+<td>Can follow curves, but is vulnerable to chains of points</td>
+</tr>
+<tr class="even">
+<td>Complete</td>
+<td>Those with the smallest <strong>maximum</strong> cross-cluster distance</td>
+<td>Favours groups whose members are all reasonably close</td>
+</tr>
+<tr class="odd">
+<td>Average</td>
+<td>Those with the smallest <strong>average</strong> cross-cluster distance</td>
+<td>Balances the nearest and farthest pairs</td>
+</tr>
+<tr class="even">
+<td>Ward</td>
+<td>Those causing the smallest increase in total within-cluster squared deviation</td>
+<td>Favours compact groups and requires Euclidean distance</td>
+</tr>
+</tbody>
+</table>
+<p>First, keep Euclidean distance fixed and compare the linkage rules on the moons.</p>
+<div id="614a88c8" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-25T15:07:18.952031Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-25T15:07:18.951968Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-25T15:07:19.061013Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-25T15:07:19.060568Z&quot;}}" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>methods <span class="op">=</span> [<span class="st">"single"</span>, <span class="st">"complete"</span>, <span class="st">"average"</span>, <span class="st">"ward"</span>]</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>X_link, _ <span class="op">=</span> make_moons(n_samples<span class="op">=</span><span class="dv">120</span>, noise<span class="op">=</span><span class="fl">0.07</span>, random_state<span class="op">=</span><span class="dv">7</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">7</span>))</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, method <span class="kw">in</span> <span class="bu">zip</span>(axes.flat, methods):</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    Z_method <span class="op">=</span> linkage(X_link, method<span class="op">=</span>method, metric<span class="op">=</span><span class="st">"euclidean"</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    labels <span class="op">=</span> fcluster(Z_method, t<span class="op">=</span><span class="dv">2</span>, criterion<span class="op">=</span><span class="st">"maxclust"</span>)</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    plot_cluster_labels(X_link, labels, ax<span class="op">=</span>ax, title<span class="op">=</span><span class="ss">f"</span><span class="sc">{</span>method<span class="sc">.</span>title()<span class="sc">}</span><span class="ss"> linkage"</span>)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="15_DBSCAN-hierarchical_files/figure-html/cell-15-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Single linkage can follow the two curved groups because it only needs nearby points to connect them. Complete, average, and Ward linkage prefer more compact groups and may divide this dataset differently. This does not make single linkage universally superior: its chaining behaviour can be undesirable in noisy data.</p>
+<div class="callout-reflection">
+<p>Suppose clusters A and B have one very close pair of points but also some widely separated pairs. Clusters A and C have no extremely close pair, but all their cross-cluster distances are moderate. Which pair would single linkage favour? Could complete linkage favour a different pair?</p>
+</div>
+<p>Single linkage favours A and B if their nearest pair is the closest across all candidate merges. Complete linkage can instead favour A and C because its decision depends on the farthest pair.</p>
+<p>We can specify <strong>both choices</strong> when calling <code>linkage</code> with a feature matrix. For example, if <code>X</code> contains numerical document features:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>Z <span class="op">=</span> linkage(X, method<span class="op">=</span><span class="st">"complete"</span>, metric<span class="op">=</span><span class="st">"cosine"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Here, <code>metric="cosine"</code> compares the directions of two feature vectors rather than their absolute magnitudes. <code>method="complete"</code> compares two clusters using the <strong>largest cosine distance</strong> between their members. The two arguments do different jobs; choosing complete linkage does not fix the point-to-point distance metric.</p>
+<p>Euclidean distance is the default. Single, complete, and average linkage can use other supported distances, including cosine. <strong>Ward requires Euclidean distance</strong>, so do not combine <code>method="ward"</code> with <code>metric="cosine"</code>. Choose a metric that makes sense for the representation, and avoid zero vectors when using cosine distance. See the <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.cluster.hierarchy.linkage.html">SciPy <code>linkage</code> documentation</a> for supported options.</p>
+</section>
+<section id="truncating-dendrograms" class="level3">
+<h3 class="anchored" data-anchor-id="truncating-dendrograms">Truncating dendrograms</h3>
+<p>A full dendrogram becomes difficult to read with hundreds or thousands of examples. We can <strong>truncate the display</strong> to show a summary of the hierarchy. In the example below, <code>truncate_mode="lastp"</code> with <code>p=15</code> shows 15 leaves after collapsing earlier merges. A parenthesized number gives the number of examples in a collapsed group; an unparenthesized number identifies an individual example.</p>
+<div id="7f026507" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-25T15:07:19.061956Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-25T15:07:19.061904Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-25T15:07:19.115326Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-25T15:07:19.115029Z&quot;}}" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>X_large, _ <span class="op">=</span> make_blobs(n_samples<span class="op">=</span><span class="dv">150</span>, centers<span class="op">=</span><span class="dv">5</span>, random_state<span class="op">=</span><span class="dv">4</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>Z_large <span class="op">=</span> linkage(StandardScaler().fit_transform(X_large), method<span class="op">=</span><span class="st">"ward"</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>dendrogram(Z_large, truncate_mode<span class="op">=</span><span class="st">"lastp"</span>, p<span class="op">=</span><span class="dv">15</span>, show_contracted<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Truncated dendrogram showing the final 15 groups"</span>)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Cluster or sample index"</span>)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Merge distance"</span>)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="15_DBSCAN-hierarchical_files/figure-html/cell-16-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Another option is <code>truncate_mode="level"</code>, where <code>p</code> limits the displayed depth from the final merge. Truncation changes only the <strong>display</strong>: all observations still contribute to the fitted hierarchy, and <code>fcluster</code> can still return a label for every example.</p>
+<p>Truncating the plot does not reduce the cost of fitting. Standard agglomerative methods often require roughly quadratic memory, which can make them impractical for very large datasets.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Optional: How the hierarchy is stored">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Optional: How the hierarchy is stored
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>SciPy’s <code>linkage</code> function stores the hierarchy in an <span class="math inline">\((n-1)    imes 4\)</span> matrix. Each row records one merge:</p>
+<ol type="1">
+<li>the index of the first cluster,</li>
+<li>the index of the second cluster,</li>
+<li>their dissimilarity when merged, and</li>
+<li>the number of original examples in the new cluster.</li>
+</ol>
+<p>Indices below <span class="math inline">\(n\)</span> refer to original examples. Indices starting at <span class="math inline">\(n\)</span> refer to clusters created by earlier rows.</p>
+<div id="5b563aeb" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-25T15:07:19.116293Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-25T15:07:19.116242Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-25T15:07:19.119169Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-25T15:07:19.118839Z&quot;}}" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>linkage_table <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    Z,</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    columns<span class="op">=</span>[<span class="st">"cluster 1"</span>, <span class="st">"cluster 2"</span>, <span class="st">"merge distance"</span>, <span class="st">"cluster size"</span>],</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>linkage_table.head().<span class="bu">round</span>(<span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="16">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">cluster 1</th>
+<th data-quarto-table-cell-role="th">cluster 2</th>
+<th data-quarto-table-cell-role="th">merge distance</th>
+<th data-quarto-table-cell-role="th">cluster size</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>0.0</td>
+<td>2.0</td>
+<td>0.201</td>
+<td>2.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>5.0</td>
+<td>9.0</td>
+<td>0.369</td>
+<td>2.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>4.0</td>
+<td>7.0</td>
+<td>0.611</td>
+<td>2.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>8.0</td>
+<td>10.0</td>
+<td>0.674</td>
+<td>2.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>1.0</td>
+<td>14.0</td>
+<td>0.889</td>
+<td>3.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-2-linkage-and-dendrograms" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-2-linkage-and-dendrograms">Exercise 2: Linkage and dendrograms</h3>
+<ol type="1">
+<li>A dendrogram has a large vertical gap between the merge that creates four clusters and the next merge, which creates three. What does this suggest? Does it prove that four is the correct number?</li>
+<li>If a thin chain of points connects two dense groups, which linkage criterion is most likely to join them early?</li>
+<li>A student writes <code>linkage(X, method="complete", metric="cosine")</code>. Explain the role of each argument. Could they replace complete linkage with Ward while keeping cosine distance?</li>
+<li>If you change only the dendrogram’s colouring threshold, have you obtained an array of flat cluster labels? What function would you use?</li>
+</ol>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>Four groups are a plausible cut because the next merge combines relatively dissimilar groups. This is evidence under the chosen representation, metric, and linkage, not proof of a correct number.</li>
+<li>Single linkage, because successive nearby pairs can connect the groups.</li>
+<li>Cosine measures dissimilarity between individual rows. Complete linkage uses the maximum cross-cluster cosine distance to compare groups. Ward requires Euclidean distance, so that replacement is not valid.</li>
+<li>No.&nbsp;Colouring affects the display. Use <code>fcluster</code> to extract labels, choosing a maximum cluster count or a merge-height threshold.</li>
+</ol>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="choosing-a-clustering-method" class="level2">
+<h2 class="anchored" data-anchor-id="choosing-a-clustering-method">Choosing a clustering method</h2>
+<p>No method is best for every dataset. The right choice depends on what a cluster should mean in the application.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Consideration</th>
+<th>K-Means</th>
+<th>DBSCAN</th>
+<th>Agglomerative hierarchical</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Main idea</td>
+<td>Nearest centre</td>
+<td>Connected dense region</td>
+<td>Repeatedly merge similar clusters</td>
+</tr>
+<tr class="even">
+<td>Main choices</td>
+<td>Number of clusters</td>
+<td><code>eps</code>, <code>min_samples</code></td>
+<td>Linkage and where to cut</td>
+</tr>
+<tr class="odd">
+<td>Typical cluster shapes</td>
+<td>Compact and roughly spherical</td>
+<td>Irregular, density-connected shapes</td>
+<td>Depends strongly on linkage</td>
+</tr>
+<tr class="even">
+<td>Noise points</td>
+<td>Every point is assigned</td>
+<td>Can leave points as noise</td>
+<td>Standard flat cuts assign every point</td>
+</tr>
+<tr class="odd">
+<td>New examples</td>
+<td><code>predict</code> is available</td>
+<td>No standard <code>predict</code></td>
+<td>No standard <code>predict</code></td>
+</tr>
+<tr class="even">
+<td>Scalability</td>
+<td>Usually the strongest of the three</td>
+<td>Can scale well with an efficient neighbour search</td>
+<td>Often limited by quadratic memory</td>
+</tr>
+<tr class="odd">
+<td>Particularly useful when</td>
+<td>Groups have representative centres</td>
+<td>Noise and non-spherical groups matter</td>
+<td>Nested structure or several resolutions matter</td>
+</tr>
+</tbody>
+</table>
+<p>These descriptions are tendencies rather than guarantees. For example, DBSCAN’s success on irregular shapes depends on the clusters having compatible densities.</p>
+</section>
+<section id="evaluating-and-interpreting-clusters" class="level2">
+<h2 class="anchored" data-anchor-id="evaluating-and-interpreting-clusters">Evaluating and interpreting clusters</h2>
+<p>Recall the <strong>silhouette score</strong> from K-Means: it compares how close each example is to its own cluster with how close it is to the nearest alternative cluster. We can also use it for DBSCAN and hierarchical clustering. However, it can undervalue irregular shapes, and DBSCAN noise needs explicit treatment. For example, we might calculate the score on non-noise points, provided at least two clusters remain and there are more points than clusters, and report the noise fraction alongside it. Otherwise, a score may hide how much data was excluded.</p>
+<p>A numerical score is only supporting evidence. For exploratory clustering, the main question is: <strong>can we tell a useful, evidence-based story about the structure of the data?</strong> If people cannot interpret the groups or connect them to the task, a clean partition has limited value.</p>
+<p>For document clusters, read several documents from each group, including typical examples and exceptions. What theme do they share? How does it differ from other groups? Does a proposed description fit most members, or only a few convenient examples? Inspect noise documents too: they might contain unusual topics, mixed content, or problems with the representation.</p>
+<p>A plausible story is not enough on its own. Check whether the interpretation survives reasonable changes to parameters or preprocessing. A useful report might say, “This group mostly contains discussions of public transport, with a few broader city-planning documents; it persists across nearby settings.” That is more informative than reporting only a silhouette score or cluster count.</p>
+<p>If trustworthy external labels are available, the adjusted Rand index can compare partitions without assuming that their numeric IDs match. Ordinary label accuracy is unsuitable because cluster IDs are arbitrary:</p>
+<div id="2caa1c03" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-25T15:07:19.119940Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-25T15:07:19.119885Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-25T15:07:19.122323Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-25T15:07:19.121980Z&quot;}}" data-execution_count="17">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cluster IDs can be permuted without changing the partition.</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>y_a <span class="op">=</span> np.array([<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>])</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>y_b <span class="op">=</span> np.array([<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>])</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Fraction of identical numeric labels:"</span>, np.mean(y_a <span class="op">==</span> y_b))</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Adjusted Rand index:"</span>, adjusted_rand_score(y_a, y_b))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Fraction of identical numeric labels: 0.0
+Adjusted Rand index: 1.0</code></pre>
+</div>
+</div>
+<p>Use numerical evidence, stability checks, and manual interpretation together. Stable clusters can still reflect an irrelevant distinction, such as document length rather than topic. Return to the purpose of the analysis when deciding whether the structure is useful.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Representation defines similarity
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>All three methods rely on distances, directly or indirectly. Feature selection, transformations, scaling, and the distance metric determine which examples appear similar. A clustering algorithm can faithfully reveal structure in its input representation while completely missing the semantic structure relevant to the application.</p>
+</div>
+</div>
+<section id="exercise-3-choosing-a-method" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-3-choosing-a-method">Exercise 3: Choosing a method</h3>
+<p>Choose a reasonable starting method for each situation and explain your choice. More than one answer may be defensible.</p>
+<ol type="1">
+<li>Millions of observations appear to form a few compact groups, and every new observation must be assigned immediately.</li>
+<li>A spatial dataset contains winding regions together with isolated measurement errors.</li>
+<li>A biologist wants to explore nested similarities among 40 species before choosing a level of detail.</li>
+<li>A dataset appears to contain groups with very different densities.</li>
+</ol>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>K-Means is a natural starting point because it scales well and provides <code>predict</code> for new examples.</li>
+<li>DBSCAN is a natural starting point because it can follow irregular density-connected shapes and label isolated observations as noise.</li>
+<li>Hierarchical clustering and a dendrogram directly represent nested groupings at several resolutions.</li>
+<li>None of these methods is guaranteed to work well. Standard DBSCAN is especially vulnerable to varying density; careful representation, parameter exploration, and possibly a method designed for varying density would be appropriate. Domain inspection remains essential.</li>
+</ol>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<ul>
+<li><strong>DBSCAN groups points through density connections.</strong> Core points extend clusters, border points join without extending them, and noise points remain unassigned with label <code>-1</code>.</li>
+<li><strong>Tune <code>eps</code> and <code>min_samples</code> together.</strong> Try a small range of settings, inspect cluster sizes and noise fractions, and examine representative examples. Suitable values depend on the representation and distance metric.</li>
+<li><strong>DBSCAN has limitations.</strong> Varying densities and dense bridges can prevent it from finding the groups we want. It has no standard <code>predict</code> method for new observations.</li>
+<li><strong>Hierarchical clustering lets us explore several levels of grouping.</strong> Read the merge sequence in a dendrogram, then use <code>fcluster</code> to obtain flat labels. Truncation simplifies the display without changing the fitted hierarchy.</li>
+<li><strong>Distance metric and linkage criterion are separate choices.</strong> The metric compares individual examples; linkage compares groups. Ward requires Euclidean distance.</li>
+<li><strong>Useful clusters need interpretation.</strong> Silhouette scores and stability checks provide evidence, but representative examples and domain knowledge should support a meaningful account of the data’s structure.</li>
+</ul>
+</section>
+<section id="resources" class="level2">
+<h2 class="anchored" data-anchor-id="resources">Resources</h2>
+<ul>
+<li><a href="https://scikit-learn.org/stable/modules/clustering.html">Clustering methods in the scikit-learn user guide</a></li>
+<li><a href="https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html">DBSCAN API documentation</a></li>
+<li><a href="https://docs.scipy.org/doc/scipy/reference/cluster.hierarchy.html">SciPy hierarchical clustering documentation</a></li>
+<li><a href="https://www.naftaliharris.com/blog/visualizing-dbscan-clustering/">Interactive DBSCAN visualization</a></li>
+</ul>
+
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/UBC-CS\.github\.io\/cpsc330-book\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../book/14_K-Means.html" class="pagination-link" aria-label="Chapter 14: K-Means Clustering">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Chapter 14: K-Means Clustering</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../book/17_natural-language-processing.html" class="pagination-link" aria-label="Chapter 17: Natural Language Processing">
+        <span class="nav-page-text">Chapter 17: Natural Language Processing</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
