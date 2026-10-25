@@ -21,7 +21,7 @@ project:
     - book/13_feature-engineering-selection.ipynb
     - book/14_K-Means.ipynb
     - book/15_DBSCAN-hierarchical.ipynb
-    - book/16_recommender-systems.ipynb
+    #- book/16_recommender-systems.ipynb
     - book/17_natural-language-processing.ipynb
     - book/chapter-03-ml-fundamentals-demo.ipynb
     - book/chapter-04-decision-boundaries-KNN-demo.ipynb
@@ -71,7 +71,7 @@ website:
           contents:
             - book/14_K-Means.ipynb
             - book/15_DBSCAN-hierarchical.ipynb
-            - book/16_recommender-systems.ipynb
+          #  - book/16_recommender-systems.ipynb
         - section: Working with Different Data Types
           contents:
             - book/17_natural-language-processing.ipynb
