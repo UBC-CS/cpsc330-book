@@ -71,7 +71,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../book/16_recommender-systems.html" rel="prev">
+<link href="../book/17_intro_to_computer-vision.html" rel="prev">
 <link href="../book/img/UBC-CS-logo.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -190,7 +190,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/18_natural-language-processing.html">Working with Different Data Types</a></li><li class="breadcrumb-item"><a href="../book/18_natural-language-processing.html">Chapter 17: Natural Language Processing</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/17_intro_to_computer-vision.html">Working with Different Data Types</a></li><li class="breadcrumb-item"><a href="../book/18_natural-language-processing.html">Chapter 17: Natural Language Processing</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -349,6 +349,12 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../book/17_intro_to_computer-vision.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 16: Introduction to Computer Vision</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../book/18_natural-language-processing.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Chapter 17: Natural Language Processing</span></a>
   </div>
@@ -430,7 +436,7 @@ window.Quarto = {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/18_natural-language-processing.html">Working with Different Data Types</a></li><li class="breadcrumb-item"><a href="../book/18_natural-language-processing.html">Chapter 17: Natural Language Processing</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/17_intro_to_computer-vision.html">Working with Different Data Types</a></li><li class="breadcrumb-item"><a href="../book/18_natural-language-processing.html">Chapter 17: Natural Language Processing</a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title">Chapter 17: Natural Language Processing</h1>
 </div>
@@ -1041,7 +1047,7 @@ Dimensions per word: 300</code></pre>
 <p><span class="math display">\[
 v(\text{king}) - v(\text{man}) + v(\text{woman}).
 \]</span></p>
-<div id="fig-king-queen-analogy" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A vector diagram showing that the arrow from man to woman is approximately parallel to the arrow from king to queen" data-fig-align="center">
+<div id="fig-king-queen-analogy" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="A vector diagram showing that the arrow from man to woman is approximately parallel to the arrow from king to queen">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-king-queen-analogy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="img/king-queen-ex-illustration.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%" alt="A vector diagram showing that the arrow from man to woman is approximately parallel to the arrow from king to queen">
@@ -1118,7 +1124,7 @@ Figure&nbsp;1: A schematic illustration of the king–queen analogy. The displac
 <section id="information-retrieval" class="level2">
 <h2 class="anchored" data-anchor-id="information-retrieval">Information retrieval</h2>
 <p><strong>Information retrieval</strong> (IR) is the task of finding useful items in a collection in response to a query. Unlike a classifier, which predicts a label, a retrieval system returns a ranked list. Several results may be useful, and relevance depends partly on what the user intends.</p>
-<div id="fig-information-retrieval-pipeline" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Documents pass through document processing into a document index. A query passes through query processing into a query vector. A search component compares them using dense, keyword, or hybrid search and returns a ranked list of documents." data-fig-align="center">
+<div id="fig-information-retrieval-pipeline" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="Documents pass through document processing into a document index. A query passes through query processing into a query vector. A search component compares them using dense, keyword, or hybrid search and returns a ranked list of documents.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-information-retrieval-pipeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="img/IR.jpeg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%" alt="Documents pass through document processing into a document index. A query passes through query processing into a query vector. A search component compares them using dense, keyword, or hybrid search and returns a ranked list of documents.">
@@ -1337,7 +1343,7 @@ Figure&nbsp;2: The main components of an information-retrieval system. Documents
 </div>
 </div>
 <p>Compare this ranking with the TF–IDF results. Dense retrieval ranks the noise-cancelling headphones first by connecting <em>avoid hearing people talk</em> with active noise cancellation, even though the wording differs. It still returns broadly related study products, because an embedding model estimates textual similarity rather than knowing the user’s intent with certainty.</p>
-<div id="fig-sparse-vs-dense" class="quarto-float quarto-figure quarto-figure-center anchored" alt="On the left, sparse retrieval tokenizes a query and matches its sparse vector against an inverted index built from document word counts. On the right, dense retrieval encodes the query and documents and matches the query vector against a vectorized index. Both return a ranked list." data-fig-align="center">
+<div id="fig-sparse-vs-dense" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="On the left, sparse retrieval tokenizes a query and matches its sparse vector against an inverted index built from document word counts. On the right, dense retrieval encodes the query and documents and matches the query vector against a vectorized index. Both return a ranked list.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-sparse-vs-dense-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="img/sparse-vs-dense.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%" alt="On the left, sparse retrieval tokenizes a query and matches its sparse vector against an inverted index built from document word counts. On the right, dense retrieval encodes the query and documents and matches the query vector against a vectorized index. Both return a ranked list.">
@@ -1446,7 +1452,7 @@ P(\text{next token} \mid \text{context}).
 <li><strong>Augment:</strong> place those chunks, the query, and instructions in a prompt.</li>
 <li><strong>Generate:</strong> ask a language model to answer from the supplied context.</li>
 </ol>
-<div id="fig-rag-bike-example" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A user asks which two products would help with a rainy bicycle commute after an evening lab while carrying a laptop. A retriever selects relevant documents from an indexed corpus. The documents and query enter a prompt, and an LLM generates the recommendations waterproof laptop backpack and bike-light set." data-fig-align="center">
+<div id="fig-rag-bike-example" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="A user asks which two products would help with a rainy bicycle commute after an evening lab while carrying a laptop. A retriever selects relevant documents from an indexed corpus. The documents and query enter a prompt, and an LLM generates the recommendations waterproof laptop backpack and bike-light set.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-rag-bike-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="img/RAG-bike-ex.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%" alt="A user asks which two products would help with a rainy bicycle commute after an evening lab while carrying a laptop. A retriever selects relevant documents from an indexed corpus. The documents and query enter a prompt, and an LLM generates the recommendations waterproof laptop backpack and bike-light set.">
@@ -2391,8 +2397,8 @@ ANSWER
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../book/16_recommender-systems.html" class="pagination-link" aria-label="Chapter 16: Recommender Systems">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Chapter 16: Recommender Systems</span>
+      <a href="../book/17_intro_to_computer-vision.html" class="pagination-link" aria-label="Chapter 16: Introduction to Computer Vision">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Chapter 16: Introduction to Computer Vision</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

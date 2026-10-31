@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.20">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Chapter 16: Introduction to Computer Vision – CPSC 330: Applied Machine Learning</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../book/18_natural-language-processing.html" rel="next">
+<link href="../book/16_recommender-systems.html" rel="prev">
+<link href="../book/img/UBC-CS-logo.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-17888a1159294d3eb470f19f6f52f5a5.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-4152339e8f1aad6c7e3e33ecc42d70c8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">CPSC 330: Applied Machine Learning</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../index.html" aria-current="page"> 
+<span class="menu-text">Book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../demos.html"> 
+<span class="menu-text">Demos</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/17_intro_to_computer-vision.html">Working with Different Data Types</a></li><li class="breadcrumb-item"><a href="../book/17_intro_to_computer-vision.html">Chapter 16: Introduction to Computer Vision</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../book/img/UBC-CS-logo.png" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../book/img/UBC-CS-logo.png" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../learning-objectives.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Detailed Learning Objectives</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/01_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1: Course Introduction</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Foundations and Supervised Learning</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/02_terminology-baselines-decision-trees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2: From Data to a First Model</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/03_ml-fundamentals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3: Machine Learning Fundamentals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/04_kNNs-SVM-RBF.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4: Similarity-Based Models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/05_preprocessing-pipelines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5: Preprocessing and Pipelines</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/06_column-transformer-text-feats.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6: Column Transformers and Text Features</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/07_linear-models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7: Linear Models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/08_hyperparameter-optimization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8: Hyperparameter Optimization</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/09_classification-metrics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9: Classification Metrics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/10_regression-metrics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10: Regression Metrics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/11_ensembles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11: Ensembles</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/12_feat-importances.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 12: Feature Importances and Model Interpretation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/13_feature-engineering-selection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 13: Feature Engineering and Selection</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Unsupervised Learning and Recommendation</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/14_K-Means.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 14: K-Means Clustering</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/15_DBSCAN-hierarchical.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 15: DBSCAN and Hierarchical Clustering</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/16_recommender-systems.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 16: Recommender Systems</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Working with Different Data Types</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/17_intro_to_computer-vision.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Chapter 16: Introduction to Computer Vision</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/18_natural-language-processing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 17: Natural Language Processing</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#learning-outcomes" id="toc-learning-outcomes" class="nav-link active" data-scroll-target="#learning-outcomes">Learning outcomes</a></li>
+  <li><a href="#from-linear-models-to-neural-networks" id="toc-from-linear-models-to-neural-networks" class="nav-link" data-scroll-target="#from-linear-models-to-neural-networks">From linear models to neural networks</a>
+  <ul>
+  <li><a href="#how-does-a-network-learn-its-weights" id="toc-how-does-a-network-learn-its-weights" class="nav-link" data-scroll-target="#how-does-a-network-learn-its-weights">How does a network learn its weights?</a></li>
+  </ul></li>
+  <li><a href="#what-is-computer-vision" id="toc-what-is-computer-vision" class="nav-link" data-scroll-target="#what-is-computer-vision">What is computer vision?</a>
+  <ul>
+  <li><a href="#images-as-numerical-arrays" id="toc-images-as-numerical-arrays" class="nav-link" data-scroll-target="#images-as-numerical-arrays">Images as numerical arrays</a></li>
+  <li><a href="#imagenet-and-multiclass-classification" id="toc-imagenet-and-multiclass-classification" class="nav-link" data-scroll-target="#imagenet-and-multiclass-classification">ImageNet and multiclass classification</a>
+  <ul class="collapse">
+  <li><a href="#from-scores-to-probabilities-with-softmax" id="toc-from-scores-to-probabilities-with-softmax" class="nav-link" data-scroll-target="#from-scores-to-probabilities-with-softmax">From scores to probabilities with softmax</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#convolutional-neural-networks" id="toc-convolutional-neural-networks" class="nav-link" data-scroll-target="#convolutional-neural-networks">Convolutional neural networks</a>
+  <ul>
+  <li><a href="#why-convolution-helps-with-images" id="toc-why-convolution-helps-with-images" class="nav-link" data-scroll-target="#why-convolution-helps-with-images">Why convolution helps with images</a></li>
+  </ul></li>
+  <li><a href="#transfer-learning-with-frozen-features" id="toc-transfer-learning-with-frozen-features" class="nav-link" data-scroll-target="#transfer-learning-with-frozen-features">Transfer learning with frozen features</a>
+  <ul>
+  <li><a href="#what-do-we-reuse-and-what-do-we-train" id="toc-what-do-we-reuse-and-what-do-we-train" class="nav-link" data-scroll-target="#what-do-we-reuse-and-what-do-we-train">What do we reuse, and what do we train?</a></li>
+  <li><a href="#using-a-pretrained-model-directly" id="toc-using-a-pretrained-model-directly" class="nav-link" data-scroll-target="#using-a-pretrained-model-directly">Using a pretrained model directly</a></li>
+  <li><a href="#a-pretrained-model-as-a-feature-extractor" id="toc-a-pretrained-model-as-a-feature-extractor" class="nav-link" data-scroll-target="#a-pretrained-model-as-a-feature-extractor">A pretrained model as a feature extractor</a></li>
+  <li><a href="#the-food-dataset" id="toc-the-food-dataset" class="nav-link" data-scroll-target="#the-food-dataset">The food dataset</a></li>
+  <li><a href="#preprocessing-and-data-loaders" id="toc-preprocessing-and-data-loaders" class="nav-link" data-scroll-target="#preprocessing-and-data-loaders">Preprocessing and data loaders</a></li>
+  <li><a href="#extracting-features" id="toc-extracting-features" class="nav-link" data-scroll-target="#extracting-features">Extracting features</a></li>
+  <li><a href="#establishing-a-baseline" id="toc-establishing-a-baseline" class="nav-link" data-scroll-target="#establishing-a-baseline">Establishing a baseline</a></li>
+  <li><a href="#predicting-labels-for-new-images" id="toc-predicting-labels-for-new-images" class="nav-link" data-scroll-target="#predicting-labels-for-new-images">Predicting labels for new images</a></li>
+  </ul></li>
+  <li><a href="#practical-considerations-and-limitations" id="toc-practical-considerations-and-limitations" class="nav-link" data-scroll-target="#practical-considerations-and-limitations">Practical considerations and limitations</a>
+  <ul>
+  <li><a href="#when-frozen-features-are-insufficient" id="toc-when-frozen-features-are-insufficient" class="nav-link" data-scroll-target="#when-frozen-features-are-insufficient">When frozen features are insufficient</a></li>
+  </ul></li>
+  <li><a href="#optional-object-detection-with-a-pretrained-model" id="toc-optional-object-detection-with-a-pretrained-model" class="nav-link" data-scroll-target="#optional-object-detection-with-a-pretrained-model">Optional: object detection with a pretrained model</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a>
+  <ul>
+  <li><a href="#exercise-16.1-what-learns-from-our-labels" id="toc-exercise-16.1-what-learns-from-our-labels" class="nav-link" data-scroll-target="#exercise-16.1-what-learns-from-our-labels">Exercise 16.1: What learns from our labels?</a></li>
+  <li><a href="#exercise-16.2-diagnose-the-workflow" id="toc-exercise-16.2-diagnose-the-workflow" class="nav-link" data-scroll-target="#exercise-16.2-diagnose-the-workflow">Exercise 16.2: Diagnose the workflow</a></li>
+  <li><a href="#exercise-16.3-adapt-the-workflow-to-new-labels" id="toc-exercise-16.3-adapt-the-workflow-to-new-labels" class="nav-link" data-scroll-target="#exercise-16.3-adapt-the-workflow-to-new-labels">Exercise 16.3: Adapt the workflow to new labels</a></li>
+  </ul></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/17_intro_to_computer-vision.html">Working with Different Data Types</a></li><li class="breadcrumb-item"><a href="../book/17_intro_to_computer-vision.html">Chapter 16: Introduction to Computer Vision</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Chapter 16: Introduction to Computer Vision</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="learning-outcomes" class="level2 unnumbered callout-lo">
+<h2 class="unnumbered anchored" data-anchor-id="learning-outcomes">Learning outcomes</h2>
+<p>By the end of this chapter, you should be able to:</p>
+<ul>
+<li>Explain how hidden layers and nonlinear activations produce learned features.</li>
+<li>Describe neural-network training at a high level, without deriving weight updates.</li>
+<li>Explain how images are represented numerically and why spatial structure matters.</li>
+<li>Distinguish image classification from object detection and segmentation.</li>
+<li>Interpret class scores and softmax probabilities in multiclass classification.</li>
+<li>Explain how convolutional filters use local structure and share weights across image locations.</li>
+<li>Use a frozen pretrained CNN to extract features and train logistic regression for new labels.</li>
+<li>Distinguish what was learned during pretraining from what is learned on the target dataset.</li>
+<li>Evaluate an image classifier while accounting for preprocessing, related images, domain shift, and computational cost.</li>
+</ul>
+</section>
+<p>Images contain information that is difficult to express as a short list of hand-designed features. Consider the cats below. They have different coat colours, patterns, and lengths of fur, and appear in different poses, settings, and lighting. Some are sleeping; others are playing or grooming. Despite these differences, every image has the same label: <strong>cat</strong>. An effective classifier needs to recognize features that distinguish cats from other categories while tolerating variation within the cat category.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/cat-variations.png" class="img-fluid figure-img"></p>
+<figcaption>Cats with different coat colours, patterns, and lengths of fur, shown sleeping, grooming, playing, and resting in indoor and outdoor settings. Despite differences in appearance, pose, viewpoint, and background, all share the label cat.</figcaption>
+</figure>
+</div>
+<p>Images from the same class can therefore have very different pixel arrays. Which differences matter depends on the task: coat colour does not change the label <strong>cat</strong>, but it would matter if our task were to classify coat colours.</p>
+<p>In this chapter, we will build a classifier for seven food categories using only a few hundred labelled images. That is far too little data to train a large vision model from scratch. Our practical solution will be <strong>transfer learning</strong>: we will reuse a representation learned from a much larger image collection and adapt it to our task.</p>
+<p><strong>Imports</strong></p>
+<div id="8288e653" class="cell">
+<details class="code-fold">
+<summary>Show imports and setup</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> Image</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.dummy <span class="im">import</span> DummyClassifier</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> ConfusionMatrixDisplay</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> make_pipeline</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch <span class="im">import</span> nn</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch.utils.data <span class="im">import</span> DataLoader</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torchvision <span class="im">import</span> datasets, models</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>torch.manual_seed(<span class="dv">42</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">"font.size"</span>] <span class="op">=</span> <span class="dv">14</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">"display.max_colwidth"</span>, <span class="dv">120</span>)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>DATA_DIR <span class="op">=</span> Path(<span class="st">"data"</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>DEVICE <span class="op">=</span> torch.device(<span class="st">"cuda"</span> <span class="cf">if</span> torch.cuda.is_available() <span class="cf">else</span> <span class="st">"cpu"</span>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>DEVICE</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<section id="from-linear-models-to-neural-networks" class="level2">
+<h2 class="anchored" data-anchor-id="from-linear-models-to-neural-networks">From linear models to neural networks</h2>
+<p>Recall that a linear model combines input features using learned weights and an intercept. In binary logistic regression, we then apply sigmoid to turn the resulting score into the predicted probability of the positive class. The diagram below draws these familiar operations as a network.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/lr-grapgical.png" class="img-fluid figure-img"></p>
+<figcaption>Binary logistic regression drawn as a network: four input features contribute to a weighted sum plus an intercept, followed by sigmoid to produce the predicted probability of the positive class.</figcaption>
+</figure>
+</div>
+<p>Read the diagram from left to right. Each connection multiplies an input <span class="math inline">\(x_j\)</span> by its weight <span class="math inline">\(w_j\)</span>. The <span class="math inline">\(\Sigma\)</span> symbol collects these contributions and adds <span class="math inline">\(b\)</span>, giving the score <span class="math inline">\(z\)</span>. The <strong>bias</strong> <span class="math inline">\(b\)</span> is another name for the intercept. Finally, sigmoid converts the score into a probability. Here, the output labelled <span class="math inline">\(\hat y\)</span> represents <span class="math inline">\(P(y=1\mid\mathbf{x})\)</span>, rather than a predicted class label. We would apply a threshold to obtain a class prediction.</p>
+<p>Drawing a network does not, by itself, make the model more flexible. Imagine a two-feature classification problem in which one class occupies a small circle and the other surrounds it. A straight decision boundary cannot separate these classes. We have already encountered models that can capture nonlinear relationships. How could we extend the weighted-sum idea to do this?</p>
+<p>A <strong>neural network</strong> introduces intermediate computations called <strong>hidden layers</strong>. Each unit in a hidden layer computes its own weighted sum and intercept, then applies a nonlinear <strong>activation function</strong>. The next diagram shows four inputs feeding three hidden units, whose outputs are combined to make a binary classification prediction.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/nn-1-hidden.png" class="img-fluid figure-img"></p>
+<figcaption>A neural network with four inputs, three hidden units using sigmoid activations, and one output unit. The final sigmoid produces the predicted probability of the positive class.</figcaption>
+</figure>
+</div>
+<p>Each hidden unit receives the same four input features but has its own weights and bias, so it can compute a different transformation. Its sigmoid output becomes a new feature for the output unit. The output unit combines these three features using another weighted sum and bias, then applies sigmoid to produce a probability.</p>
+<p>The activation boxes are drawn separately to show the steps within each unit; they are not extra hidden units. The labels <span class="math inline">\(W^{(1)}\)</span> and <span class="math inline">\(W^{(2)}\)</span> refer to the collections of weights used at the hidden and output layers. Their superscripts identify layers, not powers. Likewise, <span class="math inline">\(b_1^{(1)}\)</span>, <span class="math inline">\(b_2^{(1)}\)</span>, and <span class="math inline">\(b_3^{(1)}\)</span> are the three hidden-unit biases, while <span class="math inline">\(b^{(2)}\)</span> is the output bias. We do not need matrix notation to follow this computation.</p>
+<p>The outputs of the hidden units are <strong>learned features</strong>. The final layer combines these features to make a prediction:</p>
+<p><span class="math display">\[
+\text{original features} \longrightarrow \text{hidden features} \longrightarrow \text{prediction}.
+\]</span></p>
+<p>Unlike manually constructing features before fitting a model, training a neural network learns the hidden-layer weights together with the output-layer weights. The features are learned to help with the prediction task; they need not have names or meanings we can easily recognize. Although the hidden sigmoid outputs lie between zero and one, they are intermediate features, not predicted class probabilities.</p>
+<p>The nonlinear activation matters. Stacking weighted sums without nonlinear activations still gives a single weighted sum and intercept. Hidden activations allow a network to produce nonlinear decision boundaries. They play a different role from the final sigmoid, which converts a binary classification score into a probability.</p>
+<p>We used sigmoid in the hidden layer to build on a familiar function, but other nonlinear activations are also used. For example, the rectified linear unit (<strong>ReLU</strong>) returns zero for negative inputs and leaves positive inputs unchanged: <span class="math inline">\(\operatorname{ReLU}(z)=\max(0,z)\)</span>. A network need not use the same activation in its hidden layers as at its output.</p>
+<p>Networks can contain several hidden layers, each transforming the representation from the previous layer. This is the idea behind <strong>deep learning</strong>. We will use such a network to produce image features, rather than design its layers ourselves.</p>
+<section id="how-does-a-network-learn-its-weights" class="level3">
+<h3 class="anchored" data-anchor-id="how-does-a-network-learn-its-weights">How does a network learn its weights?</h3>
+<p>The supervised-learning workflow has not changed: training uses examples with known targets to fit a model, which can then predict targets for new examples.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/supervised-learning-training.png" class="img-fluid figure-img"></p>
+<figcaption>The supervised-learning training workflow.</figcaption>
+</figure>
+</div>
+<p>A network’s <strong>architecture</strong> specifies its layers and connections. Its <strong>parameters</strong> are the weights and intercepts learned during training. Choosing an architecture and learning its parameters are different activities.</p>
+<p>To understand training, imagine starting with weights that make poor predictions. A <strong>loss function</strong> assigns a numerical penalty to disagreement between predictions and known targets. Training repeatedly computes predictions, measures the loss, and makes small changes to the weights intended to reduce it.</p>
+<p>How do we choose those changes when there are millions of weights? A <strong>gradient</strong> describes how small changes in the weights affect the loss. <strong>Backpropagation</strong> efficiently computes this information through the network, and an <strong>optimizer</strong> uses it to update the weights. We will not derive these calculations or implement them in this chapter.</p>
+<p>The <strong>learning rate</strong> controls the size of the updates. Training often processes small batches of examples at a time; one complete pass through the training set is an <strong>epoch</strong>. These are training choices, not learned weights. More epochs do not guarantee better predictions on new data: training loss may fall while validation performance worsens through overfitting.</p>
+<p>For our worked example, this expensive neural-network training has already happened on another dataset. We will keep the resulting weights fixed and train a familiar logistic-regression classifier on the network’s features.</p>
+</section>
+</section>
+<section id="what-is-computer-vision" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-computer-vision">What is computer vision?</h2>
+<p><strong>Computer vision</strong> is the area of computing concerned with extracting useful information from images and video. Different applications require different kinds of output:</p>
+<ul>
+<li><strong>Image classification</strong> assigns a label to an entire image, such as <em>pizza</em> or <em>sushi</em>.</li>
+<li><strong>Object detection</strong> identifies objects and draws a bounding box around each one.</li>
+<li><strong>Semantic segmentation</strong> assigns a category to each pixel.</li>
+<li><strong>Instance segmentation</strong> separates individual objects as well as identifying their categories.</li>
+</ul>
+<p>These tasks are related, but they are not interchangeable. An image classifier can report that a dog appears somewhere in a photograph; it does not tell us where the dog is or trace its outline. We will focus on image classification and return briefly to object detection near the end.</p>
+<section id="images-as-numerical-arrays" class="level3">
+<h3 class="anchored" data-anchor-id="images-as-numerical-arrays">Images as numerical arrays</h3>
+<p>A colour image can be stored as a three-dimensional array: height <span class="math inline">\(\times\)</span> width <span class="math inline">\(\times\)</span> colour channels. In an RGB image, each pixel has a red, green, and blue value. Let us inspect one of the images used later in the chapter.</p>
+<p>A grayscale image needs only one intensity value per pixel and can be represented as a height-by-width matrix. A colour image adds the channel dimension.</p>
+<div id="40a1366c" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>sample_path <span class="op">=</span> <span class="bu">next</span>((DATA_DIR <span class="op">/</span> <span class="st">"food-transfer-learning"</span> <span class="op">/</span> <span class="st">"train"</span> <span class="op">/</span> <span class="st">"pizza"</span>).glob(<span class="st">"*.jpg"</span>))</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>sample_image <span class="op">=</span> Image.<span class="bu">open</span>(sample_path).convert(<span class="st">"RGB"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>sample_array <span class="op">=</span> np.asarray(sample_image)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Image shape: </span><span class="sc">{</span>sample_array<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"A 3 x 3 patch of RGB values:"</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>display(sample_array[:<span class="dv">3</span>, :<span class="dv">3</span>, :])</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>plt.imshow(sample_image)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"One training image"</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>plt.axis(<span class="st">"off"</span>)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We could flatten the array into one long feature vector and pass it to a model from an earlier chapter. However, a <span class="math inline">\(200 \times 200\)</span> RGB image already has <span class="math inline">\(200 \times 200 \times 3 = 120{,}000\)</span> pixel values. More importantly, flattening hides the two-dimensional organization of the pixels. Pixels next to one another are no longer treated as neighbours, and moving an object slightly changes many feature positions.</p>
+<p>This does not mean that logistic regression or another familiar classifier can never be used with images. It means that raw pixels are usually a poor <strong>representation</strong>. Later, we will use a neural network to transform each image into a much smaller feature vector, then fit logistic regression to those features.</p>
+</section>
+<section id="imagenet-and-multiclass-classification" class="level3">
+<h3 class="anchored" data-anchor-id="imagenet-and-multiclass-classification">ImageNet and multiclass classification</h3>
+<p>ImageNet is a large labelled image collection widely used for pretraining. The familiar ImageNet classification benchmark uses 1,000 categories. A model trained for those categories produces one score per category; it cannot automatically invent new output labels for our task.</p>
+<p>Our food task is a <strong>multiclass classification</strong> problem: each image receives exactly one label from <span class="math inline">\(K\)</span> possible classes. This differs from binary classification, which has two classes, and from <strong>multilabel classification</strong>, in which one image could simultaneously receive labels such as <em>person</em>, <em>bicycle</em>, and <em>helmet</em>.</p>
+<p>Many scikit-learn classifiers support multiclass targets directly. Multiclass logistic regression learns a score for each class. For an example with feature vector <span class="math inline">\(\mathbf{x}\)</span>, class <span class="math inline">\(k\)</span> receives the score</p>
+<p><span class="math display">\[
+z_k = \mathbf{w}_k^{\mathsf T}\mathbf{x} + b_k.
+\]</span></p>
+<p>Each class therefore has its own coefficients and intercept. The largest score determines the predicted class.</p>
+<section id="from-scores-to-probabilities-with-softmax" class="level4">
+<h4 class="anchored" data-anchor-id="from-scores-to-probabilities-with-softmax">From scores to probabilities with softmax</h4>
+<p>The scores can be any real numbers, so we use <strong>softmax</strong> to turn them into non-negative values that sum to one:</p>
+<p><span class="math display">\[
+P(y=k\mid\mathbf{x}) = \frac{e^{z_k}}{\sum_{j=1}^{K}e^{z_j}}.
+\]</span></p>
+<p>The exponentials make larger scores receive more probability, while the denominator normalizes across all classes. Softmax does not establish that these probabilities are well calibrated; it only performs the conversion from scores to a probability distribution.</p>
+<div id="bbdaf80d" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> torch.tensor([<span class="fl">1.2</span>, <span class="op">-</span><span class="fl">0.4</span>, <span class="fl">2.0</span>, <span class="fl">0.7</span>])</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>probabilities <span class="op">=</span> torch.softmax(scores, dim<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"score"</span>: scores.numpy(), <span class="st">"softmax probability"</span>: probabilities.numpy()},</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span>[<span class="st">"class 0"</span>, <span class="st">"class 1"</span>, <span class="st">"class 2"</span>, <span class="st">"class 3"</span>],</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The predicted class is class 2 because it has the highest score and, consequently, the highest softmax probability. Notice that every probability depends on all four scores. Increasing the score for one class reduces the probability available to the others.</p>
+</section>
+</section>
+</section>
+<section id="convolutional-neural-networks" class="level2">
+<h2 class="anchored" data-anchor-id="convolutional-neural-networks">Convolutional neural networks</h2>
+<section id="why-convolution-helps-with-images" class="level3">
+<h3 class="anchored" data-anchor-id="why-convolution-helps-with-images">Why convolution helps with images</h3>
+<p>A fully connected layer gives every input pixel a separate connection to every hidden unit. This creates many parameters and does not encode the fact that nearby pixels form local patterns.</p>
+<p>A <strong>convolutional neural network</strong> (CNN) instead learns small arrays of weights called <strong>filters</strong> or <strong>kernels</strong>. A filter slides across an image and produces a large activation where it finds a matching local pattern. The same filter is used at every location, so an edge detector learned in the upper-left corner can also detect a similar edge elsewhere.</p>
+<p>Early layers often respond to simple patterns such as edges or colour transitions. Later layers combine these responses into textures, parts, and more task-relevant patterns. The precise interpretation is rarely as clean as this description suggests, but the hierarchy is a useful intuition.</p>
+<p><img src="img/cnn-5.gif" class="img-fluid"></p>
+<p>You can also experiment with hand-designed filters in the interactive <a href="https://setosa.io/ev/image-kernels/">Image Kernels explainer</a>.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="What convolution does—and does not—provide">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>What convolution does—and does not—provide
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Sharing a filter across locations helps a CNN detect the same local pattern in different parts of an image. It does not make the entire model perfectly invariant to shifts, rotations, changes of scale, or changes in viewpoint. Architecture, pooling, training data, and augmentation all influence how robust the resulting model will be.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="transfer-learning-with-frozen-features" class="level2">
+<h2 class="anchored" data-anchor-id="transfer-learning-with-frozen-features">Transfer learning with frozen features</h2>
+<p>Training a large CNN from random initial weights usually requires far more labelled data and computation than we have for our food task. Fortunately, a model trained on a large and varied source dataset often learns representations that are useful for a new target task. Reusing those learned weights is called <strong>transfer learning</strong>.</p>
+<p>For example, a model trained on ImageNet may have learned filters that respond to edges, textures, shapes, and object parts. Our target labels differ from ImageNet’s labels, but many of those visual features remain useful.</p>
+<section id="what-do-we-reuse-and-what-do-we-train" class="level3">
+<h3 class="anchored" data-anchor-id="what-do-we-reuse-and-what-do-we-train">What do we reuse, and what do we train?</h3>
+<p>A pretrained classifier has a <strong>feature extractor</strong>, which transforms an image into a feature vector, and a <strong>classification head</strong>, which maps those features to its original class scores. We can reuse the feature extractor while learning a different classifier for our labels.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Approach</th>
+<th>What stays fixed?</th>
+<th>What learns from our labelled data?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Direct prediction</td>
+<td>The entire pretrained model</td>
+<td>Nothing; we use its original labels</td>
+</tr>
+<tr class="even">
+<td>Frozen feature extraction</td>
+<td>The pretrained feature extractor</td>
+<td>A new classifier for our labels</td>
+</tr>
+<tr class="odd">
+<td>Fine-tuning</td>
+<td>Some or none of the pretrained feature extractor</td>
+<td>A new classifier and some or all pretrained weights</td>
+</tr>
+</tbody>
+</table>
+<p>Our main approach is <strong>frozen feature extraction</strong>. The CNN was trained previously on ImageNet. Here, logistic regression learns coefficients and intercepts from our food images; the CNN weights stay fixed. We do not need to choose hidden layers or implement neural-network training.</p>
+</section>
+<section id="using-a-pretrained-model-directly" class="level3">
+<h3 class="anchored" data-anchor-id="using-a-pretrained-model-directly">Using a pretrained model directly</h3>
+<p>The original head of an ImageNet model predicts one of 1,000 ImageNet competition categories. Direct use is convenient, but the output vocabulary is fixed. If our desired category is absent, the model must still choose one of the labels it knows.</p>
+<p>The next example applies MobileNet V3 Small to one local photograph. <code>weights.transforms()</code> supplies the resizing, cropping, and normalization expected by these particular pretrained weights. Matching the preprocessing to the weights is part of the model specification, not an optional cosmetic choice.</p>
+<div id="16b367bf" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>weights <span class="op">=</span> models.MobileNet_V3_Small_Weights.DEFAULT</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>imagenet_model <span class="op">=</span> models.mobilenet_v3_small(weights<span class="op">=</span>weights).<span class="bu">eval</span>()</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>imagenet_labels <span class="op">=</span> weights.meta[<span class="st">"categories"</span>]</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>imagenet_preprocess <span class="op">=</span> weights.transforms()</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>ubc_paths <span class="op">=</span> <span class="bu">sorted</span>(</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    path</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> pattern <span class="kw">in</span> [<span class="st">"*.jpg"</span>, <span class="st">"*.jpeg"</span>, <span class="st">"*.png"</span>]</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> path <span class="kw">in</span> (DATA_DIR <span class="op">/</span> <span class="st">"UBC_img"</span>).glob(pattern)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>ubc_path <span class="op">=</span> ubc_paths[<span class="dv">0</span>]</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>ubc_image <span class="op">=</span> Image.<span class="bu">open</span>(ubc_path).convert(<span class="st">"RGB"</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> torch.inference_mode():</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    logits <span class="op">=</span> imagenet_model(imagenet_preprocess(ubc_image).unsqueeze(<span class="dv">0</span>))</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    top_probabilities, top_indices <span class="op">=</span> torch.softmax(logits, dim<span class="op">=</span><span class="dv">1</span>)[<span class="dv">0</span>].topk(<span class="dv">5</span>)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame({</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ImageNet label"</span>: [imagenet_labels[i] <span class="cf">for</span> i <span class="kw">in</span> top_indices.tolist()],</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">"probability"</span>: top_probabilities.numpy(),</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>}))</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>plt.imshow(ubc_image)</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>plt.title(ubc_path.stem)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>plt.axis(<span class="st">"off"</span>)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>A prediction can be the best available ImageNet label and still be a poor description of our task. A high softmax probability expresses preference among the available labels; it does not guarantee that the vocabulary suits our needs. This <strong>label mismatch</strong> is distinct from <strong>domain shift</strong>, where the images encountered in use differ from those used for training. Either can make direct use unsuitable.</p>
+</section>
+<section id="a-pretrained-model-as-a-feature-extractor" class="level3">
+<h3 class="anchored" data-anchor-id="a-pretrained-model-as-a-feature-extractor">A pretrained model as a feature extractor</h3>
+<p>We now want predictions for our seven food categories rather than the original ImageNet categories. We will remove MobileNet’s classification head and treat the remaining network as a transformer:</p>
+<p><span class="math display">\[
+\text{image} \longrightarrow \text{pretrained backbone} \longrightarrow \text{feature vector} \longrightarrow \text{logistic regression}.
+\]</span></p>
+<p>This resembles a scikit-learn pipeline, except that image loading and neural-network inference happen before the familiar classifier.</p>
+</section>
+<section id="the-food-dataset" class="level3">
+<h3 class="anchored" data-anchor-id="the-food-dataset">The food dataset</h3>
+<p>The dataset is a small subset derived from Food-101 and organized into <code>train</code> and <code>valid</code> directories. <code>ImageFolder</code> infers labels from the subdirectory names. In a larger project we would also reserve a test set for one final, unbiased evaluation after all model choices have been made.</p>
+<p>Each class directory contains images with that label. Before using a dataset like this, inspect examples and counts in every split, check the labels, and look for duplicates or related images across splits. For example, photographs of the same meal should stay together rather than appearing in both training and validation.</p>
+<p><code>ImageFolder</code> assigns integer labels from sorted directory names. These integers are identifiers, not ordered quantities, and their mapping must agree across splits.</p>
+<div id="cff83979" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>food_dir <span class="op">=</span> DATA_DIR <span class="op">/</span> <span class="st">"food-transfer-learning"</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>food_train <span class="op">=</span> datasets.ImageFolder(food_dir <span class="op">/</span> <span class="st">"train"</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>food_valid <span class="op">=</span> datasets.ImageFolder(food_dir <span class="op">/</span> <span class="st">"valid"</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> food_train.class_to_idx <span class="op">==</span> food_valid.class_to_idx</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame({</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"training images"</span>: pd.Series(food_train.targets).value_counts(),</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"validation images"</span>: pd.Series(food_valid.targets).value_counts(),</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>}).rename(index<span class="op">=</span><span class="bu">dict</span>(<span class="bu">enumerate</span>(food_train.classes))).sort_index())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="01bdc61b" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">4</span>, figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">6</span>))</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, class_name <span class="kw">in</span> <span class="bu">zip</span>(axes.flat, food_train.classes):</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    class_index <span class="op">=</span> food_train.class_to_idx[class_name]</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    image_index <span class="op">=</span> food_train.targets.index(class_index)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    image, _ <span class="op">=</span> food_train[image_index]</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    ax.imshow(image)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    ax.set_title(class_name.replace(<span class="st">"_"</span>, <span class="st">" "</span>))</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    ax.axis(<span class="st">"off"</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>axes.flat[<span class="op">-</span><span class="dv">1</span>].axis(<span class="st">"off"</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="preprocessing-and-data-loaders" class="level3">
+<h3 class="anchored" data-anchor-id="preprocessing-and-data-loaders">Preprocessing and data loaders</h3>
+<p>For frozen feature extraction we use the deterministic preprocessing supplied with the pretrained weights for both subsets. A <code>DataLoader</code> reads images in small batches, avoiding the need to hold every transformed image in memory simultaneously.</p>
+<div id="4ebd0f06" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>feature_datasets <span class="op">=</span> {</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    split: datasets.ImageFolder(food_dir <span class="op">/</span> split, transform<span class="op">=</span>imagenet_preprocess)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> split <span class="kw">in</span> [<span class="st">"train"</span>, <span class="st">"valid"</span>]</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>feature_loaders <span class="op">=</span> {</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"train"</span>: DataLoader(feature_datasets[<span class="st">"train"</span>], batch_size<span class="op">=</span><span class="dv">32</span>, shuffle<span class="op">=</span><span class="va">False</span>),</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"valid"</span>: DataLoader(feature_datasets[<span class="st">"valid"</span>], batch_size<span class="op">=</span><span class="dv">32</span>, shuffle<span class="op">=</span><span class="va">False</span>),</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>class_names <span class="op">=</span> feature_datasets[<span class="st">"train"</span>].classes</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="extracting-features" class="level3">
+<h3 class="anchored" data-anchor-id="extracting-features">Extracting features</h3>
+<p>We replace the classification head with <code>nn.Identity</code>, which simply returns its input. The resulting network outputs a learned feature vector rather than ImageNet class scores.</p>
+<p>Two details are important. <code>eval()</code> switches layers such as dropout and batch normalization to evaluation behaviour, while <code>torch.inference_mode()</code> avoids storing information needed only for gradient-based training. Neither operation changes the learned weights.</p>
+<p>The next cell supplies this setup and a reusable extraction helper. You can use the helper for a new dataset without redesigning the CNN. We also explicitly disable weight gradients to mark the extractor as frozen. The helper keeps feature rows and labels in the same order and returns ordinary NumPy arrays.</p>
+<div id="5a5b60d9" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>feature_model <span class="op">=</span> models.mobilenet_v3_small(weights<span class="op">=</span>weights)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>feature_model.classifier <span class="op">=</span> nn.Identity()</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>feature_model.requires_grad_(<span class="va">False</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>feature_model <span class="op">=</span> feature_model.to(DEVICE).<span class="bu">eval</span>()</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> extract_features(model, data_loader, device):</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return one feature row and one target for each image."""</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    feature_batches <span class="op">=</span> []</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    target_batches <span class="op">=</span> []</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> torch.inference_mode():</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> images, targets <span class="kw">in</span> data_loader:</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>            feature_batches.append(model(images.to(device)).cpu())</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>            target_batches.append(targets)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>        torch.cat(feature_batches).numpy(),</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>        torch.cat(target_batches).numpy(),</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>Z_train, y_train <span class="op">=</span> extract_features(feature_model, feature_loaders[<span class="st">"train"</span>], DEVICE)</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>Z_valid, y_valid <span class="op">=</span> extract_features(feature_model, feature_loaders[<span class="st">"valid"</span>], DEVICE)</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Training feature matrix: </span><span class="sc">{</span>Z_train<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Validation feature matrix: </span><span class="sc">{</span>Z_valid<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Each row now represents one image using 576 learned features. These features are difficult to name individually, but they preserve information the pretrained network found useful across many images. We can pass this ordinary two-dimensional feature matrix to scikit-learn.</p>
+<p>Extracting validation features here does not fit anything to validation data: this is a fixed transformation using previously learned weights and deterministic preprocessing. In contrast, our scaler and logistic regression must be fitted only on training features. We can cache the extracted features and reuse them while trying classifier settings; changing the image preprocessing or backbone requires extracting them again.</p>
+</section>
+<section id="establishing-a-baseline" class="level3">
+<h3 class="anchored" data-anchor-id="establishing-a-baseline">Establishing a baseline</h3>
+<p>Before fitting logistic regression, we establish a reference point with <code>DummyClassifier</code>. Because the classes are nearly balanced, a most-frequent classifier should achieve an accuracy near one seventh.</p>
+<p>The pipeline below fits both the scaler and logistic regression on <code>Z_train</code> only. When scoring validation examples, it reuses the training means, scales, and coefficients. If we tune regularization strength or other settings, validation results guide those choices; they are not final test results.</p>
+<div id="bc2589a9" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>dummy <span class="op">=</span> DummyClassifier(strategy<span class="op">=</span><span class="st">"most_frequent"</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>dummy.fit(Z_train, y_train)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>feature_pipe <span class="op">=</span> make_pipeline(</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    StandardScaler(),</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    LogisticRegression(max_iter<span class="op">=</span><span class="dv">3000</span>, random_state<span class="op">=</span><span class="dv">42</span>),</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>feature_pipe.fit(Z_train, y_train)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"training accuracy"</span>: [dummy.score(Z_train, y_train), feature_pipe.score(Z_train, y_train)],</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">"validation accuracy"</span>: [dummy.score(Z_valid, y_valid), feature_pipe.score(Z_valid, y_valid)],</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span>[<span class="st">"most-frequent baseline"</span>, <span class="st">"pretrained features + logistic regression"</span>],</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The comparison—not the accuracy alone—is the useful result. A classifier trained on pretrained features can distinguish categories it was never originally trained to predict, using only a few dozen examples from each new class.</p>
+<p>Validation accuracy is still an estimate based on a small sample. It should guide development, while a separate test set should remain untouched until the workflow has been finalized.</p>
+<div id="d88ce5d4" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">8</span>))</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>ConfusionMatrixDisplay.from_estimator(</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    feature_pipe,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    Z_valid,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    y_valid,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    display_labels<span class="op">=</span>[name.replace(<span class="st">"_"</span>, <span class="st">" "</span>) <span class="cf">for</span> name <span class="kw">in</span> class_names],</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    xticks_rotation<span class="op">=</span><span class="dv">45</span>,</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span>ax,</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    colorbar<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Validation confusion matrix"</span>)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>A confusion matrix reveals which categories are being confused. That information is hidden by overall accuracy and may suggest whether we need more representative data, a different label definition, or more adaptation of the model.</p>
+<p>Inspect individual mistakes as well: a confused pair of classes could reflect visual similarity, an ambiguous label, or an unrepresentative photograph. Because the validation loader is not shuffled, its feature rows match the order of <code>food_valid.samples</code>.</p>
+<div id="cv17-errors" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>valid_predictions <span class="op">=</span> feature_pipe.predict(Z_valid)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>error_indices <span class="op">=</span> np.flatnonzero(valid_predictions <span class="op">!=</span> y_valid)[:<span class="dv">5</span>]</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">len</span>(error_indices):</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="bu">len</span>(error_indices), figsize<span class="op">=</span>(<span class="dv">4</span> <span class="op">*</span> <span class="bu">len</span>(error_indices), <span class="dv">4</span>), squeeze<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> ax, index <span class="kw">in</span> <span class="bu">zip</span>(axes.flat, error_indices):</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>        image_path, _ <span class="op">=</span> food_valid.samples[index]</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>        ax.imshow(Image.<span class="bu">open</span>(image_path).convert(<span class="st">"RGB"</span>))</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>        ax.set_title(<span class="ss">f"True: </span><span class="sc">{</span>class_names[y_valid[index]]<span class="sc">}</span><span class="ch">\n</span><span class="ss">Predicted: </span><span class="sc">{</span>class_names[valid_predictions[index]]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>        ax.axis(<span class="st">"off"</span>)</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    plt.tight_layout()</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"No validation mistakes; a small validation set still leaves uncertainty."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="predicting-labels-for-new-images" class="level3">
+<h3 class="anchored" data-anchor-id="predicting-labels-for-new-images">Predicting labels for new images</h3>
+<p>Prediction must repeat the same image preprocessing and frozen feature extraction, then use the already fitted pipeline. Do not fit a new scaler or classifier to the incoming image. The helper below accepts a file path and returns one of our food labels, rather than an ImageNet label.</p>
+<div id="cv17-037" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict_food(image_path):</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    image <span class="op">=</span> Image.<span class="bu">open</span>(image_path).convert(<span class="st">"RGB"</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    inputs <span class="op">=</span> imagenet_preprocess(image).unsqueeze(<span class="dv">0</span>).to(DEVICE)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> torch.inference_mode():</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>        features <span class="op">=</span> feature_model(inputs).cpu().numpy()</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    label_index <span class="op">=</span> <span class="bu">int</span>(feature_pipe.predict(features)[<span class="dv">0</span>])</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> class_names[label_index]</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Demonstrate on a held-out validation image; replace this path for a new photo.</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>example_path, true_index <span class="op">=</span> food_valid.samples[<span class="dv">0</span>]</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"True label:"</span>, class_names[true_index])</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Predicted label:"</span>, predict_food(example_path))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The integer prediction refers to the label mapping checked earlier. The model always selects a known food category, even if we supply an unrelated image. A prediction alone is not evidence that an image belongs to one of those categories.</p>
+</section>
+</section>
+<section id="practical-considerations-and-limitations" class="level2">
+<h2 class="anchored" data-anchor-id="practical-considerations-and-limitations">Practical considerations and limitations</h2>
+<p>Pretrained models are powerful starting points, but they do not remove the need for careful problem formulation and evaluation.</p>
+<p><strong>Match preprocessing to the weights.</strong> Image size, channel order, scaling, and normalization must match what the pretrained model expects. In torchvision, the weight object’s <code>transforms()</code> method is the safest default.</p>
+<p><strong>Inspect more than overall accuracy.</strong> Per-class results and individual errors can reveal class imbalance, ambiguous labels, duplicates across splits, or a category the representation handles poorly.</p>
+<p><strong>Expect domain shift.</strong> Features learned from everyday photographs may transfer poorly to satellite imagery, pathology slides, sketches, or images produced by a different sensor. Fine-tuning cannot guarantee useful transfer.</p>
+<p><strong>Account for cost.</strong> A larger backbone may improve accuracy but require more memory, energy, and inference time. The best model is the one that satisfies the requirements of the application, not necessarily the one with the highest benchmark score.</p>
+<p><strong>Remember the source data.</strong> A pretrained model can inherit gaps, stereotypes, and labelling choices from its training data. Evaluate performance on relevant groups and conditions rather than assuming that broad pretraining makes the model universally reliable.</p>
+<p><strong>Protect the split.</strong> Keep duplicates and images of the same subject or scene together. A high score on nearly repeated images may tell us little about performance on new subjects.</p>
+<p><strong>Use consistent inputs.</strong> The example uses deterministic preprocessing for training, validation, and new images. Data augmentation creates variations such as random crops during training, but those variations must preserve the label. It is not required for this frozen-feature baseline; random transformations at evaluation time would make comparisons harder to interpret.</p>
+<section id="when-frozen-features-are-insufficient" class="level3">
+<h3 class="anchored" data-anchor-id="when-frozen-features-are-insufficient">When frozen features are insufficient</h3>
+<p>A fixed representation may miss distinctions important to our labels, especially when the target images differ from ordinary photographs. <strong>Fine-tuning</strong> continues training some or all pretrained weights on the target training data, alongside a classifier for the new labels. It requires more computation and training choices, and can overfit a small dataset.</p>
+<p>We will not implement fine-tuning here. First establish a frozen-feature baseline and inspect its errors. More representative labelled data, clearer labels, or a different pretrained representation may be useful alternatives; fine-tuning is not automatically better.</p>
+<div class="callout callout-style-default callout-important callout-titled" title="The Golden Rule still applies">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>The Golden Rule still applies
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Transfer learning does not change the role of the data subsets. Use training data to update weights, validation data to choose the model, layers, learning rate, augmentation, and number of epochs, and test data once for final evaluation. Looking at test performance after every epoch turns the test set into validation data.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="optional-object-detection-with-a-pretrained-model" class="level2">
+<h2 class="anchored" data-anchor-id="optional-object-detection-with-a-pretrained-model">Optional: object detection with a pretrained model</h2>
+<p>An object detector predicts both class labels and locations. Systems in the YOLO family are commonly used examples. Their output for an image is a collection of bounding boxes, confidence scores, and class labels rather than one probability distribution for the entire image.</p>
+<p>Using a pretrained detector directly illustrates the same limitation we encountered with ImageNet classification: the detector can only name categories in its pretrained vocabulary. Adapting it to new object categories requires labelled bounding boxes and a task-specific fine-tuning workflow. Object detection is therefore related to image classification, but it is not simply multiclass classification applied several times.</p>
+</section>
+<section id="exercises" class="level2">
+<h2 class="anchored" data-anchor-id="exercises">Exercises</h2>
+<section id="exercise-16.1-what-learns-from-our-labels" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-16.1-what-learns-from-our-labels">Exercise 16.1: What learns from our labels?</h3>
+<p>You use a CNN pretrained on ImageNet to extract features from 300 labelled plant photographs, then fit a scaler and logistic regression to classify five species.</p>
+<ol type="1">
+<li>Which components learned from ImageNet, and which learn from the plant training set?</li>
+<li>Must the five species appear among the original ImageNet labels? Explain.</li>
+<li>After extracting features, you change logistic regression’s <code>C</code>. Must you run the CNN again?</li>
+</ol>
+<div class="callout callout-style-default callout-tip callout-titled" title="Discussion">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Discussion
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The CNN weights were learned from ImageNet and stay fixed. The scaler learns feature means and scales from the plant training set, and logistic regression learns coefficients and intercepts from its features and labels. The new labels need not match ImageNet’s vocabulary because we train a new classifier. Changing <code>C</code> does not change the extracted features, so they can be reused.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-16.2-diagnose-the-workflow" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-16.2-diagnose-the-workflow">Exercise 16.2: Diagnose the workflow</h3>
+<p>A student randomly splits individual frames from videos of plants into training and test sets. They extract frozen features, fit a scaler on all the features, and try ten values of logistic regression’s <code>C</code>, keeping the one with the highest test accuracy. They apply random crops whenever they evaluate the model.</p>
+<p>Identify the problems and propose a corrected workflow. Is extracting frozen features from the test images itself a problem?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Discussion">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Discussion
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Nearby frames from the same video are related, so split by plant or video as appropriate for the intended use. Reserve validation data for selecting <code>C</code> and test data for final evaluation. Fit the scaler only on training features and reuse it on other splits. Use deterministic evaluation preprocessing. Applying the fixed pretrained extractor to test images is not itself fitting to test data; using test results to choose settings is the problem.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-16.3-adapt-the-workflow-to-new-labels" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-16.3-adapt-the-workflow-to-new-labels">Exercise 16.3: Adapt the workflow to new labels</h3>
+<p>Choose a small labelled image dataset with categories different from the food example. Before fitting anything, explain how you will split it and predict which categories may be confused. Compare a most-frequent baseline with logistic regression on frozen pretrained features. Inspect up to five validation mistakes and show the images with their true and predicted labels.</p>
+<p>Explain one change you would try next based on those mistakes. Discuss the size of the validation set, computational cost, and whether the source and target images appear similar. Finally, predict a label for a new image using the same preprocessing, extractor, and fitted classifier. A new image without a known target demonstrates prediction, but does not measure accuracy.</p>
+</section>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<ul>
+<li>Neural networks learn intermediate features by combining weighted sums and nonlinear activations. CNNs use shared local filters to exploit image structure.</li>
+<li>Training image representations can be expensive, but we can often reuse features learned on a large source dataset.</li>
+<li>Our workflow keeps a pretrained CNN fixed and trains logistic regression on its feature vectors. The new classifier learns our target labels, even when those labels differ from ImageNet’s.</li>
+<li>Only the scaler and logistic regression are fitted to our training images; the pretrained CNN weights stay fixed.</li>
+<li>Frozen features are a useful starting point when labelled data or computation is limited. Their usefulness depends on how well the pretrained representation suits the target images.</li>
+<li>Compare against a baseline, inspect errors, and use validation evidence to decide what to change. Consistent preprocessing, careful splits, and an untouched final test set remain essential.</li>
+</ul>
+
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/UBC-CS\.github\.io\/cpsc330-book\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../book/16_recommender-systems.html" class="pagination-link" aria-label="Chapter 16: Recommender Systems">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Chapter 16: Recommender Systems</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../book/18_natural-language-processing.html" class="pagination-link" aria-label="Chapter 17: Natural Language Processing">
+        <span class="nav-page-text">Chapter 17: Natural Language Processing</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
