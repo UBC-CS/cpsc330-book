@@ -457,7 +457,7 @@ window.Quarto = {
 <p>Images from the same class can therefore have very different pixel arrays. Which differences matter depends on the task: coat colour does not change the label <strong>cat</strong>, but it would matter if our task were to classify coat colours.</p>
 <p>In this chapter, we will build a classifier for seven food categories using only a few hundred labelled images. That is far too little data to train a large vision model from scratch. Our practical solution will be <strong>transfer learning</strong>: we will reuse a <strong>representation</strong>—a set of numerical features describing an image—learned from a much larger image collection and adapt it to our task.</p>
 <p><strong>Imports</strong></p>
-<div id="8288e653" class="cell" data-execution_count="30">
+<div id="8288e653" class="cell" data-execution_count="75">
 <details class="code-fold">
 <summary>Show imports and setup</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
@@ -482,11 +482,17 @@ window.Quarto = {
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">"display.max_colwidth"</span>, <span class="dv">120</span>)</span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>DATA_DIR <span class="op">=</span> Path(<span class="st">"data"</span>)</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>DEVICE <span class="op">=</span> torch.device(<span class="st">"cuda"</span> <span class="cf">if</span> torch.cuda.is_available() <span class="cf">else</span> <span class="st">"cpu"</span>)</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>DEVICE</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Use a GPU when available, including Apple Silicon GPUs via MPS.</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> torch.cuda.is_available():</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    DEVICE <span class="op">=</span> torch.device(<span class="st">"cuda"</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="cf">elif</span> torch.backends.mps.is_available():</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    DEVICE <span class="op">=</span> torch.device(<span class="st">"mps"</span>)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    DEVICE <span class="op">=</span> torch.device(<span class="st">"cpu"</span>)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>DEVICE</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="30">
-<pre><code>device(type='cpu')</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="75">
+<pre><code>device(type='mps')</code></pre>
 </div>
 </div>
 <section id="from-linear-models-to-neural-networks" class="level2">
@@ -562,7 +568,7 @@ z^{(2)} = w_1^{(2)}h_1 + w_2^{(2)}h_2 + w_3^{(2)}h_3 + b^{(2)}.
 <section id="images-as-numerical-arrays" class="level3">
 <h3 class="anchored" data-anchor-id="images-as-numerical-arrays">Images as numerical arrays</h3>
 <p>A grayscale image can be represented as a height-by-width array, with one intensity value per pixel. A colour image adds a third dimension: height <span class="math inline">\(\times\)</span> width <span class="math inline">\(\times\)</span> colour channels. In an RGB image, each pixel has a red, green, and blue value. Let us inspect one of the images used later in the chapter.</p>
-<div id="40a1366c" class="cell" data-execution_count="31">
+<div id="40a1366c" class="cell" data-execution_count="76">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>sample_path <span class="op">=</span> <span class="bu">next</span>((DATA_DIR <span class="op">/</span> <span class="st">"food-transfer-learning"</span> <span class="op">/</span> <span class="st">"train"</span> <span class="op">/</span> <span class="st">"pizza"</span>).glob(<span class="st">"*.jpg"</span>))</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>sample_image <span class="op">=</span> Image.<span class="bu">open</span>(sample_path).convert(<span class="st">"RGB"</span>)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>sample_array <span class="op">=</span> np.asarray(sample_image)</span>
@@ -674,14 +680,14 @@ P(y=k) = \frac{e^{z_k}}{\sum_{j=1}^{K}e^{z_j}}.
 </div>
 </div>
 </div>
-<div id="bbdaf80d" class="cell" data-execution_count="32">
+<div id="bbdaf80d" class="cell" data-execution_count="77">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> torch.tensor([<span class="fl">1.2</span>, <span class="op">-</span><span class="fl">0.4</span>, <span class="fl">2.0</span>, <span class="fl">0.7</span>])</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>probabilities <span class="op">=</span> torch.softmax(scores, dim<span class="op">=</span><span class="dv">0</span>)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"score"</span>: scores.numpy(), <span class="st">"softmax probability"</span>: probabilities.numpy()},</span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span>[<span class="st">"class 0"</span>, <span class="st">"class 1"</span>, <span class="st">"class 2"</span>, <span class="st">"class 3"</span>],</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="32">
+<div class="cell-output cell-output-display" data-execution_count="77">
 <div>
 
 
@@ -727,7 +733,7 @@ P(y=k) = \frac{e^{z_k}}{\sum_{j=1}^{K}e^{z_j}}.
 <h3 class="anchored" data-anchor-id="using-pretrained-models-out-of-the-box">Using pretrained models out of the box</h3>
 <p><code>torchvision.models</code> provides different CNNs and their pretrained weights. We will use MobileNet V3 Small, a relatively lightweight ImageNet model. The weight object supplies its category names and, through <code>weights.transforms()</code>, the preprocessing it expects: resizing and cropping images and rescaling their colour values. The plots below show the original photographs; the CNN receives their preprocessed versions. The first call may download the weights.</p>
 <p>The code puts the model in prediction mode with <code>eval()</code> and uses <code>torch.inference_mode()</code> for efficient prediction. We will reuse this setup without needing to study its internal details.</p>
-<div id="16b367bf" class="cell" data-execution_count="33">
+<div id="16b367bf" class="cell" data-execution_count="78">
 <details class="code-fold">
 <summary>Show model setup and plotting helper</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>weights <span class="op">=</span> models.MobileNet_V3_Small_Weights.DEFAULT</span>
@@ -769,7 +775,7 @@ P(y=k) = \frac{e^{z_k}}{\sum_{j=1}^{K}e^{z_j}}.
 <section id="when-the-original-labels-are-useful" class="level4">
 <h4 class="anchored" data-anchor-id="when-the-original-labels-are-useful">When the original labels are useful</h4>
 <p>Inspect the animal photographs from <code>data/test_images</code>. Before running the cell, predict the labels you expect. The plots show the three highest-probability ImageNet categories for each image.</p>
-<div id="cv17-animal-code" class="cell" data-execution_count="34">
+<div id="cv17-animal-code" class="cell" data-execution_count="79">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>animal_paths <span class="op">=</span> <span class="bu">sorted</span>(</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    path <span class="cf">for</span> path <span class="kw">in</span> (DATA_DIR <span class="op">/</span> <span class="st">"test_images"</span>).iterdir()</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> path.suffix.lower() <span class="kw">in</span> {<span class="st">".jpg"</span>, <span class="st">".jpeg"</span>, <span class="st">".png"</span>}</span>
@@ -788,7 +794,7 @@ P(y=k) = \frac{e^{z_k}}{\sum_{j=1}^{K}e^{z_j}}.
 <section id="when-the-predictions-do-not-answer-our-question" class="level4">
 <h4 class="anchored" data-anchor-id="when-the-predictions-do-not-answer-our-question">When the predictions do not answer our question</h4>
 <p>Now suppose we want to identify UBC landmarks. Inspect all the images in <code>data/UBC_img</code>, which also includes an apple photograph. Which predictions describe something visible, and which identify the landmark?</p>
-<div id="cv17-campus-code" class="cell" data-execution_count="35">
+<div id="cv17-campus-code" class="cell" data-execution_count="80">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>campus_paths <span class="op">=</span> <span class="bu">sorted</span>(</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    path <span class="cf">for</span> path <span class="kw">in</span> (DATA_DIR <span class="op">/</span> <span class="st">"UBC_img"</span>).iterdir()</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> path.suffix.lower() <span class="kw">in</span> {<span class="st">".jpg"</span>, <span class="st">".jpeg"</span>, <span class="st">".png"</span>}</span>
@@ -819,7 +825,7 @@ P(y=k) = \frac{e^{z_k}}{\sum_{j=1}^{K}e^{z_j}}.
 <h4 class="anchored" data-anchor-id="the-food-dataset">The food dataset</h4>
 <p>Our small subset of Food-101 is organized into <code>train</code> and <code>valid</code> directories, with one subdirectory per food category. <code>ImageFolder</code> reads these directory names as labels and assigns integer identifiers. The mapping must agree across splits; the assertion below checks this.</p>
 <p>Inspect examples and class counts before fitting a model. Keep duplicates and photographs of the same meal together when making splits. This example uses training and validation sets; for a final evaluation, reserve a separate test set.</p>
-<div id="cff83979" class="cell" data-execution_count="36">
+<div id="cff83979" class="cell" data-execution_count="81">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>food_dir <span class="op">=</span> DATA_DIR <span class="op">/</span> <span class="st">"food-transfer-learning"</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>food_train <span class="op">=</span> datasets.ImageFolder(food_dir <span class="op">/</span> <span class="st">"train"</span>)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>food_valid <span class="op">=</span> datasets.ImageFolder(food_dir <span class="op">/</span> <span class="st">"valid"</span>)</span>
@@ -883,7 +889,7 @@ P(y=k) = \frac{e^{z_k}}{\sum_{j=1}^{K}e^{z_j}}.
 </div>
 </div>
 </div>
-<div id="01bdc61b" class="cell" data-execution_count="37">
+<div id="01bdc61b" class="cell" data-execution_count="82">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">4</span>, figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">6</span>))</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, class_name <span class="kw">in</span> <span class="bu">zip</span>(axes.flat, food_train.classes):</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    class_index <span class="op">=</span> food_train.class_to_idx[class_name]</span>
@@ -906,7 +912,7 @@ P(y=k) = \frac{e^{z_k}}{\sum_{j=1}^{K}e^{z_j}}.
 <section id="preprocessing-the-images" class="level4">
 <h4 class="anchored" data-anchor-id="preprocessing-the-images">Preprocessing the images</h4>
 <p>We apply the same fixed resizing, cropping, and colour-value transformations to training, validation, and new images. A <code>DataLoader</code> reads images in small batches so we do not need to hold all processed images in memory at once.</p>
-<div id="4ebd0f06" class="cell" data-execution_count="38">
+<div id="4ebd0f06" class="cell" data-execution_count="83">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>feature_datasets <span class="op">=</span> {</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    split: datasets.ImageFolder(food_dir <span class="op">/</span> split, transform<span class="op">=</span>imagenet_preprocess)</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> split <span class="kw">in</span> [<span class="st">"train"</span>, <span class="st">"valid"</span>]</span>
@@ -921,7 +927,7 @@ P(y=k) = \frac{e^{z_k}}{\sum_{j=1}^{K}e^{z_j}}.
 <section id="extracting-features" class="level4">
 <h4 class="anchored" data-anchor-id="extracting-features">Extracting features</h4>
 <p>We use the pretrained CNN to turn each image into a feature vector instead of producing ImageNet predictions. The helper below performs this step without changing the CNN’s weights. You can reuse it for your own dataset. It returns one feature row and the corresponding label for each image.</p>
-<div id="5a5b60d9" class="cell" data-execution_count="39">
+<div id="5a5b60d9" class="cell" data-execution_count="84">
 <details class="code-fold">
 <summary>Show frozen feature-extraction helper</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>feature_model <span class="op">=</span> models.mobilenet_v3_small(weights<span class="op">=</span>weights)</span>
@@ -946,7 +952,7 @@ P(y=k) = \frac{e^{z_k}}{\sum_{j=1}^{K}e^{z_j}}.
 <span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<div id="cv17-extract-calls" class="cell" data-execution_count="40">
+<div id="cv17-extract-calls" class="cell" data-execution_count="85">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>Z_train, y_train <span class="op">=</span> extract_features(feature_model, feature_loaders[<span class="st">"train"</span>], DEVICE)</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>Z_valid, y_valid <span class="op">=</span> extract_features(feature_model, feature_loaders[<span class="st">"valid"</span>], DEVICE)</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -964,7 +970,7 @@ Validation feature matrix: (67, 576)</code></pre>
 <section id="training-and-comparing-classifiers" class="level4">
 <h4 class="anchored" data-anchor-id="training-and-comparing-classifiers">Training and comparing classifiers</h4>
 <p>A most-frequent <code>DummyClassifier</code> provides a reference score, near one seventh for these roughly balanced classes. Our pipeline then fits a scaler and logistic regression on training features only. Validation examples use the already fitted pipeline.</p>
-<div id="bc2589a9" class="cell" data-execution_count="41">
+<div id="bc2589a9" class="cell" data-execution_count="86">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>dummy <span class="op">=</span> DummyClassifier(strategy<span class="op">=</span><span class="st">"most_frequent"</span>)</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>dummy.fit(Z_train, y_train)</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -981,7 +987,7 @@ Validation feature matrix: (67, 576)</code></pre>
 <span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>    },</span>
 <span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span>[<span class="st">"most-frequent baseline"</span>, <span class="st">"pretrained features + logistic regression"</span>],</span>
 <span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="41">
+<div class="cell-output cell-output-display" data-execution_count="86">
 <div>
 
 
@@ -1011,7 +1017,7 @@ Validation feature matrix: (67, 576)</code></pre>
 </div>
 </div>
 <p>Compare validation accuracy with the dummy baseline to assess whether the learned features help distinguish food categories. Also compare training and validation accuracy: a large gap can indicate overfitting. Because the validation set is small, avoid treating small score differences as decisive.</p>
-<div id="d88ce5d4" class="cell" data-execution_count="42">
+<div id="d88ce5d4" class="cell" data-execution_count="87">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">8</span>))</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>ConfusionMatrixDisplay.from_estimator(</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    feature_pipe,</span>
@@ -1033,7 +1039,7 @@ Validation feature matrix: (67, 576)</code></pre>
 </div>
 </div>
 <p>The confusion matrix shows which categories are confused. Inspect individual mistakes too: they may reveal visual similarity, ambiguous labels, or unrepresentative images. The unshuffled validation loader keeps feature rows in the same order as the original images.</p>
-<div id="cv17-errors" class="cell" data-execution_count="43">
+<div id="cv17-errors" class="cell" data-execution_count="88">
 <details class="code-fold">
 <summary>Show individual validation mistakes</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>valid_predictions <span class="op">=</span> feature_pipe.predict(Z_valid)</span>
@@ -1061,7 +1067,7 @@ Validation feature matrix: (67, 576)</code></pre>
 <section id="predicting-labels-for-new-images" class="level4">
 <h4 class="anchored" data-anchor-id="predicting-labels-for-new-images">Predicting labels for new images</h4>
 <p>Prediction must repeat the same image preprocessing and frozen feature extraction, then use the already fitted pipeline. Do not fit a new scaler or classifier to the incoming image. The helper below accepts a file path and returns one of our food labels, rather than an ImageNet label.</p>
-<div id="cv17-037" class="cell" data-execution_count="44">
+<div id="cv17-037" class="cell" data-execution_count="89">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict_food(image_path):</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    image <span class="op">=</span> Image.<span class="bu">open</span>(image_path).convert(<span class="st">"RGB"</span>)</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    inputs <span class="op">=</span> imagenet_preprocess(image).unsqueeze(<span class="dv">0</span>).to(DEVICE)</span>
@@ -1073,11 +1079,17 @@ Validation feature matrix: (67, 576)</code></pre>
 <span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Demonstrate on a held-out validation image; replace this path for a new photo.</span></span>
 <span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>example_path, true_index <span class="op">=</span> food_valid.samples[<span class="dv">0</span>]</span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"True label:"</span>, class_names[true_index])</span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Predicted label:"</span>, predict_food(example_path))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>True label: beet_salad
-Predicted label: beet_salad</code></pre>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>predicted_label <span class="op">=</span> predict_food(example_path)</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">5</span>, <span class="dv">5</span>))</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>plt.imshow(Image.<span class="bu">open</span>(example_path).convert(<span class="st">"RGB"</span>))</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="ss">f"True: </span><span class="sc">{</span>class_names[true_index]<span class="sc">}</span><span class="ch">\n</span><span class="ss">Predicted: </span><span class="sc">{</span>predicted_label<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>plt.axis(<span class="st">"off"</span>)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="17_intro_to_computer-vision_files/figure-html/cell-16-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>The integer prediction refers to the label mapping checked earlier. The model always selects a known food category, even if we supply an unrelated image. A prediction alone is not evidence that an image belongs to one of those categories.</p>

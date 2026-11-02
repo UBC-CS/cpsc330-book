@@ -2,98 +2,98 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://UBC-CS.github.io/cpsc330-book/book/chapter-05-06-preprocessing-demo.html</loc>
-    <lastmod>2026-11-02T03:18:07.362Z</lastmod>
+    <lastmod>2026-11-02T03:28:51.821Z</lastmod>
   </url>
   <url>
     <loc>https://UBC-CS.github.io/cpsc330-book/book/chapter-03-ml-fundamentals-demo.html</loc>
-    <lastmod>2026-11-02T03:18:07.348Z</lastmod>
+    <lastmod>2026-11-02T03:28:51.807Z</lastmod>
   </url>
   <url>
     <loc>https://UBC-CS.github.io/cpsc330-book/book/17_intro_to_computer-vision.html</loc>
-    <lastmod>2026-11-02T03:18:07.346Z</lastmod>
+    <lastmod>2026-11-02T03:28:51.806Z</lastmod>
   </url>
   <url>
     <loc>https://UBC-CS.github.io/cpsc330-book/book/15_DBSCAN-hierarchical.html</loc>
-    <lastmod>2026-11-02T03:18:07.317Z</lastmod>
+    <lastmod>2026-11-02T03:28:51.776Z</lastmod>
   </url>
   <url>
     <loc>https://UBC-CS.github.io/cpsc330-book/book/13_feature-engineering-selection.html</loc>
-    <lastmod>2026-11-02T03:18:07.303Z</lastmod>
+    <lastmod>2026-11-02T03:28:51.762Z</lastmod>
   </url>
   <url>
     <loc>https://UBC-CS.github.io/cpsc330-book/book/11_ensembles.html</loc>
-    <lastmod>2026-11-02T03:18:07.300Z</lastmod>
+    <lastmod>2026-11-02T03:28:51.759Z</lastmod>
   </url>
   <url>
     <loc>https://UBC-CS.github.io/cpsc330-book/book/09_classification-metrics.html</loc>
-    <lastmod>2026-11-02T03:18:07.298Z</lastmod>
+    <lastmod>2026-11-02T03:28:51.757Z</lastmod>
   </url>
   <url>
     <loc>https://UBC-CS.github.io/cpsc330-book/book/07_linear-models.html</loc>
-    <lastmod>2026-11-02T03:18:07.296Z</lastmod>
+    <lastmod>2026-11-02T03:28:51.755Z</lastmod>
   </url>
   <url>
     <loc>https://UBC-CS.github.io/cpsc330-book/book/05_preprocessing-pipelines.html</loc>
-    <lastmod>2026-11-02T03:18:07.294Z</lastmod>
+    <lastmod>2026-11-02T03:28:51.753Z</lastmod>
   </url>
   <url>
     <loc>https://UBC-CS.github.io/cpsc330-book/book/03_ml-fundamentals.html</loc>
-    <lastmod>2026-11-02T03:18:07.285Z</lastmod>
+    <lastmod>2026-11-02T03:28:51.744Z</lastmod>
   </url>
   <url>
     <loc>https://UBC-CS.github.io/cpsc330-book/book/01_intro.html</loc>
-    <lastmod>2026-11-02T03:18:07.278Z</lastmod>
+    <lastmod>2026-11-02T03:28:51.737Z</lastmod>
   </url>
   <url>
     <loc>https://UBC-CS.github.io/cpsc330-book/learning-objectives.html</loc>
-    <lastmod>2026-11-02T03:18:08.303Z</lastmod>
+    <lastmod>2026-11-02T03:28:52.777Z</lastmod>
   </url>
   <url>
     <loc>https://UBC-CS.github.io/cpsc330-book/index.html</loc>
-    <lastmod>2026-11-02T03:18:08.303Z</lastmod>
+    <lastmod>2026-11-02T03:28:52.777Z</lastmod>
   </url>
   <url>
     <loc>https://UBC-CS.github.io/cpsc330-book/demos.html</loc>
-    <lastmod>2026-11-02T03:18:08.303Z</lastmod>
+    <lastmod>2026-11-02T03:28:52.777Z</lastmod>
   </url>
   <url>
     <loc>https://UBC-CS.github.io/cpsc330-book/book/02_terminology-baselines-decision-trees.html</loc>
-    <lastmod>2026-11-02T03:18:07.283Z</lastmod>
+    <lastmod>2026-11-02T03:28:51.742Z</lastmod>
   </url>
   <url>
     <loc>https://UBC-CS.github.io/cpsc330-book/book/04_kNNs-SVM-RBF.html</loc>
-    <lastmod>2026-11-02T03:18:07.291Z</lastmod>
+    <lastmod>2026-11-02T03:28:51.750Z</lastmod>
   </url>
   <url>
     <loc>https://UBC-CS.github.io/cpsc330-book/book/06_column-transformer-text-feats.html</loc>
-    <lastmod>2026-11-02T03:18:07.295Z</lastmod>
+    <lastmod>2026-11-02T03:28:51.754Z</lastmod>
   </url>
   <url>
     <loc>https://UBC-CS.github.io/cpsc330-book/book/08_hyperparameter-optimization.html</loc>
-    <lastmod>2026-11-02T03:18:07.297Z</lastmod>
+    <lastmod>2026-11-02T03:28:51.756Z</lastmod>
   </url>
   <url>
     <loc>https://UBC-CS.github.io/cpsc330-book/book/10_regression-metrics.html</loc>
-    <lastmod>2026-11-02T03:18:07.299Z</lastmod>
+    <lastmod>2026-11-02T03:28:51.758Z</lastmod>
   </url>
   <url>
     <loc>https://UBC-CS.github.io/cpsc330-book/book/12_feat-importances.html</loc>
-    <lastmod>2026-11-02T03:18:07.302Z</lastmod>
+    <lastmod>2026-11-02T03:28:51.762Z</lastmod>
   </url>
   <url>
     <loc>https://UBC-CS.github.io/cpsc330-book/book/14_K-Means.html</loc>
-    <lastmod>2026-11-02T03:18:07.313Z</lastmod>
+    <lastmod>2026-11-02T03:28:51.772Z</lastmod>
   </url>
   <url>
     <loc>https://UBC-CS.github.io/cpsc330-book/book/16_recommender-systems.html</loc>
-    <lastmod>2026-11-02T03:18:07.317Z</lastmod>
+    <lastmod>2026-11-02T03:28:51.776Z</lastmod>
   </url>
   <url>
     <loc>https://UBC-CS.github.io/cpsc330-book/book/18_natural-language-processing.html</loc>
-    <lastmod>2026-11-02T03:18:07.347Z</lastmod>
+    <lastmod>2026-11-02T03:28:51.807Z</lastmod>
   </url>
   <url>
     <loc>https://UBC-CS.github.io/cpsc330-book/book/chapter-04-decision-boundaries-KNN-demo.html</loc>
-    <lastmod>2026-11-02T03:18:07.361Z</lastmod>
+    <lastmod>2026-11-02T03:28:51.821Z</lastmod>
   </url>
 </urlset>
