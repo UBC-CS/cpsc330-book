@@ -64,7 +64,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -112,6 +112,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
@@ -373,39 +376,39 @@ window.Quarto = {
   <ul>
   <li><a href="#how-does-a-network-learn-its-weights" id="toc-how-does-a-network-learn-its-weights" class="nav-link" data-scroll-target="#how-does-a-network-learn-its-weights">How does a network learn its weights?</a></li>
   </ul></li>
-  <li><a href="#what-is-computer-vision" id="toc-what-is-computer-vision" class="nav-link" data-scroll-target="#what-is-computer-vision">What is computer vision?</a>
+  <li><a href="#introduction-to-computer-vision" id="toc-introduction-to-computer-vision" class="nav-link" data-scroll-target="#introduction-to-computer-vision">Introduction to computer vision</a>
   <ul>
   <li><a href="#images-as-numerical-arrays" id="toc-images-as-numerical-arrays" class="nav-link" data-scroll-target="#images-as-numerical-arrays">Images as numerical arrays</a></li>
-  <li><a href="#imagenet-and-multiclass-classification" id="toc-imagenet-and-multiclass-classification" class="nav-link" data-scroll-target="#imagenet-and-multiclass-classification">ImageNet and multiclass classification</a>
+  <li><a href="#convolutions-why-do-they-help-with-images" id="toc-convolutions-why-do-they-help-with-images" class="nav-link" data-scroll-target="#convolutions-why-do-they-help-with-images">Convolutions: why do they help with images?</a></li>
+  <li><a href="#convolutional-neural-networks" id="toc-convolutional-neural-networks" class="nav-link" data-scroll-target="#convolutional-neural-networks">Convolutional neural networks</a></li>
+  </ul></li>
+  <li><a href="#pretrained-models" id="toc-pretrained-models" class="nav-link" data-scroll-target="#pretrained-models">Pretrained models</a>
+  <ul>
+  <li><a href="#what-are-pretrained-models-in-computer-vision" id="toc-what-are-pretrained-models-in-computer-vision" class="nav-link" data-scroll-target="#what-are-pretrained-models-in-computer-vision">What are pretrained models in computer vision?</a>
   <ul class="collapse">
+  <li><a href="#imagenet-and-multiclass-classification" id="toc-imagenet-and-multiclass-classification" class="nav-link" data-scroll-target="#imagenet-and-multiclass-classification">ImageNet and multiclass classification</a></li>
   <li><a href="#from-scores-to-probabilities-with-softmax" id="toc-from-scores-to-probabilities-with-softmax" class="nav-link" data-scroll-target="#from-scores-to-probabilities-with-softmax">From scores to probabilities with softmax</a></li>
   </ul></li>
-  </ul></li>
-  <li><a href="#convolutional-neural-networks" id="toc-convolutional-neural-networks" class="nav-link" data-scroll-target="#convolutional-neural-networks">Convolutional neural networks</a>
-  <ul>
-  <li><a href="#why-convolution-helps-with-images" id="toc-why-convolution-helps-with-images" class="nav-link" data-scroll-target="#why-convolution-helps-with-images">Why convolution helps with images</a></li>
+  <li><a href="#using-pretrained-models-out-of-the-box" id="toc-using-pretrained-models-out-of-the-box" class="nav-link" data-scroll-target="#using-pretrained-models-out-of-the-box">Using pretrained models out of the box</a>
+  <ul class="collapse">
+  <li><a href="#when-the-original-labels-are-useful" id="toc-when-the-original-labels-are-useful" class="nav-link" data-scroll-target="#when-the-original-labels-are-useful">When the original labels are useful</a></li>
+  <li><a href="#when-the-predictions-do-not-answer-our-question" id="toc-when-the-predictions-do-not-answer-our-question" class="nav-link" data-scroll-target="#when-the-predictions-do-not-answer-our-question">When the predictions do not answer our question</a></li>
   </ul></li>
   <li><a href="#transfer-learning-with-frozen-features" id="toc-transfer-learning-with-frozen-features" class="nav-link" data-scroll-target="#transfer-learning-with-frozen-features">Transfer learning with frozen features</a>
-  <ul>
-  <li><a href="#what-do-we-reuse-and-what-do-we-train" id="toc-what-do-we-reuse-and-what-do-we-train" class="nav-link" data-scroll-target="#what-do-we-reuse-and-what-do-we-train">What do we reuse, and what do we train?</a></li>
-  <li><a href="#using-a-pretrained-model-directly" id="toc-using-a-pretrained-model-directly" class="nav-link" data-scroll-target="#using-a-pretrained-model-directly">Using a pretrained model directly</a></li>
-  <li><a href="#a-pretrained-model-as-a-feature-extractor" id="toc-a-pretrained-model-as-a-feature-extractor" class="nav-link" data-scroll-target="#a-pretrained-model-as-a-feature-extractor">A pretrained model as a feature extractor</a></li>
+  <ul class="collapse">
   <li><a href="#the-food-dataset" id="toc-the-food-dataset" class="nav-link" data-scroll-target="#the-food-dataset">The food dataset</a></li>
-  <li><a href="#preprocessing-and-data-loaders" id="toc-preprocessing-and-data-loaders" class="nav-link" data-scroll-target="#preprocessing-and-data-loaders">Preprocessing and data loaders</a></li>
+  <li><a href="#preprocessing-the-images" id="toc-preprocessing-the-images" class="nav-link" data-scroll-target="#preprocessing-the-images">Preprocessing the images</a></li>
   <li><a href="#extracting-features" id="toc-extracting-features" class="nav-link" data-scroll-target="#extracting-features">Extracting features</a></li>
-  <li><a href="#establishing-a-baseline" id="toc-establishing-a-baseline" class="nav-link" data-scroll-target="#establishing-a-baseline">Establishing a baseline</a></li>
+  <li><a href="#training-and-comparing-classifiers" id="toc-training-and-comparing-classifiers" class="nav-link" data-scroll-target="#training-and-comparing-classifiers">Training and comparing classifiers</a></li>
   <li><a href="#predicting-labels-for-new-images" id="toc-predicting-labels-for-new-images" class="nav-link" data-scroll-target="#predicting-labels-for-new-images">Predicting labels for new images</a></li>
   </ul></li>
-  <li><a href="#practical-considerations-and-limitations" id="toc-practical-considerations-and-limitations" class="nav-link" data-scroll-target="#practical-considerations-and-limitations">Practical considerations and limitations</a>
-  <ul>
-  <li><a href="#when-frozen-features-are-insufficient" id="toc-when-frozen-features-are-insufficient" class="nav-link" data-scroll-target="#when-frozen-features-are-insufficient">When frozen features are insufficient</a></li>
+  <li><a href="#practical-considerations-and-limitations" id="toc-practical-considerations-and-limitations" class="nav-link" data-scroll-target="#practical-considerations-and-limitations">Practical considerations and limitations</a></li>
   </ul></li>
-  <li><a href="#optional-object-detection-with-a-pretrained-model" id="toc-optional-object-detection-with-a-pretrained-model" class="nav-link" data-scroll-target="#optional-object-detection-with-a-pretrained-model">Optional: object detection with a pretrained model</a></li>
   <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a>
   <ul>
-  <li><a href="#exercise-16.1-what-learns-from-our-labels" id="toc-exercise-16.1-what-learns-from-our-labels" class="nav-link" data-scroll-target="#exercise-16.1-what-learns-from-our-labels">Exercise 16.1: What learns from our labels?</a></li>
-  <li><a href="#exercise-16.2-diagnose-the-workflow" id="toc-exercise-16.2-diagnose-the-workflow" class="nav-link" data-scroll-target="#exercise-16.2-diagnose-the-workflow">Exercise 16.2: Diagnose the workflow</a></li>
-  <li><a href="#exercise-16.3-adapt-the-workflow-to-new-labels" id="toc-exercise-16.3-adapt-the-workflow-to-new-labels" class="nav-link" data-scroll-target="#exercise-16.3-adapt-the-workflow-to-new-labels">Exercise 16.3: Adapt the workflow to new labels</a></li>
+  <li><a href="#exercise-17.1-what-learns-from-our-labels" id="toc-exercise-17.1-what-learns-from-our-labels" class="nav-link" data-scroll-target="#exercise-17.1-what-learns-from-our-labels">Exercise 17.1: What learns from our labels?</a></li>
+  <li><a href="#exercise-17.2-diagnose-the-workflow" id="toc-exercise-17.2-diagnose-the-workflow" class="nav-link" data-scroll-target="#exercise-17.2-diagnose-the-workflow">Exercise 17.2: Diagnose the workflow</a></li>
+  <li><a href="#optional-practice-adapt-the-workflow-to-new-labels" id="toc-optional-practice-adapt-the-workflow-to-new-labels" class="nav-link" data-scroll-target="#optional-practice-adapt-the-workflow-to-new-labels">Optional practice: Adapt the workflow to new labels</a></li>
   </ul></li>
   <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
   </ul>
@@ -437,15 +440,11 @@ window.Quarto = {
 <h2 class="unnumbered anchored" data-anchor-id="learning-outcomes">Learning outcomes</h2>
 <p>By the end of this chapter, you should be able to:</p>
 <ul>
-<li>Explain how hidden layers and nonlinear activations produce learned features.</li>
-<li>Describe neural-network training at a high level, without deriving weight updates.</li>
-<li>Explain how images are represented numerically and why spatial structure matters.</li>
-<li>Distinguish image classification from object detection and segmentation.</li>
-<li>Interpret class scores and softmax probabilities in multiclass classification.</li>
-<li>Explain how convolutional filters use local structure and share weights across image locations.</li>
-<li>Use a frozen pretrained CNN to extract features and train logistic regression for new labels.</li>
-<li>Distinguish what was learned during pretraining from what is learned on the target dataset.</li>
-<li>Evaluate an image classifier while accounting for preprocessing, related images, domain shift, and computational cost.</li>
+<li>Explain how a neural network computes predictions using learned features and nonlinear activations.</li>
+<li>Describe how images are represented numerically and why CNNs use local, shared filters.</li>
+<li>Use a pretrained image classifier and recognize the limitations of its output labels.</li>
+<li>Extract frozen pretrained features and train logistic regression for new labels.</li>
+<li>Evaluate an image classifier with appropriate preprocessing, data splits, and error analysis.</li>
 </ul>
 </section>
 <p>Images contain information that is difficult to express as a short list of hand-designed features. Consider the cats below. They have different coat colours, patterns, and lengths of fur, and appear in different poses, settings, and lighting. Some are sleeping; others are playing or grooming. Despite these differences, every image has the same label: <strong>cat</strong>. An effective classifier needs to recognize features that distinguish cats from other categories while tolerating variation within the cat category.</p>
@@ -456,9 +455,9 @@ window.Quarto = {
 </figure>
 </div>
 <p>Images from the same class can therefore have very different pixel arrays. Which differences matter depends on the task: coat colour does not change the label <strong>cat</strong>, but it would matter if our task were to classify coat colours.</p>
-<p>In this chapter, we will build a classifier for seven food categories using only a few hundred labelled images. That is far too little data to train a large vision model from scratch. Our practical solution will be <strong>transfer learning</strong>: we will reuse a representation learned from a much larger image collection and adapt it to our task.</p>
+<p>In this chapter, we will build a classifier for seven food categories using only a few hundred labelled images. That is far too little data to train a large vision model from scratch. Our practical solution will be <strong>transfer learning</strong>: we will reuse a <strong>representation</strong>—a set of numerical features describing an image—learned from a much larger image collection and adapt it to our task.</p>
 <p><strong>Imports</strong></p>
-<div id="8288e653" class="cell">
+<div id="8288e653" class="cell" data-execution_count="30">
 <details class="code-fold">
 <summary>Show imports and setup</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
@@ -486,384 +485,609 @@ window.Quarto = {
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>DEVICE <span class="op">=</span> torch.device(<span class="st">"cuda"</span> <span class="cf">if</span> torch.cuda.is_available() <span class="cf">else</span> <span class="st">"cpu"</span>)</span>
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>DEVICE</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
+<div class="cell-output cell-output-display" data-execution_count="30">
+<pre><code>device(type='cpu')</code></pre>
+</div>
 </div>
 <section id="from-linear-models-to-neural-networks" class="level2">
 <h2 class="anchored" data-anchor-id="from-linear-models-to-neural-networks">From linear models to neural networks</h2>
 <p>Recall that a linear model combines input features using learned weights and an intercept. In binary logistic regression, we then apply sigmoid to turn the resulting score into the predicted probability of the positive class. The diagram below draws these familiar operations as a network.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="img/lr-grapgical.png" class="img-fluid figure-img"></p>
-<figcaption>Binary logistic regression drawn as a network: four input features contribute to a weighted sum plus an intercept, followed by sigmoid to produce the predicted probability of the positive class.</figcaption>
+<p><img src="img/lr-graphical.png" class="img-fluid figure-img"></p>
+<figcaption>Binary logistic regression drawn as a network: four input features contribute to a weighted sum plus an intercept, followed by sigmoid to produce a probability and thresholding to produce the predicted label.</figcaption>
 </figure>
 </div>
-<p>Read the diagram from left to right. Each connection multiplies an input <span class="math inline">\(x_j\)</span> by its weight <span class="math inline">\(w_j\)</span>. The <span class="math inline">\(\Sigma\)</span> symbol collects these contributions and adds <span class="math inline">\(b\)</span>, giving the score <span class="math inline">\(z\)</span>. The <strong>bias</strong> <span class="math inline">\(b\)</span> is another name for the intercept. Finally, sigmoid converts the score into a probability. Here, the output labelled <span class="math inline">\(\hat y\)</span> represents <span class="math inline">\(P(y=1\mid\mathbf{x})\)</span>, rather than a predicted class label. We would apply a threshold to obtain a class prediction.</p>
-<p>Drawing a network does not, by itself, make the model more flexible. Imagine a two-feature classification problem in which one class occupies a small circle and the other surrounds it. A straight decision boundary cannot separate these classes. We have already encountered models that can capture nonlinear relationships. How could we extend the weighted-sum idea to do this?</p>
+<p>Read the diagram from left to right. Each connection multiplies an input <span class="math inline">\(x_j\)</span> by its weight <span class="math inline">\(w_j\)</span>. The <span class="math inline">\(\Sigma\)</span> symbol collects these contributions and adds <span class="math inline">\(b\)</span>, giving the score <span class="math inline">\(z\)</span>. The <strong>bias</strong> <span class="math inline">\(b\)</span> is another name for the intercept. Sigmoid gives the predicted probability <span class="math inline">\(\hat p\)</span> of the positive class. Applying a threshold gives the predicted label <span class="math inline">\(\hat y\)</span>. For example, with a threshold of 0.5, we predict 1 when <span class="math inline">\(\hat p \geq 0.5\)</span>, and 0 otherwise.</p>
+<p>This is a graphical representation of our familiar logistic-regression model. Its decision boundary is still linear, so it has the same limitations as before. Imagine a two-feature classification problem in which one class occupies a small circle and the other surrounds it. A straight decision boundary cannot separate these classes. We have already encountered models that can capture nonlinear relationships. How could we extend the weighted-sum idea to do this?</p>
 <p>A <strong>neural network</strong> introduces intermediate computations called <strong>hidden layers</strong>. Each unit in a hidden layer computes its own weighted sum and intercept, then applies a nonlinear <strong>activation function</strong>. The next diagram shows four inputs feeding three hidden units, whose outputs are combined to make a binary classification prediction.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="img/nn-1-hidden.png" class="img-fluid figure-img"></p>
-<figcaption>A neural network with four inputs, three hidden units using sigmoid activations, and one output unit. The final sigmoid produces the predicted probability of the positive class.</figcaption>
+<figcaption>A neural network with four inputs, three hidden units using sigmoid activations, and one output unit. The final sigmoid produces a probability, and thresholding converts it to a predicted label.</figcaption>
 </figure>
 </div>
-<p>Each hidden unit receives the same four input features but has its own weights and bias, so it can compute a different transformation. Its sigmoid output becomes a new feature for the output unit. The output unit combines these three features using another weighted sum and bias, then applies sigmoid to produce a probability.</p>
-<p>The activation boxes are drawn separately to show the steps within each unit; they are not extra hidden units. The labels <span class="math inline">\(W^{(1)}\)</span> and <span class="math inline">\(W^{(2)}\)</span> refer to the collections of weights used at the hidden and output layers. Their superscripts identify layers, not powers. Likewise, <span class="math inline">\(b_1^{(1)}\)</span>, <span class="math inline">\(b_2^{(1)}\)</span>, and <span class="math inline">\(b_3^{(1)}\)</span> are the three hidden-unit biases, while <span class="math inline">\(b^{(2)}\)</span> is the output bias. We do not need matrix notation to follow this computation.</p>
-<p>The outputs of the hidden units are <strong>learned features</strong>. The final layer combines these features to make a prediction:</p>
+<p>Each hidden unit receives the same four input features but has its own weights and bias, so it can compute a different transformation. Its sigmoid output becomes a new feature for the output unit. The output unit combines these three features using another weighted sum and bias, then applies sigmoid to produce a probability. As in logistic regression, we threshold this final probability to obtain a predicted label; we do not threshold the hidden features.</p>
+<p>The activation boxes show steps within each unit, not extra hidden units. The labels <span class="math inline">\(W^{(1)}\)</span> and <span class="math inline">\(W^{(2)}\)</span> collect the weights used at the hidden and output layers. Superscripts identify layers, not powers.</p>
+<p>Let us write out these computations for one example. For the first hidden unit, we first compute a score:</p>
 <p><span class="math display">\[
-\text{original features} \longrightarrow \text{hidden features} \longrightarrow \text{prediction}.
+z_1^{(1)} = w_{11}^{(1)}x_1 + w_{12}^{(1)}x_2
+          + w_{13}^{(1)}x_3 + w_{14}^{(1)}x_4 + b_1^{(1)}.
 \]</span></p>
-<p>Unlike manually constructing features before fitting a model, training a neural network learns the hidden-layer weights together with the output-layer weights. The features are learned to help with the prediction task; they need not have names or meanings we can easily recognize. Although the hidden sigmoid outputs lie between zero and one, they are intermediate features, not predicted class probabilities.</p>
+<p>For example, <span class="math inline">\(w_{12}^{(1)}\)</span> connects input 2 to hidden unit 1 in layer <span class="math inline">\((1)\)</span>. Each hidden unit has its own weights and bias.</p>
+<p>We then apply sigmoid to obtain the first hidden feature:</p>
+<p><span class="math display">\[
+h_1 = \operatorname{sigmoid}\!\left(z_1^{(1)}\right).
+\]</span></p>
+<p>The other two hidden units repeat these steps with their own weights and biases, producing <span class="math inline">\(h_2\)</span> and <span class="math inline">\(h_3\)</span>. For this network, the four original input features have now been transformed into three hidden features.</p>
+<p>Next, the output unit combines those hidden features:</p>
+<p><span class="math display">\[
+z^{(2)} = w_1^{(2)}h_1 + w_2^{(2)}h_2 + w_3^{(2)}h_3 + b^{(2)}.
+\]</span></p>
+<p>The weights <span class="math inline">\(w_j^{(2)}\)</span> connect the hidden features to the output unit. Finally,</p>
+<p><span class="math display">\[
+\hat p = \operatorname{sigmoid}\!\left(z^{(2)}\right).
+\]</span></p>
+<p>This is the probability <span class="math inline">\(\hat p\)</span> shown before the threshold box. With a threshold of 0.5, the final decision is:</p>
+<p><span class="math display">\[
+\hat y = \begin{cases}1 &amp; \text{if } \hat p \geq 0.5,\\ 0 &amp; \text{otherwise.}\end{cases}
+\]</span></p>
+<p>Computing the hidden features and then the prediction is called a <strong>forward pass</strong>. It uses the current weights and biases without changing them. When training the whole network, we adjust weights in both the hidden and output layers so that the hidden features help predict the target. Hidden activations are features, not class probabilities, even when sigmoid puts them between zero and one.</p>
 <p>The nonlinear activation matters. Stacking weighted sums without nonlinear activations still gives a single weighted sum and intercept. Hidden activations allow a network to produce nonlinear decision boundaries. They play a different role from the final sigmoid, which converts a binary classification score into a probability.</p>
 <p>We used sigmoid in the hidden layer to build on a familiar function, but other nonlinear activations are also used. For example, the rectified linear unit (<strong>ReLU</strong>) returns zero for negative inputs and leaves positive inputs unchanged: <span class="math inline">\(\operatorname{ReLU}(z)=\max(0,z)\)</span>. A network need not use the same activation in its hidden layers as at its output.</p>
 <p>Networks can contain several hidden layers, each transforming the representation from the previous layer. This is the idea behind <strong>deep learning</strong>. We will use such a network to produce image features, rather than design its layers ourselves.</p>
 <section id="how-does-a-network-learn-its-weights" class="level3">
 <h3 class="anchored" data-anchor-id="how-does-a-network-learn-its-weights">How does a network learn its weights?</h3>
-<p>The supervised-learning workflow has not changed: training uses examples with known targets to fit a model, which can then predict targets for new examples.</p>
+<p>The supervised-learning workflow is unchanged: use examples with known targets to fit a model, then predict targets for new examples.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="img/supervised-learning-training.png" class="img-fluid figure-img"></p>
 <figcaption>The supervised-learning training workflow.</figcaption>
 </figure>
 </div>
-<p>A network’s <strong>architecture</strong> specifies its layers and connections. Its <strong>parameters</strong> are the weights and intercepts learned during training. Choosing an architecture and learning its parameters are different activities.</p>
-<p>To understand training, imagine starting with weights that make poor predictions. A <strong>loss function</strong> assigns a numerical penalty to disagreement between predictions and known targets. Training repeatedly computes predictions, measures the loss, and makes small changes to the weights intended to reduce it.</p>
-<p>How do we choose those changes when there are millions of weights? A <strong>gradient</strong> describes how small changes in the weights affect the loss. <strong>Backpropagation</strong> efficiently computes this information through the network, and an <strong>optimizer</strong> uses it to update the weights. We will not derive these calculations or implement them in this chapter.</p>
-<p>The <strong>learning rate</strong> controls the size of the updates. Training often processes small batches of examples at a time; one complete pass through the training set is an <strong>epoch</strong>. These are training choices, not learned weights. More epochs do not guarantee better predictions on new data: training loss may fall while validation performance worsens through overfitting.</p>
-<p>For our worked example, this expensive neural-network training has already happened on another dataset. We will keep the resulting weights fixed and train a familiar logistic-regression classifier on the network’s features.</p>
+<p>A <strong>loss function</strong> measures disagreement between predictions and known targets. Training repeatedly makes predictions and adjusts weights to reduce this loss. As with other flexible models, reducing training error does not guarantee better performance on new data.</p>
+<p>In our worked example, the CNN has already been trained on another dataset. We will keep its weights fixed and train logistic regression on the features it produces.</p>
 </section>
 </section>
-<section id="what-is-computer-vision" class="level2">
-<h2 class="anchored" data-anchor-id="what-is-computer-vision">What is computer vision?</h2>
-<p><strong>Computer vision</strong> is the area of computing concerned with extracting useful information from images and video. Different applications require different kinds of output:</p>
-<ul>
-<li><strong>Image classification</strong> assigns a label to an entire image, such as <em>pizza</em> or <em>sushi</em>.</li>
-<li><strong>Object detection</strong> identifies objects and draws a bounding box around each one.</li>
-<li><strong>Semantic segmentation</strong> assigns a category to each pixel.</li>
-<li><strong>Instance segmentation</strong> separates individual objects as well as identifying their categories.</li>
-</ul>
-<p>These tasks are related, but they are not interchangeable. An image classifier can report that a dog appears somewhere in a photograph; it does not tell us where the dog is or trace its outline. We will focus on image classification and return briefly to object detection near the end.</p>
+<section id="introduction-to-computer-vision" class="level2">
+<h2 class="anchored" data-anchor-id="introduction-to-computer-vision">Introduction to computer vision</h2>
+<p><strong>Computer vision</strong> extracts useful information from images and video. Different tasks ask for different outputs.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/vision-apps.jpeg" class="img-fluid figure-img"></p>
+<figcaption>Computer-vision tasks: classification gives an image label; localization adds a box; object detection labels and boxes individual objects; instance segmentation identifies each object’s pixels.</figcaption>
+</figure>
+</div>
+<p>From left to right, the figure shows an image label, a label with a bounding box, boxes around individual objects, and the pixels belonging to each object. Classification can also label images containing several objects; it simply does not locate them. Here, we focus on <strong>image classification</strong>: predicting a category for an entire image.</p>
 <section id="images-as-numerical-arrays" class="level3">
 <h3 class="anchored" data-anchor-id="images-as-numerical-arrays">Images as numerical arrays</h3>
-<p>A colour image can be stored as a three-dimensional array: height <span class="math inline">\(\times\)</span> width <span class="math inline">\(\times\)</span> colour channels. In an RGB image, each pixel has a red, green, and blue value. Let us inspect one of the images used later in the chapter.</p>
-<p>A grayscale image needs only one intensity value per pixel and can be represented as a height-by-width matrix. A colour image adds the channel dimension.</p>
-<div id="40a1366c" class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>sample_path <span class="op">=</span> <span class="bu">next</span>((DATA_DIR <span class="op">/</span> <span class="st">"food-transfer-learning"</span> <span class="op">/</span> <span class="st">"train"</span> <span class="op">/</span> <span class="st">"pizza"</span>).glob(<span class="st">"*.jpg"</span>))</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>sample_image <span class="op">=</span> Image.<span class="bu">open</span>(sample_path).convert(<span class="st">"RGB"</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>sample_array <span class="op">=</span> np.asarray(sample_image)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Image shape: </span><span class="sc">{</span>sample_array<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"A 3 x 3 patch of RGB values:"</span>)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>display(sample_array[:<span class="dv">3</span>, :<span class="dv">3</span>, :])</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>plt.imshow(sample_image)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"One training image"</span>)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>plt.axis(<span class="st">"off"</span>)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A grayscale image can be represented as a height-by-width array, with one intensity value per pixel. A colour image adds a third dimension: height <span class="math inline">\(\times\)</span> width <span class="math inline">\(\times\)</span> colour channels. In an RGB image, each pixel has a red, green, and blue value. Let us inspect one of the images used later in the chapter.</p>
+<div id="40a1366c" class="cell" data-execution_count="31">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>sample_path <span class="op">=</span> <span class="bu">next</span>((DATA_DIR <span class="op">/</span> <span class="st">"food-transfer-learning"</span> <span class="op">/</span> <span class="st">"train"</span> <span class="op">/</span> <span class="st">"pizza"</span>).glob(<span class="st">"*.jpg"</span>))</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>sample_image <span class="op">=</span> Image.<span class="bu">open</span>(sample_path).convert(<span class="st">"RGB"</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>sample_array <span class="op">=</span> np.asarray(sample_image)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Image shape: </span><span class="sc">{</span>sample_array<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"A 3 x 3 patch of RGB values:"</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>display(sample_array[:<span class="dv">3</span>, :<span class="dv">3</span>, :])</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>plt.imshow(sample_image)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"One training image"</span>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>plt.axis(<span class="st">"off"</span>)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Image shape: (446, 512, 3)
+A 3 x 3 patch of RGB values:</code></pre>
 </div>
-<p>We could flatten the array into one long feature vector and pass it to a model from an earlier chapter. However, a <span class="math inline">\(200 \times 200\)</span> RGB image already has <span class="math inline">\(200 \times 200 \times 3 = 120{,}000\)</span> pixel values. More importantly, flattening hides the two-dimensional organization of the pixels. Pixels next to one another are no longer treated as neighbours, and moving an object slightly changes many feature positions.</p>
-<p>This does not mean that logistic regression or another familiar classifier can never be used with images. It means that raw pixels are usually a poor <strong>representation</strong>. Later, we will use a neural network to transform each image into a much smaller feature vector, then fit logistic regression to those features.</p>
-</section>
-<section id="imagenet-and-multiclass-classification" class="level3">
-<h3 class="anchored" data-anchor-id="imagenet-and-multiclass-classification">ImageNet and multiclass classification</h3>
-<p>ImageNet is a large labelled image collection widely used for pretraining. The familiar ImageNet classification benchmark uses 1,000 categories. A model trained for those categories produces one score per category; it cannot automatically invent new output labels for our task.</p>
-<p>Our food task is a <strong>multiclass classification</strong> problem: each image receives exactly one label from <span class="math inline">\(K\)</span> possible classes. This differs from binary classification, which has two classes, and from <strong>multilabel classification</strong>, in which one image could simultaneously receive labels such as <em>person</em>, <em>bicycle</em>, and <em>helmet</em>.</p>
-<p>Many scikit-learn classifiers support multiclass targets directly. Multiclass logistic regression learns a score for each class. For an example with feature vector <span class="math inline">\(\mathbf{x}\)</span>, class <span class="math inline">\(k\)</span> receives the score</p>
-<p><span class="math display">\[
-z_k = \mathbf{w}_k^{\mathsf T}\mathbf{x} + b_k.
-\]</span></p>
-<p>Each class therefore has its own coefficients and intercept. The largest score determines the predicted class.</p>
-<section id="from-scores-to-probabilities-with-softmax" class="level4">
-<h4 class="anchored" data-anchor-id="from-scores-to-probabilities-with-softmax">From scores to probabilities with softmax</h4>
-<p>The scores can be any real numbers, so we use <strong>softmax</strong> to turn them into non-negative values that sum to one:</p>
-<p><span class="math display">\[
-P(y=k\mid\mathbf{x}) = \frac{e^{z_k}}{\sum_{j=1}^{K}e^{z_j}}.
-\]</span></p>
-<p>The exponentials make larger scores receive more probability, while the denominator normalizes across all classes. Softmax does not establish that these probabilities are well calibrated; it only performs the conversion from scores to a probability distribution.</p>
-<div id="bbdaf80d" class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> torch.tensor([<span class="fl">1.2</span>, <span class="op">-</span><span class="fl">0.4</span>, <span class="fl">2.0</span>, <span class="fl">0.7</span>])</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>probabilities <span class="op">=</span> torch.softmax(scores, dim<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"score"</span>: scores.numpy(), <span class="st">"softmax probability"</span>: probabilities.numpy()},</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span>[<span class="st">"class 0"</span>, <span class="st">"class 1"</span>, <span class="st">"class 2"</span>, <span class="st">"class 3"</span>],</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([[[112,  60,  13],
+        [113,  61,  14],
+        [115,  63,  16]],
+
+       [[111,  59,  12],
+        [113,  61,  14],
+        [115,  63,  16]],
+
+       [[113,  61,  14],
+        [115,  63,  16],
+        [117,  65,  18]]], dtype=uint8)</code></pre>
 </div>
-<p>The predicted class is class 2 because it has the highest score and, consequently, the highest softmax probability. Notice that every probability depends on all four scores. Increasing the score for one class reduces the probability available to the others.</p>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="17_intro_to_computer-vision_files/figure-html/cell-3-output-3.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We could flatten the array into one long feature vector and pass it to a model from an earlier chapter. However, a <span class="math inline">\(200 \times 200\)</span> RGB image already has <span class="math inline">\(200 \times 200 \times 3 = 120{,}000\)</span> pixel values. Flattening preserves these values, but an ordinary classifier does not automatically use the fact that nearby pixels form local patterns. Moving an object slightly can also change many feature values.</p>
+<p>Raw pixels can therefore be a difficult starting point for the familiar classifiers used here. Instead, we will use a neural network to transform each image into a smaller set of learned features, then fit logistic regression to those features.</p>
 </section>
-</section>
-</section>
-<section id="convolutional-neural-networks" class="level2">
-<h2 class="anchored" data-anchor-id="convolutional-neural-networks">Convolutional neural networks</h2>
-<section id="why-convolution-helps-with-images" class="level3">
-<h3 class="anchored" data-anchor-id="why-convolution-helps-with-images">Why convolution helps with images</h3>
-<p>A fully connected layer gives every input pixel a separate connection to every hidden unit. This creates many parameters and does not encode the fact that nearby pixels form local patterns.</p>
-<p>A <strong>convolutional neural network</strong> (CNN) instead learns small arrays of weights called <strong>filters</strong> or <strong>kernels</strong>. A filter slides across an image and produces a large activation where it finds a matching local pattern. The same filter is used at every location, so an edge detector learned in the upper-left corner can also detect a similar edge elsewhere.</p>
-<p>Early layers often respond to simple patterns such as edges or colour transitions. Later layers combine these responses into textures, parts, and more task-relevant patterns. The precise interpretation is rarely as clean as this description suggests, but the hierarchy is a useful intuition.</p>
-<p><img src="img/cnn-5.gif" class="img-fluid"></p>
-<p>You can also experiment with hand-designed filters in the interactive <a href="https://setosa.io/ev/image-kernels/">Image Kernels explainer</a>.</p>
-<div class="callout callout-style-default callout-note callout-titled" title="What convolution does—and does not—provide">
+<section id="convolutions-why-do-they-help-with-images" class="level3">
+<h3 class="anchored" data-anchor-id="convolutions-why-do-they-help-with-images">Convolutions: why do they help with images?</h3>
+<p>In the network above, every input connects to every hidden unit. This is called a <strong>fully connected layer</strong>. Applying that approach directly to images would connect every pixel value to every hidden unit. This creates many parameters and does not encode the fact that nearby pixels form local patterns.</p>
+<p>A <strong>convolution</strong> applies a small array of weights called a <strong>filter</strong> or <strong>kernel</strong> across an image. At each position, it computes a weighted sum of the local pixel values. The resulting array is called a <strong>feature map</strong>. A learned filter can produce large responses to a local pattern such as an edge. The same filter is used at every location, so an edge detector learned in the upper-left corner can also detect a similar edge elsewhere.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/cnn-5.gif" class="img-fluid figure-img"></p>
+<figcaption>An animation illustrating a small filter moving across an input array to produce an output feature map.</figcaption>
+</figure>
+</div>
+<p>You can also experiment with hand-designed filters in the interactive <a href="https://setosa.io/ev/image-kernels/">Image Kernels explainer</a>. In a neural network, the filter weights are learned from training data rather than chosen by hand.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Recognizing patterns in different locations">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>What convolution does—and does not—provide
+<span class="screen-reader-only">Note</span>Recognizing patterns in different locations
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Sharing a filter across locations helps a CNN detect the same local pattern in different parts of an image. It does not make the entire model perfectly invariant to shifts, rotations, changes of scale, or changes in viewpoint. Architecture, pooling, training data, and augmentation all influence how robust the resulting model will be.</p>
+<p>A shared filter can recognize a pattern in different locations, but changes in viewpoint, size, or lighting can still cause mistakes.</p>
 </div>
 </div>
 </section>
+<section id="convolutional-neural-networks" class="level3">
+<h3 class="anchored" data-anchor-id="convolutional-neural-networks">Convolutional neural networks</h3>
+<p>A <strong>convolutional neural network</strong> (CNN) combines convolutions and nonlinear activations to turn an image into a prediction.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/cnn_big_picture.png" class="img-fluid figure-img"></p>
+<figcaption>A simplified CNN: convolutions, ReLU, and pooling produce features that fully connected layers use for binary cat classification. This is not the exact architecture used later.</figcaption>
+</figure>
+</div>
+<p><em>Image source: <a href="https://developers.google.com/machine-learning">Google Developers: Machine Learning</a>.</em></p>
+<p>Each convolutional layer produces several feature maps. ReLU introduces nonlinearity, while <strong>pooling</strong> reduces their height and width. The max-pooling operations shown keep the largest response in each small region. Early layers often respond to edges and colour changes; later layers combine responses into more complex patterns.</p>
+<p>The network has a <strong>feature extractor</strong>, which builds an image representation, and a <strong>classification head</strong>, which maps it to class scores. The figure illustrates “cat or not cat”; our pretrained model has a different architecture and predicts 1,000 categories.</p>
 </section>
-<section id="transfer-learning-with-frozen-features" class="level2">
-<h2 class="anchored" data-anchor-id="transfer-learning-with-frozen-features">Transfer learning with frozen features</h2>
-<p>Training a large CNN from random initial weights usually requires far more labelled data and computation than we have for our food task. Fortunately, a model trained on a large and varied source dataset often learns representations that are useful for a new target task. Reusing those learned weights is called <strong>transfer learning</strong>.</p>
-<p>For example, a model trained on ImageNet may have learned filters that respond to edges, textures, shapes, and object parts. Our target labels differ from ImageNet’s labels, but many of those visual features remain useful.</p>
-<section id="what-do-we-reuse-and-what-do-we-train" class="level3">
-<h3 class="anchored" data-anchor-id="what-do-we-reuse-and-what-do-we-train">What do we reuse, and what do we train?</h3>
-<p>A pretrained classifier has a <strong>feature extractor</strong>, which transforms an image into a feature vector, and a <strong>classification head</strong>, which maps those features to its original class scores. We can reuse the feature extractor while learning a different classifier for our labels.</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
+</section>
+<section id="pretrained-models" class="level2">
+<h2 class="anchored" data-anchor-id="pretrained-models">Pretrained models</h2>
+<section id="what-are-pretrained-models-in-computer-vision" class="level3">
+<h3 class="anchored" data-anchor-id="what-are-pretrained-models-in-computer-vision">What are pretrained models in computer vision?</h3>
+<p>A <strong>pretrained model</strong> supplies weights already learned on another dataset. Training a CNN can require substantial labelled data and computation; using pretrained weights lets us start making predictions immediately. Creating the same network without its learned weights would not give useful predictions.</p>
+<section id="imagenet-and-multiclass-classification" class="level4">
+<h4 class="anchored" data-anchor-id="imagenet-and-multiclass-classification">ImageNet and multiclass classification</h4>
+<p>ImageNet is a large collection of labelled images. Our pretrained CNN was trained on its 1,000-category image-classification task. It produces one score per category and predicts the class with the largest score. Unlike the binary examples above, we select the class with the largest score (or softmax probability) rather than thresholding a single probability. It cannot invent new output labels.</p>
+<p>This is <strong>multiclass classification</strong>: each image receives one label from several possible classes. Our seven-category food task has the same structure. It differs from multilabel classification, where an image can receive several labels at once.</p>
+</section>
+<section id="from-scores-to-probabilities-with-softmax" class="level4">
+<h4 class="anchored" data-anchor-id="from-scores-to-probabilities-with-softmax">From scores to probabilities with softmax</h4>
+<p><strong>Softmax</strong> converts class scores into probabilities that sum to one. The largest score receives the largest probability. In the example below, the class labels are numbered 0–3. A high probability still does not guarantee a correct or useful prediction, as we will see below.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Optional: the softmax formula">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Optional: the softmax formula
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>For class scores <span class="math inline">\(z_1,\ldots,z_K\)</span>,</p>
+<p><span class="math display">\[
+P(y=k) = \frac{e^{z_k}}{\sum_{j=1}^{K}e^{z_j}}.
+\]</span></p>
+<p>Exponentiation makes the values positive, and division by their sum makes them add to one.</p>
+</div>
+</div>
+</div>
+<div id="bbdaf80d" class="cell" data-execution_count="32">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> torch.tensor([<span class="fl">1.2</span>, <span class="op">-</span><span class="fl">0.4</span>, <span class="fl">2.0</span>, <span class="fl">0.7</span>])</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>probabilities <span class="op">=</span> torch.softmax(scores, dim<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"score"</span>: scores.numpy(), <span class="st">"softmax probability"</span>: probabilities.numpy()},</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span>[<span class="st">"class 0"</span>, <span class="st">"class 1"</span>, <span class="st">"class 2"</span>, <span class="st">"class 3"</span>],</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="32">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
-<th>Approach</th>
-<th>What stays fixed?</th>
-<th>What learns from our labelled data?</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">score</th>
+<th data-quarto-table-cell-role="th">softmax probability</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Direct prediction</td>
-<td>The entire pretrained model</td>
-<td>Nothing; we use its original labels</td>
+<th data-quarto-table-cell-role="th">class 0</th>
+<td>1.2</td>
+<td>0.247895</td>
 </tr>
 <tr class="even">
-<td>Frozen feature extraction</td>
-<td>The pretrained feature extractor</td>
-<td>A new classifier for our labels</td>
+<th data-quarto-table-cell-role="th">class 1</th>
+<td>-0.4</td>
+<td>0.050049</td>
 </tr>
 <tr class="odd">
-<td>Fine-tuning</td>
-<td>Some or none of the pretrained feature extractor</td>
-<td>A new classifier and some or all pretrained weights</td>
+<th data-quarto-table-cell-role="th">class 2</th>
+<td>2.0</td>
+<td>0.551700</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">class 3</th>
+<td>0.7</td>
+<td>0.150356</td>
 </tr>
 </tbody>
 </table>
-<p>Our main approach is <strong>frozen feature extraction</strong>. The CNN was trained previously on ImageNet. Here, logistic regression learns coefficients and intercepts from our food images; the CNN weights stay fixed. We do not need to choose hidden layers or implement neural-network training.</p>
-</section>
-<section id="using-a-pretrained-model-directly" class="level3">
-<h3 class="anchored" data-anchor-id="using-a-pretrained-model-directly">Using a pretrained model directly</h3>
-<p>The original head of an ImageNet model predicts one of 1,000 ImageNet competition categories. Direct use is convenient, but the output vocabulary is fixed. If our desired category is absent, the model must still choose one of the labels it knows.</p>
-<p>The next example applies MobileNet V3 Small to one local photograph. <code>weights.transforms()</code> supplies the resizing, cropping, and normalization expected by these particular pretrained weights. Matching the preprocessing to the weights is part of the model specification, not an optional cosmetic choice.</p>
-<div id="16b367bf" class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>weights <span class="op">=</span> models.MobileNet_V3_Small_Weights.DEFAULT</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>imagenet_model <span class="op">=</span> models.mobilenet_v3_small(weights<span class="op">=</span>weights).<span class="bu">eval</span>()</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>imagenet_labels <span class="op">=</span> weights.meta[<span class="st">"categories"</span>]</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>imagenet_preprocess <span class="op">=</span> weights.transforms()</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>ubc_paths <span class="op">=</span> <span class="bu">sorted</span>(</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    path</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> pattern <span class="kw">in</span> [<span class="st">"*.jpg"</span>, <span class="st">"*.jpeg"</span>, <span class="st">"*.png"</span>]</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> path <span class="kw">in</span> (DATA_DIR <span class="op">/</span> <span class="st">"UBC_img"</span>).glob(pattern)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>ubc_path <span class="op">=</span> ubc_paths[<span class="dv">0</span>]</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>ubc_image <span class="op">=</span> Image.<span class="bu">open</span>(ubc_path).convert(<span class="st">"RGB"</span>)</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> torch.inference_mode():</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    logits <span class="op">=</span> imagenet_model(imagenet_preprocess(ubc_image).unsqueeze(<span class="dv">0</span>))</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    top_probabilities, top_indices <span class="op">=</span> torch.softmax(logits, dim<span class="op">=</span><span class="dv">1</span>)[<span class="dv">0</span>].topk(<span class="dv">5</span>)</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame({</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ImageNet label"</span>: [imagenet_labels[i] <span class="cf">for</span> i <span class="kw">in</span> top_indices.tolist()],</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">"probability"</span>: top_probabilities.numpy(),</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>}))</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>plt.imshow(ubc_image)</span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>plt.title(ubc_path.stem)</span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>plt.axis(<span class="st">"off"</span>)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+
 </div>
-<p>A prediction can be the best available ImageNet label and still be a poor description of our task. A high softmax probability expresses preference among the available labels; it does not guarantee that the vocabulary suits our needs. This <strong>label mismatch</strong> is distinct from <strong>domain shift</strong>, where the images encountered in use differ from those used for training. Either can make direct use unsuitable.</p>
+</div>
+</div>
+<p>The predicted class is class 2 because it has the highest score and, consequently, the highest softmax probability. Notice that every probability depends on all four scores. Increasing the score for one class reduces the probability available to the others.</p>
 </section>
-<section id="a-pretrained-model-as-a-feature-extractor" class="level3">
-<h3 class="anchored" data-anchor-id="a-pretrained-model-as-a-feature-extractor">A pretrained model as a feature extractor</h3>
-<p>We now want predictions for our seven food categories rather than the original ImageNet categories. We will remove MobileNet’s classification head and treat the remaining network as a transformer:</p>
+</section>
+<section id="using-pretrained-models-out-of-the-box" class="level3">
+<h3 class="anchored" data-anchor-id="using-pretrained-models-out-of-the-box">Using pretrained models out of the box</h3>
+<p><code>torchvision.models</code> provides different CNNs and their pretrained weights. We will use MobileNet V3 Small, a relatively lightweight ImageNet model. The weight object supplies its category names and, through <code>weights.transforms()</code>, the preprocessing it expects: resizing and cropping images and rescaling their colour values. The plots below show the original photographs; the CNN receives their preprocessed versions. The first call may download the weights.</p>
+<p>The code puts the model in prediction mode with <code>eval()</code> and uses <code>torch.inference_mode()</code> for efficient prediction. We will reuse this setup without needing to study its internal details.</p>
+<div id="16b367bf" class="cell" data-execution_count="33">
+<details class="code-fold">
+<summary>Show model setup and plotting helper</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>weights <span class="op">=</span> models.MobileNet_V3_Small_Weights.DEFAULT</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>imagenet_model <span class="op">=</span> models.mobilenet_v3_small(weights<span class="op">=</span>weights).<span class="bu">eval</span>()</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>imagenet_labels <span class="op">=</span> weights.meta[<span class="st">"categories"</span>]</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>imagenet_preprocess <span class="op">=</span> weights.transforms()</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> show_imagenet_predictions(image_paths):</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Show each image alongside its three highest-probability ImageNet labels."""</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    ncols <span class="op">=</span> <span class="bu">min</span>(<span class="dv">2</span>, <span class="bu">len</span>(image_paths))</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    nrows <span class="op">=</span> (<span class="bu">len</span>(image_paths) <span class="op">+</span> ncols <span class="op">-</span> <span class="dv">1</span>) <span class="op">//</span> ncols</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    fig, axes <span class="op">=</span> plt.subplots(nrows, ncols, figsize<span class="op">=</span>(<span class="dv">6</span> <span class="op">*</span> ncols, <span class="dv">5</span> <span class="op">*</span> nrows), squeeze<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    rows <span class="op">=</span> []</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> ax, image_path <span class="kw">in</span> <span class="bu">zip</span>(axes.flat, image_paths):</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        image <span class="op">=</span> Image.<span class="bu">open</span>(image_path).convert(<span class="st">"RGB"</span>)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Add a batch dimension: the model expects a batch, even for one image.</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>        inputs <span class="op">=</span> imagenet_preprocess(image).unsqueeze(<span class="dv">0</span>)</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">with</span> torch.inference_mode():</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>            scores <span class="op">=</span> imagenet_model(inputs)</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>            probabilities, indices <span class="op">=</span> torch.softmax(scores, dim<span class="op">=</span><span class="dv">1</span>)[<span class="dv">0</span>].topk(<span class="dv">3</span>)</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>        labels <span class="op">=</span> [imagenet_labels[index] <span class="cf">for</span> index <span class="kw">in</span> indices.tolist()]</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>        ax.imshow(image)</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>        ax.set_title(image_path.name)</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>        ax.axis(<span class="st">"off"</span>)</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>        ax.text(<span class="fl">0.5</span>, <span class="op">-</span><span class="fl">0.04</span>, <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>.join(</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"</span><span class="sc">{</span>label<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>probability<span class="sc">:.1%}</span><span class="ss">"</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> label, probability <span class="kw">in</span> <span class="bu">zip</span>(labels, probabilities.tolist())</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>        ), transform<span class="op">=</span>ax.transAxes, ha<span class="op">=</span><span class="st">"center"</span>, va<span class="op">=</span><span class="st">"top"</span>)</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>        rows.append({<span class="st">"image"</span>: image_path.name, <span class="st">"top label"</span>: labels[<span class="dv">0</span>],</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"probability"</span>: probabilities[<span class="dv">0</span>].item()})</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> ax <span class="kw">in</span> axes.flat[<span class="bu">len</span>(image_paths):]:</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>        ax.axis(<span class="st">"off"</span>)</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>    plt.tight_layout(h_pad<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>    plt.show()</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.DataFrame(rows)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<section id="when-the-original-labels-are-useful" class="level4">
+<h4 class="anchored" data-anchor-id="when-the-original-labels-are-useful">When the original labels are useful</h4>
+<p>Inspect the animal photographs from <code>data/test_images</code>. Before running the cell, predict the labels you expect. The plots show the three highest-probability ImageNet categories for each image.</p>
+<div id="cv17-animal-code" class="cell" data-execution_count="34">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>animal_paths <span class="op">=</span> <span class="bu">sorted</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    path <span class="cf">for</span> path <span class="kw">in</span> (DATA_DIR <span class="op">/</span> <span class="st">"test_images"</span>).iterdir()</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> path.suffix.lower() <span class="kw">in</span> {<span class="st">".jpg"</span>, <span class="st">".jpeg"</span>, <span class="st">".png"</span>}</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>animal_results <span class="op">=</span> show_imagenet_predictions(animal_paths)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="17_intro_to_computer-vision_files/figure-html/cell-6-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The model identifies a <em>macaque</em> and <em>cheetah</em> with high confidence, without any additional training on these photographs. Other predictions are less decisive: several cat or dog categories receive similar probabilities. Recognizing an animal and identifying its exact category are different levels of success.</p>
+</section>
+<section id="when-the-predictions-do-not-answer-our-question" class="level4">
+<h4 class="anchored" data-anchor-id="when-the-predictions-do-not-answer-our-question">When the predictions do not answer our question</h4>
+<p>Now suppose we want to identify UBC landmarks. Inspect all the images in <code>data/UBC_img</code>, which also includes an apple photograph. Which predictions describe something visible, and which identify the landmark?</p>
+<div id="cv17-campus-code" class="cell" data-execution_count="35">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>campus_paths <span class="op">=</span> <span class="bu">sorted</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    path <span class="cf">for</span> path <span class="kw">in</span> (DATA_DIR <span class="op">/</span> <span class="st">"UBC_img"</span>).iterdir()</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> path.suffix.lower() <span class="kw">in</span> {<span class="st">".jpg"</span>, <span class="st">".jpeg"</span>, <span class="st">".png"</span>}</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>campus_results <span class="op">=</span> show_imagenet_predictions(campus_paths)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="17_intro_to_computer-vision_files/figure-html/cell-7-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The clock tower receives <em>obelisk</em>, and the fountain scene receives <em>lakeside</em>. The model correctly recognizes a <em>totem pole</em>, but that does not identify a particular UBC location.</p>
+<p>The large UBC letters receive the surprising label <em>car mirror</em>, at about 21%. Their reflective shapes may explain the association, but that is a hypothesis, not something the prediction proves. The apple photograph is also misclassified as <em>fig</em>.</p>
+<p>There are two issues here: predictions can be wrong, and our desired landmark labels are absent from ImageNet’s vocabulary. Even a correct general object label may not answer our question. Could we keep the useful image features and train a classifier for our own labels?</p>
+</section>
+</section>
+<section id="transfer-learning-with-frozen-features" class="level3">
+<h3 class="anchored" data-anchor-id="transfer-learning-with-frozen-features">Transfer learning with frozen features</h3>
+<p><strong>Transfer learning</strong> reuses what a model learned on one task for another. To learn landmark labels, we would need labelled landmark images. We will demonstrate the same approach using our labelled food dataset: keep the pretrained CNN’s feature extractor fixed and replace its original classifier with logistic regression for our seven food labels:</p>
 <p><span class="math display">\[
-\text{image} \longrightarrow \text{pretrained backbone} \longrightarrow \text{feature vector} \longrightarrow \text{logistic regression}.
+\text{image} \longrightarrow \text{pretrained feature extractor}
+\longrightarrow \text{feature vector} \longrightarrow \text{logistic regression}.
 \]</span></p>
-<p>This resembles a scikit-learn pipeline, except that image loading and neural-network inference happen before the familiar classifier.</p>
-</section>
-<section id="the-food-dataset" class="level3">
-<h3 class="anchored" data-anchor-id="the-food-dataset">The food dataset</h3>
-<p>The dataset is a small subset derived from Food-101 and organized into <code>train</code> and <code>valid</code> directories. <code>ImageFolder</code> infers labels from the subdirectory names. In a larger project we would also reserve a test set for one final, unbiased evaluation after all model choices have been made.</p>
-<p>Each class directory contains images with that label. Before using a dataset like this, inspect examples and counts in every split, check the labels, and look for duplicates or related images across splits. For example, photographs of the same meal should stay together rather than appearing in both training and validation.</p>
-<p><code>ImageFolder</code> assigns integer labels from sorted directory names. These integers are identifiers, not ordered quantities, and their mapping must agree across splits.</p>
-<div id="cff83979" class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>food_dir <span class="op">=</span> DATA_DIR <span class="op">/</span> <span class="st">"food-transfer-learning"</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>food_train <span class="op">=</span> datasets.ImageFolder(food_dir <span class="op">/</span> <span class="st">"train"</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>food_valid <span class="op">=</span> datasets.ImageFolder(food_dir <span class="op">/</span> <span class="st">"valid"</span>)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> food_train.class_to_idx <span class="op">==</span> food_valid.class_to_idx</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame({</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"training images"</span>: pd.Series(food_train.targets).value_counts(),</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"validation images"</span>: pd.Series(food_valid.targets).value_counts(),</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>}).rename(index<span class="op">=</span><span class="bu">dict</span>(<span class="bu">enumerate</span>(food_train.classes))).sort_index())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Frozen</strong> means that the CNN weights remain unchanged; different images still produce different feature vectors. The CNN weights were learned from ImageNet. Only the scaler and logistic regression will learn from our training images. Our labels need not appear in ImageNet’s vocabulary.</p>
+<section id="the-food-dataset" class="level4">
+<h4 class="anchored" data-anchor-id="the-food-dataset">The food dataset</h4>
+<p>Our small subset of Food-101 is organized into <code>train</code> and <code>valid</code> directories, with one subdirectory per food category. <code>ImageFolder</code> reads these directory names as labels and assigns integer identifiers. The mapping must agree across splits; the assertion below checks this.</p>
+<p>Inspect examples and class counts before fitting a model. Keep duplicates and photographs of the same meal together when making splits. This example uses training and validation sets; for a final evaluation, reserve a separate test set.</p>
+<div id="cff83979" class="cell" data-execution_count="36">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>food_dir <span class="op">=</span> DATA_DIR <span class="op">/</span> <span class="st">"food-transfer-learning"</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>food_train <span class="op">=</span> datasets.ImageFolder(food_dir <span class="op">/</span> <span class="st">"train"</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>food_valid <span class="op">=</span> datasets.ImageFolder(food_dir <span class="op">/</span> <span class="st">"valid"</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> food_train.class_to_idx <span class="op">==</span> food_valid.class_to_idx</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame({</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"training images"</span>: pd.Series(food_train.targets).value_counts(),</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"validation images"</span>: pd.Series(food_valid.targets).value_counts(),</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>}).rename(index<span class="op">=</span><span class="bu">dict</span>(<span class="bu">enumerate</span>(food_train.classes))).sort_index())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">training images</th>
+<th data-quarto-table-cell-role="th">validation images</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">beet_salad</th>
+<td>40</td>
+<td>10</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">chocolate_cake</th>
+<td>38</td>
+<td>9</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">edamame</th>
+<td>40</td>
+<td>10</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">french_fries</th>
+<td>40</td>
+<td>10</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">pizza</th>
+<td>43</td>
+<td>10</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">spring_rolls</th>
+<td>41</td>
+<td>9</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">sushi</th>
+<td>41</td>
+<td>9</td>
+</tr>
+</tbody>
+</table>
+
 </div>
-<div id="01bdc61b" class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">4</span>, figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">6</span>))</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, class_name <span class="kw">in</span> <span class="bu">zip</span>(axes.flat, food_train.classes):</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    class_index <span class="op">=</span> food_train.class_to_idx[class_name]</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    image_index <span class="op">=</span> food_train.targets.index(class_index)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    image, _ <span class="op">=</span> food_train[image_index]</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    ax.imshow(image)</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    ax.set_title(class_name.replace(<span class="st">"_"</span>, <span class="st">" "</span>))</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    ax.axis(<span class="st">"off"</span>)</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>axes.flat[<span class="op">-</span><span class="dv">1</span>].axis(<span class="st">"off"</span>)</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</section>
-<section id="preprocessing-and-data-loaders" class="level3">
-<h3 class="anchored" data-anchor-id="preprocessing-and-data-loaders">Preprocessing and data loaders</h3>
-<p>For frozen feature extraction we use the deterministic preprocessing supplied with the pretrained weights for both subsets. A <code>DataLoader</code> reads images in small batches, avoiding the need to hold every transformed image in memory simultaneously.</p>
-<div id="4ebd0f06" class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>feature_datasets <span class="op">=</span> {</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    split: datasets.ImageFolder(food_dir <span class="op">/</span> split, transform<span class="op">=</span>imagenet_preprocess)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> split <span class="kw">in</span> [<span class="st">"train"</span>, <span class="st">"valid"</span>]</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>feature_loaders <span class="op">=</span> {</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"train"</span>: DataLoader(feature_datasets[<span class="st">"train"</span>], batch_size<span class="op">=</span><span class="dv">32</span>, shuffle<span class="op">=</span><span class="va">False</span>),</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"valid"</span>: DataLoader(feature_datasets[<span class="st">"valid"</span>], batch_size<span class="op">=</span><span class="dv">32</span>, shuffle<span class="op">=</span><span class="va">False</span>),</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>class_names <span class="op">=</span> feature_datasets[<span class="st">"train"</span>].classes</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</section>
-<section id="extracting-features" class="level3">
-<h3 class="anchored" data-anchor-id="extracting-features">Extracting features</h3>
-<p>We replace the classification head with <code>nn.Identity</code>, which simply returns its input. The resulting network outputs a learned feature vector rather than ImageNet class scores.</p>
-<p>Two details are important. <code>eval()</code> switches layers such as dropout and batch normalization to evaluation behaviour, while <code>torch.inference_mode()</code> avoids storing information needed only for gradient-based training. Neither operation changes the learned weights.</p>
-<p>The next cell supplies this setup and a reusable extraction helper. You can use the helper for a new dataset without redesigning the CNN. We also explicitly disable weight gradients to mark the extractor as frozen. The helper keeps feature rows and labels in the same order and returns ordinary NumPy arrays.</p>
-<div id="5a5b60d9" class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>feature_model <span class="op">=</span> models.mobilenet_v3_small(weights<span class="op">=</span>weights)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>feature_model.classifier <span class="op">=</span> nn.Identity()</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>feature_model.requires_grad_(<span class="va">False</span>)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>feature_model <span class="op">=</span> feature_model.to(DEVICE).<span class="bu">eval</span>()</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> extract_features(model, data_loader, device):</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return one feature row and one target for each image."""</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    feature_batches <span class="op">=</span> []</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    target_batches <span class="op">=</span> []</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> torch.inference_mode():</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> images, targets <span class="kw">in</span> data_loader:</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>            feature_batches.append(model(images.to(device)).cpu())</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>            target_batches.append(targets)</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>        torch.cat(feature_batches).numpy(),</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>        torch.cat(target_batches).numpy(),</span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>Z_train, y_train <span class="op">=</span> extract_features(feature_model, feature_loaders[<span class="st">"train"</span>], DEVICE)</span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>Z_valid, y_valid <span class="op">=</span> extract_features(feature_model, feature_loaders[<span class="st">"valid"</span>], DEVICE)</span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Training feature matrix: </span><span class="sc">{</span>Z_train<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Validation feature matrix: </span><span class="sc">{</span>Z_valid<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="01bdc61b" class="cell" data-execution_count="37">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">4</span>, figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">6</span>))</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, class_name <span class="kw">in</span> <span class="bu">zip</span>(axes.flat, food_train.classes):</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    class_index <span class="op">=</span> food_train.class_to_idx[class_name]</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    image_index <span class="op">=</span> food_train.targets.index(class_index)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    image, _ <span class="op">=</span> food_train[image_index]</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    ax.imshow(image)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    ax.set_title(class_name.replace(<span class="st">"_"</span>, <span class="st">" "</span>))</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    ax.axis(<span class="st">"off"</span>)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>axes.flat[<span class="op">-</span><span class="dv">1</span>].axis(<span class="st">"off"</span>)</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="17_intro_to_computer-vision_files/figure-html/cell-9-output-1.png" class="img-fluid figure-img"></p>
+</figure>
 </div>
-<p>Each row now represents one image using 576 learned features. These features are difficult to name individually, but they preserve information the pretrained network found useful across many images. We can pass this ordinary two-dimensional feature matrix to scikit-learn.</p>
-<p>Extracting validation features here does not fit anything to validation data: this is a fixed transformation using previously learned weights and deterministic preprocessing. In contrast, our scaler and logistic regression must be fitted only on training features. We can cache the extracted features and reuse them while trying classifier settings; changing the image preprocessing or backbone requires extracting them again.</p>
-</section>
-<section id="establishing-a-baseline" class="level3">
-<h3 class="anchored" data-anchor-id="establishing-a-baseline">Establishing a baseline</h3>
-<p>Before fitting logistic regression, we establish a reference point with <code>DummyClassifier</code>. Because the classes are nearly balanced, a most-frequent classifier should achieve an accuracy near one seventh.</p>
-<p>The pipeline below fits both the scaler and logistic regression on <code>Z_train</code> only. When scoring validation examples, it reuses the training means, scales, and coefficients. If we tune regularization strength or other settings, validation results guide those choices; they are not final test results.</p>
-<div id="bc2589a9" class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>dummy <span class="op">=</span> DummyClassifier(strategy<span class="op">=</span><span class="st">"most_frequent"</span>)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>dummy.fit(Z_train, y_train)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>feature_pipe <span class="op">=</span> make_pipeline(</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    StandardScaler(),</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    LogisticRegression(max_iter<span class="op">=</span><span class="dv">3000</span>, random_state<span class="op">=</span><span class="dv">42</span>),</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>feature_pipe.fit(Z_train, y_train)</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(</span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    {</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"training accuracy"</span>: [dummy.score(Z_train, y_train), feature_pipe.score(Z_train, y_train)],</span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">"validation accuracy"</span>: [dummy.score(Z_valid, y_valid), feature_pipe.score(Z_valid, y_valid)],</span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    },</span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span>[<span class="st">"most-frequent baseline"</span>, <span class="st">"pretrained features + logistic regression"</span>],</span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>The comparison—not the accuracy alone—is the useful result. A classifier trained on pretrained features can distinguish categories it was never originally trained to predict, using only a few dozen examples from each new class.</p>
-<p>Validation accuracy is still an estimate based on a small sample. It should guide development, while a separate test set should remain untouched until the workflow has been finalized.</p>
-<div id="d88ce5d4" class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">8</span>))</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>ConfusionMatrixDisplay.from_estimator(</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    feature_pipe,</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    Z_valid,</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    y_valid,</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    display_labels<span class="op">=</span>[name.replace(<span class="st">"_"</span>, <span class="st">" "</span>) <span class="cf">for</span> name <span class="kw">in</span> class_names],</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    xticks_rotation<span class="op">=</span><span class="dv">45</span>,</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span>ax,</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    colorbar<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Validation confusion matrix"</span>)</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>A confusion matrix reveals which categories are being confused. That information is hidden by overall accuracy and may suggest whether we need more representative data, a different label definition, or more adaptation of the model.</p>
-<p>Inspect individual mistakes as well: a confused pair of classes could reflect visual similarity, an ambiguous label, or an unrepresentative photograph. Because the validation loader is not shuffled, its feature rows match the order of <code>food_valid.samples</code>.</p>
-<div id="cv17-errors" class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>valid_predictions <span class="op">=</span> feature_pipe.predict(Z_valid)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>error_indices <span class="op">=</span> np.flatnonzero(valid_predictions <span class="op">!=</span> y_valid)[:<span class="dv">5</span>]</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">len</span>(error_indices):</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="bu">len</span>(error_indices), figsize<span class="op">=</span>(<span class="dv">4</span> <span class="op">*</span> <span class="bu">len</span>(error_indices), <span class="dv">4</span>), squeeze<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> ax, index <span class="kw">in</span> <span class="bu">zip</span>(axes.flat, error_indices):</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>        image_path, _ <span class="op">=</span> food_valid.samples[index]</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>        ax.imshow(Image.<span class="bu">open</span>(image_path).convert(<span class="st">"RGB"</span>))</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>        ax.set_title(<span class="ss">f"True: </span><span class="sc">{</span>class_names[y_valid[index]]<span class="sc">}</span><span class="ch">\n</span><span class="ss">Predicted: </span><span class="sc">{</span>class_names[valid_predictions[index]]<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>        ax.axis(<span class="st">"off"</span>)</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    plt.tight_layout()</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"No validation mistakes; a small validation set still leaves uncertainty."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="predicting-labels-for-new-images" class="level3">
-<h3 class="anchored" data-anchor-id="predicting-labels-for-new-images">Predicting labels for new images</h3>
+<section id="preprocessing-the-images" class="level4">
+<h4 class="anchored" data-anchor-id="preprocessing-the-images">Preprocessing the images</h4>
+<p>We apply the same fixed resizing, cropping, and colour-value transformations to training, validation, and new images. A <code>DataLoader</code> reads images in small batches so we do not need to hold all processed images in memory at once.</p>
+<div id="4ebd0f06" class="cell" data-execution_count="38">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>feature_datasets <span class="op">=</span> {</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    split: datasets.ImageFolder(food_dir <span class="op">/</span> split, transform<span class="op">=</span>imagenet_preprocess)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> split <span class="kw">in</span> [<span class="st">"train"</span>, <span class="st">"valid"</span>]</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>feature_loaders <span class="op">=</span> {</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"train"</span>: DataLoader(feature_datasets[<span class="st">"train"</span>], batch_size<span class="op">=</span><span class="dv">32</span>, shuffle<span class="op">=</span><span class="va">False</span>),</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"valid"</span>: DataLoader(feature_datasets[<span class="st">"valid"</span>], batch_size<span class="op">=</span><span class="dv">32</span>, shuffle<span class="op">=</span><span class="va">False</span>),</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>class_names <span class="op">=</span> feature_datasets[<span class="st">"train"</span>].classes</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="extracting-features" class="level4">
+<h4 class="anchored" data-anchor-id="extracting-features">Extracting features</h4>
+<p>We use the pretrained CNN to turn each image into a feature vector instead of producing ImageNet predictions. The helper below performs this step without changing the CNN’s weights. You can reuse it for your own dataset. It returns one feature row and the corresponding label for each image.</p>
+<div id="5a5b60d9" class="cell" data-execution_count="39">
+<details class="code-fold">
+<summary>Show frozen feature-extraction helper</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>feature_model <span class="op">=</span> models.mobilenet_v3_small(weights<span class="op">=</span>weights)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>feature_model.classifier <span class="op">=</span> nn.Identity()</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>feature_model.requires_grad_(<span class="va">False</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>feature_model <span class="op">=</span> feature_model.to(DEVICE).<span class="bu">eval</span>()</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> extract_features(model, data_loader, device):</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return one feature row and one target for each image."""</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    feature_batches <span class="op">=</span> []</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    target_batches <span class="op">=</span> []</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> torch.inference_mode():</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> images, targets <span class="kw">in</span> data_loader:</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>            feature_batches.append(model(images.to(device)).cpu())</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>            target_batches.append(targets)</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>        torch.cat(feature_batches).numpy(),</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>        torch.cat(target_batches).numpy(),</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div id="cv17-extract-calls" class="cell" data-execution_count="40">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>Z_train, y_train <span class="op">=</span> extract_features(feature_model, feature_loaders[<span class="st">"train"</span>], DEVICE)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>Z_valid, y_valid <span class="op">=</span> extract_features(feature_model, feature_loaders[<span class="st">"valid"</span>], DEVICE)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Training feature matrix: </span><span class="sc">{</span>Z_train<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Validation feature matrix: </span><span class="sc">{</span>Z_valid<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Training feature matrix: (283, 576)
+Validation feature matrix: (67, 576)</code></pre>
+</div>
+</div>
+<p><code>Z_train</code> contains one row per training image and one column per extracted feature; <code>y_train</code> contains the corresponding labels. Each row has 576 features because that is the output size of this particular extractor, not a number we choose.</p>
+<p>These are learned features like the hidden outputs in our earlier network, but produced by a larger CNN. We can pass this ordinary feature matrix to scikit-learn. Applying the fixed extractor to validation images does not learn from them; fitting the scaler and classifier does, so they must use only training features.</p>
+<p>We can reuse these matrices when trying different logistic-regression settings. Changing the extractor or image preprocessing requires extracting features again.</p>
+</section>
+<section id="training-and-comparing-classifiers" class="level4">
+<h4 class="anchored" data-anchor-id="training-and-comparing-classifiers">Training and comparing classifiers</h4>
+<p>A most-frequent <code>DummyClassifier</code> provides a reference score, near one seventh for these roughly balanced classes. Our pipeline then fits a scaler and logistic regression on training features only. Validation examples use the already fitted pipeline.</p>
+<div id="bc2589a9" class="cell" data-execution_count="41">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>dummy <span class="op">=</span> DummyClassifier(strategy<span class="op">=</span><span class="st">"most_frequent"</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>dummy.fit(Z_train, y_train)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>feature_pipe <span class="op">=</span> make_pipeline(</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    StandardScaler(),</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    LogisticRegression(max_iter<span class="op">=</span><span class="dv">3000</span>, random_state<span class="op">=</span><span class="dv">42</span>),</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>feature_pipe.fit(Z_train, y_train)</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"training accuracy"</span>: [dummy.score(Z_train, y_train), feature_pipe.score(Z_train, y_train)],</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">"validation accuracy"</span>: [dummy.score(Z_valid, y_valid), feature_pipe.score(Z_valid, y_valid)],</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span>[<span class="st">"most-frequent baseline"</span>, <span class="st">"pretrained features + logistic regression"</span>],</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="41">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">training accuracy</th>
+<th data-quarto-table-cell-role="th">validation accuracy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">most-frequent baseline</th>
+<td>0.151943</td>
+<td>0.149254</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">pretrained features + logistic regression</th>
+<td>1.000000</td>
+<td>0.865672</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Compare validation accuracy with the dummy baseline to assess whether the learned features help distinguish food categories. Also compare training and validation accuracy: a large gap can indicate overfitting. Because the validation set is small, avoid treating small score differences as decisive.</p>
+<div id="d88ce5d4" class="cell" data-execution_count="42">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">8</span>))</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>ConfusionMatrixDisplay.from_estimator(</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    feature_pipe,</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    Z_valid,</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    y_valid,</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    display_labels<span class="op">=</span>[name.replace(<span class="st">"_"</span>, <span class="st">" "</span>) <span class="cf">for</span> name <span class="kw">in</span> class_names],</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    xticks_rotation<span class="op">=</span><span class="dv">45</span>,</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span>ax,</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    colorbar<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Validation confusion matrix"</span>)</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="17_intro_to_computer-vision_files/figure-html/cell-14-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The confusion matrix shows which categories are confused. Inspect individual mistakes too: they may reveal visual similarity, ambiguous labels, or unrepresentative images. The unshuffled validation loader keeps feature rows in the same order as the original images.</p>
+<div id="cv17-errors" class="cell" data-execution_count="43">
+<details class="code-fold">
+<summary>Show individual validation mistakes</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>valid_predictions <span class="op">=</span> feature_pipe.predict(Z_valid)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>error_indices <span class="op">=</span> np.flatnonzero(valid_predictions <span class="op">!=</span> y_valid)[:<span class="dv">5</span>]</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">len</span>(error_indices):</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="bu">len</span>(error_indices), figsize<span class="op">=</span>(<span class="dv">4</span> <span class="op">*</span> <span class="bu">len</span>(error_indices), <span class="dv">4</span>), squeeze<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> ax, index <span class="kw">in</span> <span class="bu">zip</span>(axes.flat, error_indices):</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>        image_path, _ <span class="op">=</span> food_valid.samples[index]</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>        ax.imshow(Image.<span class="bu">open</span>(image_path).convert(<span class="st">"RGB"</span>))</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>        ax.set_title(<span class="ss">f"True: </span><span class="sc">{</span>class_names[y_valid[index]]<span class="sc">}</span><span class="ch">\n</span><span class="ss">Predicted: </span><span class="sc">{</span>class_names[valid_predictions[index]]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>        ax.axis(<span class="st">"off"</span>)</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    plt.tight_layout()</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"No validation mistakes; a small validation set still leaves uncertainty."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="17_intro_to_computer-vision_files/figure-html/cell-15-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="predicting-labels-for-new-images" class="level4">
+<h4 class="anchored" data-anchor-id="predicting-labels-for-new-images">Predicting labels for new images</h4>
 <p>Prediction must repeat the same image preprocessing and frozen feature extraction, then use the already fitted pipeline. Do not fit a new scaler or classifier to the incoming image. The helper below accepts a file path and returns one of our food labels, rather than an ImageNet label.</p>
-<div id="cv17-037" class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict_food(image_path):</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    image <span class="op">=</span> Image.<span class="bu">open</span>(image_path).convert(<span class="st">"RGB"</span>)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    inputs <span class="op">=</span> imagenet_preprocess(image).unsqueeze(<span class="dv">0</span>).to(DEVICE)</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> torch.inference_mode():</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>        features <span class="op">=</span> feature_model(inputs).cpu().numpy()</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    label_index <span class="op">=</span> <span class="bu">int</span>(feature_pipe.predict(features)[<span class="dv">0</span>])</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> class_names[label_index]</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Demonstrate on a held-out validation image; replace this path for a new photo.</span></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>example_path, true_index <span class="op">=</span> food_valid.samples[<span class="dv">0</span>]</span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"True label:"</span>, class_names[true_index])</span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Predicted label:"</span>, predict_food(example_path))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="cv17-037" class="cell" data-execution_count="44">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict_food(image_path):</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    image <span class="op">=</span> Image.<span class="bu">open</span>(image_path).convert(<span class="st">"RGB"</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    inputs <span class="op">=</span> imagenet_preprocess(image).unsqueeze(<span class="dv">0</span>).to(DEVICE)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> torch.inference_mode():</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>        features <span class="op">=</span> feature_model(inputs).cpu().numpy()</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    label_index <span class="op">=</span> <span class="bu">int</span>(feature_pipe.predict(features)[<span class="dv">0</span>])</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> class_names[label_index]</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Demonstrate on a held-out validation image; replace this path for a new photo.</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>example_path, true_index <span class="op">=</span> food_valid.samples[<span class="dv">0</span>]</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"True label:"</span>, class_names[true_index])</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Predicted label:"</span>, predict_food(example_path))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>True label: beet_salad
+Predicted label: beet_salad</code></pre>
+</div>
 </div>
 <p>The integer prediction refers to the label mapping checked earlier. The model always selects a known food category, even if we supply an unrelated image. A prediction alone is not evidence that an image belongs to one of those categories.</p>
 </section>
 </section>
-<section id="practical-considerations-and-limitations" class="level2">
-<h2 class="anchored" data-anchor-id="practical-considerations-and-limitations">Practical considerations and limitations</h2>
-<p>Pretrained models are powerful starting points, but they do not remove the need for careful problem formulation and evaluation.</p>
-<p><strong>Match preprocessing to the weights.</strong> Image size, channel order, scaling, and normalization must match what the pretrained model expects. In torchvision, the weight object’s <code>transforms()</code> method is the safest default.</p>
-<p><strong>Inspect more than overall accuracy.</strong> Per-class results and individual errors can reveal class imbalance, ambiguous labels, duplicates across splits, or a category the representation handles poorly.</p>
-<p><strong>Expect domain shift.</strong> Features learned from everyday photographs may transfer poorly to satellite imagery, pathology slides, sketches, or images produced by a different sensor. Fine-tuning cannot guarantee useful transfer.</p>
-<p><strong>Account for cost.</strong> A larger backbone may improve accuracy but require more memory, energy, and inference time. The best model is the one that satisfies the requirements of the application, not necessarily the one with the highest benchmark score.</p>
-<p><strong>Remember the source data.</strong> A pretrained model can inherit gaps, stereotypes, and labelling choices from its training data. Evaluate performance on relevant groups and conditions rather than assuming that broad pretraining makes the model universally reliable.</p>
-<p><strong>Protect the split.</strong> Keep duplicates and images of the same subject or scene together. A high score on nearly repeated images may tell us little about performance on new subjects.</p>
-<p><strong>Use consistent inputs.</strong> The example uses deterministic preprocessing for training, validation, and new images. Data augmentation creates variations such as random crops during training, but those variations must preserve the label. It is not required for this frozen-feature baseline; random transformations at evaluation time would make comparisons harder to interpret.</p>
-<section id="when-frozen-features-are-insufficient" class="level3">
-<h3 class="anchored" data-anchor-id="when-frozen-features-are-insufficient">When frozen features are insufficient</h3>
-<p>A fixed representation may miss distinctions important to our labels, especially when the target images differ from ordinary photographs. <strong>Fine-tuning</strong> continues training some or all pretrained weights on the target training data, alongside a classifier for the new labels. It requires more computation and training choices, and can overfit a small dataset.</p>
-<p>We will not implement fine-tuning here. First establish a frozen-feature baseline and inspect its errors. More representative labelled data, clearer labels, or a different pretrained representation may be useful alternatives; fine-tuning is not automatically better.</p>
+<section id="practical-considerations-and-limitations" class="level3">
+<h3 class="anchored" data-anchor-id="practical-considerations-and-limitations">Practical considerations and limitations</h3>
+<p><strong>Transfer depends on the images.</strong> A representation learned from everyday photographs may work poorly on satellite images, sketches, or medical images. This difference between training conditions and use is called <strong>domain shift</strong>. Pretrained features can also inherit biases and gaps from their source data, so evaluate on images representative of the intended use.</p>
+<p><strong>Consider computational cost.</strong> A larger feature extractor may improve accuracy but need more time and memory. Start with a manageable model and use validation results and error analysis to decide whether a change is worthwhile.</p>
+<p><strong>Fine-tuning</strong> updates some or all pretrained CNN weights using the new training data, rather than keeping the feature extractor fixed. It is outside this course’s scope and is not automatically better, especially with a small dataset.</p>
 <div class="callout callout-style-default callout-important callout-titled" title="The Golden Rule still applies">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -874,47 +1098,21 @@ P(y=k\mid\mathbf{x}) = \frac{e^{z_k}}{\sum_{j=1}^{K}e^{z_j}}.
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Transfer learning does not change the role of the data subsets. Use training data to update weights, validation data to choose the model, layers, learning rate, augmentation, and number of epochs, and test data once for final evaluation. Looking at test performance after every epoch turns the test set into validation data.</p>
+<p>Fit the scaler and classifier on training features, choose settings using validation data, and use test data once for final evaluation. Keep preprocessing consistent across splits and new images.</p>
 </div>
 </div>
 </section>
-</section>
-<section id="optional-object-detection-with-a-pretrained-model" class="level2">
-<h2 class="anchored" data-anchor-id="optional-object-detection-with-a-pretrained-model">Optional: object detection with a pretrained model</h2>
-<p>An object detector predicts both class labels and locations. Systems in the YOLO family are commonly used examples. Their output for an image is a collection of bounding boxes, confidence scores, and class labels rather than one probability distribution for the entire image.</p>
-<p>Using a pretrained detector directly illustrates the same limitation we encountered with ImageNet classification: the detector can only name categories in its pretrained vocabulary. Adapting it to new object categories requires labelled bounding boxes and a task-specific fine-tuning workflow. Object detection is therefore related to image classification, but it is not simply multiclass classification applied several times.</p>
 </section>
 <section id="exercises" class="level2">
 <h2 class="anchored" data-anchor-id="exercises">Exercises</h2>
-<section id="exercise-16.1-what-learns-from-our-labels" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-16.1-what-learns-from-our-labels">Exercise 16.1: What learns from our labels?</h3>
+<section id="exercise-17.1-what-learns-from-our-labels" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-17.1-what-learns-from-our-labels">Exercise 17.1: What learns from our labels?</h3>
 <p>You use a CNN pretrained on ImageNet to extract features from 300 labelled plant photographs, then fit a scaler and logistic regression to classify five species.</p>
 <ol type="1">
 <li>Which components learned from ImageNet, and which learn from the plant training set?</li>
 <li>Must the five species appear among the original ImageNet labels? Explain.</li>
 <li>After extracting features, you change logistic regression’s <code>C</code>. Must you run the CNN again?</li>
 </ol>
-<div class="callout callout-style-default callout-tip callout-titled" title="Discussion">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Discussion
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-3" class="callout-3-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>The CNN weights were learned from ImageNet and stay fixed. The scaler learns feature means and scales from the plant training set, and logistic regression learns coefficients and intercepts from its features and labels. The new labels need not match ImageNet’s vocabulary because we train a new classifier. Changing <code>C</code> does not change the extracted features, so they can be reused.</p>
-</div>
-</div>
-</div>
-</section>
-<section id="exercise-16.2-diagnose-the-workflow" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-16.2-diagnose-the-workflow">Exercise 16.2: Diagnose the workflow</h3>
-<p>A student randomly splits individual frames from videos of plants into training and test sets. They extract frozen features, fit a scaler on all the features, and try ten values of logistic regression’s <code>C</code>, keeping the one with the highest test accuracy. They apply random crops whenever they evaluate the model.</p>
-<p>Identify the problems and propose a corrected workflow. Is extracting frozen features from the test images itself a problem?</p>
 <div class="callout callout-style-default callout-tip callout-titled" title="Discussion">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -927,26 +1125,45 @@ P(y=k\mid\mathbf{x}) = \frac{e^{z_k}}{\sum_{j=1}^{K}e^{z_j}}.
 </div>
 <div id="callout-4" class="callout-4-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>Nearby frames from the same video are related, so split by plant or video as appropriate for the intended use. Reserve validation data for selecting <code>C</code> and test data for final evaluation. Fit the scaler only on training features and reuse it on other splits. Use deterministic evaluation preprocessing. Applying the fixed pretrained extractor to test images is not itself fitting to test data; using test results to choose settings is the problem.</p>
+<p>The CNN weights were learned from ImageNet and stay fixed. The scaler learns feature means and scales from the plant training set, and logistic regression learns coefficients and intercepts from its features and labels. The new labels need not match ImageNet’s vocabulary because we train a new classifier. Changing <code>C</code> does not change the extracted features, so they can be reused.</p>
 </div>
 </div>
 </div>
 </section>
-<section id="exercise-16.3-adapt-the-workflow-to-new-labels" class="level3">
-<h3 class="anchored" data-anchor-id="exercise-16.3-adapt-the-workflow-to-new-labels">Exercise 16.3: Adapt the workflow to new labels</h3>
+<section id="exercise-17.2-diagnose-the-workflow" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-17.2-diagnose-the-workflow">Exercise 17.2: Diagnose the workflow</h3>
+<p>A student randomly splits individual frames from videos of plants into training and test sets. They extract frozen features, fit a scaler on all the features, and try ten values of logistic regression’s <code>C</code>, keeping the one with the highest test accuracy.</p>
+<p>Identify the problems and propose a corrected workflow. Is extracting frozen features from the test images itself a problem?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Discussion">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Discussion
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Nearby frames from the same video are related, so split by plant or video as appropriate for the intended use. Reserve validation data for selecting <code>C</code> and test data for final evaluation. Fit the scaler only on training features and reuse it on other splits. Applying the fixed pretrained extractor to test images is not itself fitting to test data; using test results to choose settings is the problem.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="optional-practice-adapt-the-workflow-to-new-labels" class="level3">
+<h3 class="anchored" data-anchor-id="optional-practice-adapt-the-workflow-to-new-labels">Optional practice: Adapt the workflow to new labels</h3>
 <p>Choose a small labelled image dataset with categories different from the food example. Before fitting anything, explain how you will split it and predict which categories may be confused. Compare a most-frequent baseline with logistic regression on frozen pretrained features. Inspect up to five validation mistakes and show the images with their true and predicted labels.</p>
-<p>Explain one change you would try next based on those mistakes. Discuss the size of the validation set, computational cost, and whether the source and target images appear similar. Finally, predict a label for a new image using the same preprocessing, extractor, and fitted classifier. A new image without a known target demonstrates prediction, but does not measure accuracy.</p>
+<p>Explain one change you would try next based on those mistakes. Discuss the size of the validation set, computational cost, and whether the new images resemble those used for pretraining. Finally, predict a label for a new image using the same preprocessing, extractor, and fitted classifier. A new image without a known target demonstrates prediction, but does not measure accuracy.</p>
 </section>
 </section>
 <section id="summary" class="level2">
 <h2 class="anchored" data-anchor-id="summary">Summary</h2>
 <ul>
-<li>Neural networks learn intermediate features by combining weighted sums and nonlinear activations. CNNs use shared local filters to exploit image structure.</li>
-<li>Training image representations can be expensive, but we can often reuse features learned on a large source dataset.</li>
-<li>Our workflow keeps a pretrained CNN fixed and trains logistic regression on its feature vectors. The new classifier learns our target labels, even when those labels differ from ImageNet’s.</li>
-<li>Only the scaler and logistic regression are fitted to our training images; the pretrained CNN weights stay fixed.</li>
-<li>Frozen features are a useful starting point when labelled data or computation is limited. Their usefulness depends on how well the pretrained representation suits the target images.</li>
-<li>Compare against a baseline, inspect errors, and use validation evidence to decide what to change. Consistent preprocessing, careful splits, and an untouched final test set remain essential.</li>
+<li>Neural networks combine weighted sums and nonlinear activations to learn useful features. CNNs use shared local filters for images.</li>
+<li>Pretrained classifiers can be used immediately, but their original labels may not match our task.</li>
+<li>Frozen feature extraction keeps the CNN fixed and trains a new classifier for our labels. Here, only the scaler and logistic regression learn from our training images.</li>
+<li>Compare against a baseline, inspect errors, and protect the training, validation, and test split. Useful transfer depends on the target images and available computation.</li>
 </ul>
 
 
