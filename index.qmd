@@ -47,9 +47,11 @@ The course emphasizes not only how to fit models, but also how to formulate mach
 
 These notes have evolved over multiple offerings of CPSC 330 and have benefited from the contributions and feedback of instructors, teaching assistants, and students.
 
-The original course notes were developed by Mike Gelbart, who taught the first two offerings of CPSC 330. Varada Kolhatkar subsequently expanded and substantially revised the notes, added examples, and created accompanying videos.
+The original course notes were developed by **Mike Gelbart**, who taught the first two offerings of CPSC 330. Varada Kolhatkar subsequently expanded and substantially revised the notes, added new topics, and created accompanying videos.
 
-Over the years, several instructors (Giulia Toti, Firas Moosvi, Mehrdad Oveisi, and Mathias Lécuyer), teaching assistants, and students have contributed to the course materials and provided valuable feedback that has helped improve these notes. Thank you all! 
+Over the years, several instructors (**Giulia Toti, Firas Moosvi, Mehrdad Oveisi, and Mathias Lécuyer**), teaching assistants, and students have contributed to the course materials and provided valuable feedback that has helped improve these notes. Thank you all! 
+
+OpenAI's Codex was used to adapt the lecture notes into textbook format and to revise the prose for clarity and flow. All revisions were reviewed by the author (Varada Kolhatkar), who takes responsibility for the final content.
 
 ## License {.unnumbered}
 
@@ -72,7 +74,7 @@ license terms.
 Under the following terms:
 
 * **Attribution**---You must give appropriate credit (mentioning that
-  your work is derived from work that is Copyright © Varada Kolhatkar, Mike  Gelbart, where practical, linking to https://ubc-cs.github.io/cpsc330-book/), provide a [link to the
+  your work is derived from work that is Copyright © 2026 Varada Kolhatkar, where practical, linking to https://ubc-cs.github.io/cpsc330-book/), provide a [link to the
   license][cc-by-human], and indicate if changes were made. You may do
   so in any reasonable manner, but not in any way that suggests the
   licensor endorses you or your use.
@@ -99,7 +101,7 @@ MIT license.
 
 MIT License
 
-Copyright (c) 2024 Varada Kolhatkar and Mike Gelbart
+Copyright (c) 2026 Varada Kolhatkar
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
