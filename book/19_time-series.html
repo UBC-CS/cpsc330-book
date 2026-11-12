@@ -1,0 +1,2140 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.11.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Chapter 19: Time series – CPSC 330: Applied Machine Learning</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../book/18_natural-language-processing.html" rel="prev">
+<link href="../book/img/UBC-CS-logo.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-82700a3bea9d6cd17a4d064348abcb37.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Site">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">CPSC 330: Applied Machine Learning</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../index.html" aria-current="page"> 
+<span class="menu-text">Book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../demos.html"> 
+<span class="menu-text">Demos</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" aria-label="Toolbar">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/17_intro_to_computer-vision.html">Working with Different Data Types</a></li><li class="breadcrumb-item"><a href="../book/19_time-series.html">Chapter 19: Time series</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="Section">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../book/img/UBC-CS-logo.png" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../book/img/UBC-CS-logo.png" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../learning-objectives.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Detailed Learning Objectives</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/01_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1: Course Introduction</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-1-label">Foundations and Supervised Learning</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/02_terminology-baselines-decision-trees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2: From Data to a First Model</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/03_ml-fundamentals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3: Machine Learning Fundamentals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/04_kNNs-SVM-RBF.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4: Similarity-Based Models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/05_preprocessing-pipelines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5: Preprocessing and Pipelines</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/06_column-transformer-text-feats.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6: Column Transformers and Text Features</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/07_linear-models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7: Linear Models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/08_hyperparameter-optimization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8: Hyperparameter Optimization</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/09_classification-metrics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9: Classification Metrics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/10_regression-metrics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10: Regression Metrics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/11_ensembles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11: Ensembles</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/12_feat-importances.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 12: Feature Importances and Model Interpretation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/13_feature-engineering-selection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 13: Feature Engineering and Selection</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-2-label">Unsupervised Learning and Recommendation</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/14_K-Means.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 14: K-Means Clustering</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/15_DBSCAN-hierarchical.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 15: DBSCAN and Hierarchical Clustering</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/16_recommender-systems.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 16: Recommender Systems</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-3-label">Working with Different Data Types</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/17_intro_to_computer-vision.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 17: Introduction to Computer Vision</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/18_natural-language-processing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 18: Natural Language Processing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/19_time-series.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Chapter 19: Time series</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#learning-outcomes" id="toc-learning-outcomes" class="nav-link active" data-scroll-target="#learning-outcomes">Learning outcomes</a></li>
+  <li><a href="#from-supervised-learning-to-forecasting" id="toc-from-supervised-learning-to-forecasting" class="nav-link" data-scroll-target="#from-supervised-learning-to-forecasting">From supervised learning to forecasting</a></li>
+  <li><a href="#evaluating-forecasts" id="toc-evaluating-forecasts" class="nav-link" data-scroll-target="#evaluating-forecasts">Evaluating forecasts</a>
+  <ul>
+  <li><a href="#validation-that-moves-forward-in-time" id="toc-validation-that-moves-forward-in-time" class="nav-link" data-scroll-target="#validation-that-moves-forward-in-time">Validation that moves forward in time</a></li>
+  </ul></li>
+  <li><a href="#engineering-temporal-features" id="toc-engineering-temporal-features" class="nav-link" data-scroll-target="#engineering-temporal-features">Engineering temporal features</a>
+  <ul>
+  <li><a href="#start-with-a-numeric-timestamp" id="toc-start-with-a-numeric-timestamp" class="nav-link" data-scroll-target="#start-with-a-numeric-timestamp">Start with a numeric timestamp</a></li>
+  <li><a href="#calendar-features-and-model-choice" id="toc-calendar-features-and-model-choice" class="nav-link" data-scroll-target="#calendar-features-and-model-choice">Calendar features and model choice</a></li>
+  <li><a href="#learning-from-recent-observations" id="toc-learning-from-recent-observations" class="nav-link" data-scroll-target="#learning-from-recent-observations">Learning from recent observations</a></li>
+  <li><a href="#combining-calendar-and-recent-history" id="toc-combining-calendar-and-recent-history" class="nav-link" data-scroll-target="#combining-calendar-and-recent-history">Combining calendar and recent history</a></li>
+  <li><a href="#one-final-test" id="toc-one-final-test" class="nav-link" data-scroll-target="#one-final-test">One final test</a></li>
+  </ul></li>
+  <li><a href="#forecasting-multiple-steps-ahead" id="toc-forecasting-multiple-steps-ahead" class="nav-link" data-scroll-target="#forecasting-multiple-steps-ahead">Forecasting multiple steps ahead</a>
+  <ul>
+  <li><a href="#recursive-forecasting" id="toc-recursive-forecasting" class="nav-link" data-scroll-target="#recursive-forecasting">Recursive forecasting</a></li>
+  <li><a href="#direct-forecasting" id="toc-direct-forecasting" class="nav-link" data-scroll-target="#direct-forecasting">Direct forecasting</a></li>
+  </ul></li>
+  <li><a href="#seasonality-trends-and-extrapolation" id="toc-seasonality-trends-and-extrapolation" class="nav-link" data-scroll-target="#seasonality-trends-and-extrapolation">Seasonality, trends, and extrapolation</a>
+  <ul>
+  <li><a href="#choosing-an-approach" id="toc-choosing-an-approach" class="nav-link" data-scroll-target="#choosing-an-approach">Choosing an approach</a></li>
+  </ul></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/17_intro_to_computer-vision.html">Working with Different Data Types</a></li><li class="breadcrumb-item"><a href="../book/19_time-series.html">Chapter 19: Time series</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Chapter 19: Time series</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="learning-outcomes" class="level2 unnumbered callout-lo">
+<h2 class="unnumbered anchored" data-anchor-id="learning-outcomes">Learning outcomes</h2>
+<p>By the end of this chapter, you should be able to:</p>
+<ul>
+<li>Define a forecasting task in terms of prediction time, available information, and forecast horizon.</li>
+<li>Use chronological holdouts and temporal cross-validation to evaluate forecasts.</li>
+<li>Construct calendar and lag features and choose representations suited to a model.</li>
+<li>Distinguish repeated one-step forecasting from recursive and direct multi-step forecasting.</li>
+<li>Explain seasonality, trends, and the limits of extrapolation.</li>
+</ul>
+</section>
+<p><strong>Imports</strong></p>
+<div id="1693c183" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-12T04:26:49.521806Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-12T04:26:49.521758Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-12T04:26:50.369800Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-12T04:26:50.369371Z&quot;}}" data-execution_count="1">
+<details class="code-fold">
+<summary>Show imports and setup</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mglearn</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.base <span class="im">import</span> clone</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.compose <span class="im">import</span> ColumnTransformer</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestRegressor</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.impute <span class="im">import</span> SimpleImputer</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> Ridge</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> mean_absolute_error</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> TimeSeriesSplit, cross_val_score, train_test_split</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> make_pipeline</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> OneHotEncoder, PolynomialFeatures</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>DATA_DIR <span class="op">=</span> Path(<span class="st">"data"</span>) <span class="cf">if</span> Path(<span class="st">"data"</span>).is_dir() <span class="cf">else</span> Path(<span class="st">"book"</span>) <span class="op">/</span> <span class="st">"data"</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">"font.size"</span>] <span class="op">=</span> <span class="dv">12</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<section id="from-supervised-learning-to-forecasting" class="level2">
+<h2 class="anchored" data-anchor-id="from-supervised-learning-to-forecasting">From supervised learning to forecasting</h2>
+<p>Suppose you manage a bicycle rental station in New York City. You want to predict how many rentals will occur during a future three-hour period so you can plan where bikes will be needed. Rental demand helps with planning, although predicting how many bikes will remain also requires information about returns and the station’s current inventory.</p>
+<p>You already know several regression models. What would you use as features, and how would you evaluate the predictions?</p>
+<p>We will use the Citi Bike example from <em>Introduction to Machine Learning with Python</em>, available through <code>mglearn</code>. Each timestamp marks the beginning of a three-hour rental-count interval.</p>
+<div id="5b68fff7" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-12T04:26:50.370945Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-12T04:26:50.370848Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-12T04:26:50.432992Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-12T04:26:50.432610Z&quot;}}" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>rentals <span class="op">=</span> mglearn.datasets.load_citibike().rename(<span class="st">"rentals"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>display(rentals.head())</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>rentals<span class="sc">.</span>index<span class="sc">.</span><span class="bu">min</span>()<span class="sc">}</span><span class="ss"> to </span><span class="sc">{</span>rentals<span class="sc">.</span>index<span class="sc">.</span><span class="bu">max</span>()<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> rentals.plot(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">3</span>), ylabel<span class="op">=</span><span class="st">"Rentals"</span>, xlabel<span class="op">=</span><span class="st">"Interval start"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Bike rentals at one station, August 2015"</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>starttime
+2015-08-01 00:00:00     3
+2015-08-01 03:00:00     0
+2015-08-01 06:00:00     9
+2015-08-01 09:00:00    41
+2015-08-01 12:00:00    39
+Freq: 3h, Name: rentals, dtype: int64</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2015-08-01 00:00:00 to 2015-08-31 21:00:00</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="19_time-series_files/figure-html/cell-3-output-3.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>What patterns do you notice? Demand changes with the time of day, and weekdays differ from weekends. These recurring patterns are examples of <strong>seasonality</strong>. Here, seasonality can be daily or weekly; it need not refer to seasons of the year.</p>
+<p>A <strong>time series</strong> records observations in time order. Nearby observations often carry information about one another: a busy rental period may follow another busy period. This temporal dependence is useful information, but our familiar regressors do not use row order automatically. We must give them suitable features.</p>
+<p>For our main task, we make a prediction at the beginning of each three-hour interval, using rental counts from completed intervals and calendar information for the interval ahead. We assume completed counts are available immediately. The <strong>forecast horizon</strong> describes how far ahead we predict. If counts arrive with a delay, our features must respect that delay too.</p>
+<p>This is a <strong>univariate</strong> series: we observe one variable, rental count, over time. Recording weather as well would give us multiple variables. Recording rentals at many stations would give us multiple related series. A hierarchy adds aggregation relationships, such as station totals adding up to city totals. These distinctions matter when constructing lags and evaluating models.</p>
+<p>We will adapt the supervised learning tools we already know. Specialized time-series models are another option, but they are outside this chapter’s scope.</p>
+</section>
+<section id="evaluating-forecasts" class="level2">
+<h2 class="anchored" data-anchor-id="evaluating-forecasts">Evaluating forecasts</h2>
+<p>How would you split this dataset? Our usual random split puts earlier and later observations in both sets. Let’s inspect what that means.</p>
+<div id="669dcab0" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-12T04:26:50.433944Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-12T04:26:50.433883Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-12T04:26:50.436133Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-12T04:26:50.435715Z&quot;}}" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>random_train, random_test <span class="op">=</span> train_test_split(rentals, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">123</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Latest training interval:"</span>, random_train.index.<span class="bu">max</span>())</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Earliest test interval:"</span>, random_test.index.<span class="bu">min</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Latest training interval: 2015-08-31 21:00:00
+Earliest test interval: 2015-08-01 12:00:00</code></pre>
+</div>
+</div>
+<p>Some training observations occur after test observations. This does not reproduce learning from the past to forecast the future. For this forecasting task, we instead hold out the last eight days and train on the first 23 days.</p>
+<div id="7fafd8b3" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-12T04:26:50.437036Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-12T04:26:50.436973Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-12T04:26:50.473599Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-12T04:26:50.473276Z&quot;}}" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>n_train <span class="op">=</span> <span class="dv">184</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>train <span class="op">=</span> rentals.iloc[:n_train]</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>test <span class="op">=</span> rentals.iloc[n_train:]</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> train.plot(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">3</span>), label<span class="op">=</span><span class="st">"Training"</span>, ylabel<span class="op">=</span><span class="st">"Rentals"</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>test.plot(ax<span class="op">=</span>ax, label<span class="op">=</span><span class="st">"Final test"</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="19_time-series_files/figure-html/cell-5-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="validation-that-moves-forward-in-time" class="level3">
+<h3 class="anchored" data-anchor-id="validation-that-moves-forward-in-time">Validation that moves forward in time</h3>
+<p>We still need to compare features and models without repeatedly consulting the final test set. <code>TimeSeriesSplit</code> constructs folds in which training observations precede validation observations. Its default training window expands as more observations become available. For this regularly spaced series, row counts also correspond to elapsed time.</p>
+<div id="44381044" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-12T04:26:50.474582Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-12T04:26:50.474528Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-12T04:26:50.476386Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-12T04:26:50.476052Z&quot;}}" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>cv <span class="op">=</span> TimeSeriesSplit(n_splits<span class="op">=</span><span class="dv">3</span>, test_size<span class="op">=</span><span class="dv">32</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> fold, (fit_rows, valid_rows) <span class="kw">in</span> <span class="bu">enumerate</span>(cv.split(train), start<span class="op">=</span><span class="dv">1</span>):</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Fold </span><span class="sc">{</span>fold<span class="sc">}</span><span class="ss">: train </span><span class="sc">{</span>fit_rows[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">–</span><span class="sc">{</span>fit_rows[<span class="op">-</span><span class="dv">1</span>]<span class="sc">}</span><span class="ss">, "</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>          <span class="ss">f"validate </span><span class="sc">{</span>valid_rows[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">–</span><span class="sc">{</span>valid_rows[<span class="op">-</span><span class="dv">1</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Fold 1: train 0–87, validate 88–119
+Fold 2: train 0–119, validate 120–151
+Fold 3: train 0–151, validate 152–183</code></pre>
+</div>
+</div>
+<p>We will compare models using <strong>mean absolute error (MAE)</strong>, measured in rentals per interval. Lower is better. Before fitting a model, establish simple reference forecasts. A <strong>persistence</strong> forecast repeats the last observed count. A <strong>seasonal naive</strong> forecast repeats the count from the same interval one day earlier.</p>
+<p>Our validation setup predicts one interval at a time. Observed counts become available between predictions, although the fitted model stays fixed during each validation fold. Therefore a later validation row may use an earlier validation count as a lag. That would be unavailable if we forecast the entire validation period at its beginning.</p>
+<div id="5d79270b" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-12T04:26:50.477217Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-12T04:26:50.477155Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-12T04:26:50.487570Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-12T04:26:50.487288Z&quot;}}" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>baseline_predictions <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Previous interval"</span>: rentals.shift(<span class="dv">1</span>),</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Same interval yesterday"</span>: rentals.shift(<span class="dv">8</span>),</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>baseline_scores <span class="op">=</span> {}</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name <span class="kw">in</span> baseline_predictions:</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    errors <span class="op">=</span> []</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _, valid_rows <span class="kw">in</span> cv.split(train):</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>        errors.append(mean_absolute_error(</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>            train.iloc[valid_rows], baseline_predictions[name].iloc[valid_rows]</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>        ))</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    baseline_scores[name] <span class="op">=</span> np.mean(errors)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>display(pd.Series(baseline_scores, name<span class="op">=</span><span class="st">"Validation MAE"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>Previous interval          13.041667
+Same interval yesterday     7.677083
+Name: Validation MAE, dtype: float64</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Think it through
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A model uses yesterday’s rentals to predict today’s rentals. Is it valid to use observed rentals from the validation period?</p>
+<p>It depends on the prediction task. They are available for later predictions if observations arrive each day. They are unavailable when forecasting the whole period in advance. A chronological split alone does not settle this question.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="engineering-temporal-features" class="level2">
+<h2 class="anchored" data-anchor-id="engineering-temporal-features">Engineering temporal features</h2>
+<section id="start-with-a-numeric-timestamp" class="level3">
+<h3 class="anchored" data-anchor-id="start-with-a-numeric-timestamp">Start with a numeric timestamp</h3>
+<p>A timestamp is not yet a useful numerical representation for every model. One possibility is elapsed seconds since the Unix epoch, often called POSIX time. Will a random forest learn the repeating rental pattern from this single increasing number? Predict the shape of its validation predictions before running the example.</p>
+<p>Each comparison below plots observed and predicted rentals on the same last validation fold. The plot shows the final week of its training window and the following four validation days, with identical axes across models. All earlier training rows are still used for fitting. Training predictions show what the model can fit; validation predictions show which patterns carry forward. The printed cross-validation MAE averages over all three folds. The final test period remains untouched.</p>
+<div id="65c560bf" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-12T04:26:50.488395Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-12T04:26:50.488345Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-12T04:26:50.640462Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-12T04:26:50.640108Z&quot;}}" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Explicitly request seconds; do not assume the datetime storage resolution.</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>calendar <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"elapsed_seconds"</span>: rentals.index.as_unit(<span class="st">"s"</span>).asi8,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"hour"</span>: rentals.index.hour,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"weekday"</span>: rentals.index.dayofweek,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>}, index<span class="op">=</span>rentals.index)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>y_train <span class="op">=</span> train.to_numpy()</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>validation_results <span class="op">=</span> {}</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Use the same last validation fold for every illustration.</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Cross-validation scores still average over all three folds.</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>plot_fit_rows, plot_valid_rows <span class="op">=</span> <span class="bu">list</span>(cv.split(train))[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> compare(name, model, features):</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> <span class="op">-</span>cross_val_score(</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>        model, features.iloc[:n_train], y_train,</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>        cv<span class="op">=</span>cv, scoring<span class="op">=</span><span class="st">"neg_mean_absolute_error"</span>,</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>    validation_results[name] <span class="op">=</span> scores.mean()</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>    fitted <span class="op">=</span> clone(model).fit(features.iloc[plot_fit_rows], train.iloc[plot_fit_rows])</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>    fit_predictions <span class="op">=</span> fitted.predict(features.iloc[plot_fit_rows])</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>    valid_predictions <span class="op">=</span> fitted.predict(features.iloc[plot_valid_rows])</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>    fit_mae <span class="op">=</span> mean_absolute_error(train.iloc[plot_fit_rows], fit_predictions)</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>    valid_mae <span class="op">=</span> mean_absolute_error(train.iloc[plot_valid_rows], valid_predictions)</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>    fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">11</span>, <span class="fl">3.5</span>))</span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>    ax.plot(train.index[plot_fit_rows], train.iloc[plot_fit_rows],</span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>            color<span class="op">=</span><span class="st">"C0"</span>, label<span class="op">=</span><span class="st">"Training observations"</span>, alpha<span class="op">=</span><span class="fl">0.65</span>)</span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>    ax.plot(train.index[plot_valid_rows], train.iloc[plot_valid_rows],</span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>            color<span class="op">=</span><span class="st">"C1"</span>, label<span class="op">=</span><span class="st">"Validation observations"</span>, alpha<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>    ax.plot(train.index[plot_fit_rows], fit_predictions, <span class="st">"--"</span>,</span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>            color<span class="op">=</span><span class="st">"C2"</span>, label<span class="op">=</span><span class="st">"Training predictions"</span>)</span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>    ax.plot(train.index[plot_valid_rows], valid_predictions, <span class="st">"--"</span>,</span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>            color<span class="op">=</span><span class="st">"C3"</span>, label<span class="op">=</span><span class="st">"Validation predictions"</span>)</span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>    boundary <span class="op">=</span> train.index[plot_valid_rows[<span class="dv">0</span>]]</span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>    ax.axvline(boundary, color<span class="op">=</span><span class="st">"0.4"</span>, linestyle<span class="op">=</span><span class="st">":"</span>, label<span class="op">=</span><span class="st">"Validation begins"</span>)</span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Zoom to the last training week and all four validation days.</span></span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>    ax.set_xlim(boundary <span class="op">-</span> pd.Timedelta(days<span class="op">=</span><span class="dv">7</span>), train.index[plot_valid_rows[<span class="op">-</span><span class="dv">1</span>]])</span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>    ax.set_ylim(<span class="op">-</span><span class="dv">5</span>, train.<span class="bu">max</span>() <span class="op">*</span> <span class="fl">1.1</span>)</span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>    ax.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"Interval start"</span>, ylabel<span class="op">=</span><span class="st">"Rentals"</span>, title<span class="op">=</span>(</span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f"</span><span class="sc">{</span>name<span class="sc">}</span><span class="ch">\n</span><span class="ss">Illustrated fold MAE: train </span><span class="sc">{</span>fit_mae<span class="sc">:.2f}</span><span class="ss">, validation </span><span class="sc">{</span>valid_mae<span class="sc">:.2f}</span><span class="ss">"</span></span>
+<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>    ))</span>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a>    ax.legend(loc<span class="op">=</span><span class="st">"upper left"</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">1.01</span>, <span class="dv">1</span>))</span>
+<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a>    fig.autofmt_xdate()</span>
+<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a>    plt.show()</span>
+<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Mean cross-validation MAE: </span><span class="sc">{</span>scores<span class="sc">.</span>mean()<span class="sc">:.2f}</span><span class="ss"> rentals"</span>)</span>
+<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> fitted</span>
+<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a>forest <span class="op">=</span> RandomForestRegressor(n_estimators<span class="op">=</span><span class="dv">100</span>, random_state<span class="op">=</span><span class="dv">123</span>)</span>
+<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a>timestamp_model <span class="op">=</span> compare(<span class="st">"Forest: timestamp"</span>, forest, calendar[[<span class="st">"elapsed_seconds"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="19_time-series_files/figure-html/cell-8-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Mean cross-validation MAE: 11.40 rentals</code></pre>
+</div>
+</div>
+<p>All validation timestamps are later than the training timestamps. A regression tree sends these values into the same outermost leaf, whose prediction is an average of training targets. Averaging across trees still gives a constant prediction here.</p>
+<p>A standard regression forest cannot extend an increasing or decreasing relationship beyond its learned partitions. It can accept new feature values, but it does not extrapolate a trend from this timestamp. We need features that expose the recurring patterns instead.</p>
+</section>
+<section id="calendar-features-and-model-choice" class="level3">
+<h3 class="anchored" data-anchor-id="calendar-features-and-model-choice">Calendar features and model choice</h3>
+<p>The plot suggests that hour and weekday matter. These features recur in future intervals, so a forest can reuse patterns learned from earlier days.</p>
+<div id="076e3d49" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-12T04:26:50.641348Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-12T04:26:50.641291Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-12T04:26:50.783398Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-12T04:26:50.783035Z&quot;}}" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>hour_model <span class="op">=</span> compare(<span class="st">"Forest: hour"</span>, forest, calendar[[<span class="st">"hour"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="19_time-series_files/figure-html/cell-9-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Mean cross-validation MAE: 6.97 rentals</code></pre>
+</div>
+</div>
+<p>The hour-only model repeats the same daily profile. It can describe busy and quiet hours, but must use that same pattern on weekdays and weekends. Look at the training predictions: the missing day-to-day variation is a limitation of the representation, not simply a failure to generalize.</p>
+<p>What additional calendar information could let the model distinguish a weekend afternoon from a weekday afternoon? Let’s add the day of the week.</p>
+<div id="487d6b41" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-12T04:26:50.784304Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-12T04:26:50.784247Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-12T04:26:50.933244Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-12T04:26:50.932837Z&quot;}}" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>calendar_features <span class="op">=</span> calendar[[<span class="st">"hour"</span>, <span class="st">"weekday"</span>]]</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>calendar_forest_model <span class="op">=</span> compare(<span class="st">"Forest: hour + weekday"</span>, forest, calendar_features)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="19_time-series_files/figure-html/cell-10-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Mean cross-validation MAE: 4.36 rentals</code></pre>
+</div>
+</div>
+<p>Now the forest can use both hour and weekday in its splits. Compare the shapes of the daily peaks with the previous plot, and check the validation error rather than assuming that every added feature helps.</p>
+<p>Do we need a forest to use these two features? Let’s try Ridge with exactly the same numeric inputs. Before running it, consider what one coefficient for hour and one for weekday allow the model to express.</p>
+<div id="b17fc3dd" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-12T04:26:50.934186Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-12T04:26:50.934130Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-12T04:26:50.986106Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-12T04:26:50.985781Z&quot;}}" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>numeric_ridge_model <span class="op">=</span> compare(<span class="st">"Ridge: numeric calendar"</span>, Ridge(), calendar_features)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="19_time-series_files/figure-html/cell-11-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Mean cross-validation MAE: 10.00 rentals</code></pre>
+</div>
+</div>
+<p>Why might Ridge struggle even on the training data? Numeric hour gives it one coefficient: each additional hour changes the prediction by the same amount. That cannot describe morning and evening peaks. Numeric weekday imposes a similarly restrictive relationship.</p>
+<p>One-hot encoding gives each hour and weekday its own effect. It does not explicitly tell the model that 21:00 and 00:00 are close in time. It does allow a separate prediction contribution for each observed hour.</p>
+<div id="db35a9d9" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-12T04:26:50.987003Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-12T04:26:50.986948Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-12T04:26:51.041347Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-12T04:26:51.041014Z&quot;}}" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>calendar_ridge <span class="op">=</span> make_pipeline(</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    OneHotEncoder(handle_unknown<span class="op">=</span><span class="st">"ignore"</span>, sparse_output<span class="op">=</span><span class="va">False</span>), Ridge()</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>onehot_model <span class="op">=</span> compare(<span class="st">"Ridge: one-hot calendar"</span>, calendar_ridge, calendar_features)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="19_time-series_files/figure-html/cell-12-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Mean cross-validation MAE: 6.93 rentals</code></pre>
+</div>
+</div>
+<p>Inspect the encoded rows alongside the prediction plot. Each row activates one hour category and one weekday category. Unlike a numeric hour coefficient, the model can assign unrelated effects to 06:00, 09:00, and 12:00.</p>
+<div id="1068aa10" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-12T04:26:51.042226Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-12T04:26:51.042171Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-12T04:26:51.048376Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-12T04:26:51.048078Z&quot;}}" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>encoder <span class="op">=</span> onehot_model.named_steps[<span class="st">"onehotencoder"</span>]</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>encoded_calendar <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    encoder.transform(calendar_features.iloc[plot_fit_rows]),</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    columns<span class="op">=</span>encoder.get_feature_names_out(),</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span>train.index[plot_fit_rows],</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>display(encoded_calendar.head(<span class="dv">8</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">hour_0</th>
+<th data-quarto-table-cell-role="th">hour_3</th>
+<th data-quarto-table-cell-role="th">hour_6</th>
+<th data-quarto-table-cell-role="th">hour_9</th>
+<th data-quarto-table-cell-role="th">hour_12</th>
+<th data-quarto-table-cell-role="th">hour_15</th>
+<th data-quarto-table-cell-role="th">hour_18</th>
+<th data-quarto-table-cell-role="th">hour_21</th>
+<th data-quarto-table-cell-role="th">weekday_0</th>
+<th data-quarto-table-cell-role="th">weekday_1</th>
+<th data-quarto-table-cell-role="th">weekday_2</th>
+<th data-quarto-table-cell-role="th">weekday_3</th>
+<th data-quarto-table-cell-role="th">weekday_4</th>
+<th data-quarto-table-cell-role="th">weekday_5</th>
+<th data-quarto-table-cell-role="th">weekday_6</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">starttime</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2015-08-01 00:00:00</th>
+<td>1.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2015-08-01 03:00:00</th>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2015-08-01 06:00:00</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2015-08-01 09:00:00</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2015-08-01 12:00:00</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2015-08-01 15:00:00</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2015-08-01 18:00:00</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2015-08-01 21:00:00</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>This model still adds the same hourly effect on every weekday. What if the morning commute peak occurs on weekdays but not weekends? <strong>Interaction features</strong> let the effect of one feature depend on another. A weekday–hour interaction can represent a particular combination, such as Monday at 09:00.</p>
+<p>The pipeline below fits encoding separately inside each training fold. <code>PolynomialFeatures</code> creates pairwise products; products between mutually exclusive categories are always zero, while hour–weekday products encode combinations.</p>
+<div id="60a2673f" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-12T04:26:51.049208Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-12T04:26:51.049158Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-12T04:26:51.105257Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-12T04:26:51.104963Z&quot;}}" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>interaction_ridge <span class="op">=</span> make_pipeline(</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    OneHotEncoder(handle_unknown<span class="op">=</span><span class="st">"ignore"</span>, sparse_output<span class="op">=</span><span class="va">False</span>),</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    PolynomialFeatures(degree<span class="op">=</span><span class="dv">2</span>, interaction_only<span class="op">=</span><span class="va">True</span>, include_bias<span class="op">=</span><span class="va">False</span>),</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    Ridge(),</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>interaction_model <span class="op">=</span> compare(<span class="st">"Ridge: calendar interactions"</span>, interaction_ridge, calendar_features)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="19_time-series_files/figure-html/cell-14-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Mean cross-validation MAE: 4.79 rentals</code></pre>
+</div>
+</div>
+<p>Compare the one-hot model’s daily profiles with those from the interaction model. Without interactions, moving from a weekday to a weekend adds the same weekday effect at every hour. With interactions, the hourly profile itself can change.</p>
+<p>We can inspect the corresponding feature products. The displayed interaction columns are active only when both the weekday and hour match.</p>
+<div id="a069e218" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-12T04:26:51.106217Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-12T04:26:51.106168Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-12T04:26:51.115319Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-12T04:26:51.115017Z&quot;}}" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>poly <span class="op">=</span> interaction_model.named_steps[<span class="st">"polynomialfeatures"</span>]</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>interaction_encoder <span class="op">=</span> interaction_model.named_steps[<span class="st">"onehotencoder"</span>]</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>encoded <span class="op">=</span> interaction_encoder.transform(calendar_features.iloc[plot_fit_rows])</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>interaction_names <span class="op">=</span> poly.get_feature_names_out(interaction_encoder.get_feature_names_out())</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>interaction_table <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    poly.transform(encoded), columns<span class="op">=</span>interaction_names,</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span>train.index[plot_fit_rows],</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>example_columns <span class="op">=</span> [<span class="st">"hour_9"</span>, <span class="st">"weekday_0"</span>, <span class="st">"hour_9 weekday_0"</span>,</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>                   <span class="st">"hour_12"</span>, <span class="st">"weekday_6"</span>, <span class="st">"hour_12 weekday_6"</span>]</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>display(interaction_table[example_columns].head(<span class="dv">16</span>))</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>coefficients <span class="op">=</span> pd.Series(</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>    interaction_model.named_steps[<span class="st">"ridge"</span>].coef_, index<span class="op">=</span>interaction_names,</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="st">"Coefficient"</span>,</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>interaction_coefficients <span class="op">=</span> coefficients[coefficients.index.<span class="bu">str</span>.contains(<span class="st">" "</span>)]</span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>strongest <span class="op">=</span> interaction_coefficients.<span class="bu">abs</span>().nlargest(<span class="dv">10</span>).index</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>display(interaction_coefficients.loc[strongest].to_frame())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">hour_9</th>
+<th data-quarto-table-cell-role="th">weekday_0</th>
+<th data-quarto-table-cell-role="th">hour_9 weekday_0</th>
+<th data-quarto-table-cell-role="th">hour_12</th>
+<th data-quarto-table-cell-role="th">weekday_6</th>
+<th data-quarto-table-cell-role="th">hour_12 weekday_6</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">starttime</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2015-08-01 00:00:00</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2015-08-01 03:00:00</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2015-08-01 06:00:00</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2015-08-01 09:00:00</th>
+<td>1.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2015-08-01 12:00:00</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2015-08-01 15:00:00</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2015-08-01 18:00:00</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2015-08-01 21:00:00</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2015-08-02 00:00:00</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2015-08-02 03:00:00</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2015-08-02 06:00:00</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2015-08-02 09:00:00</th>
+<td>1.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2015-08-02 12:00:00</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2015-08-02 15:00:00</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2015-08-02 18:00:00</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2015-08-02 21:00:00</th>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Coefficient</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">hour_6 weekday_6</th>
+<td>-17.378082</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">hour_12 weekday_6</th>
+<td>15.241781</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">hour_9 weekday_5</th>
+<td>14.338772</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">hour_6 weekday_2</th>
+<td>14.318346</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">hour_12 weekday_5</th>
+<td>14.143566</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">hour_6 weekday_5</th>
+<td>-13.476297</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">hour_6 weekday_3</th>
+<td>11.306393</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">hour_6 weekday_4</th>
+<td>9.341480</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">hour_9 weekday_6</th>
+<td>6.686986</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">hour_6 weekday_1</th>
+<td>6.621918</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>A positive interaction coefficient contributes an upward adjustment for that combination; a negative one contributes a downward adjustment. The prediction also includes the intercept, main effects, and other active terms. Because some encoded features overlap and Ridge distributes their weights, an individual coefficient is not the total effect of that time period and should not be read as a causal explanation.</p>
+<p>The comparison illustrates why model and representation must be chosen together. Forests can learn interactions through their splits. A linear model needs us to provide the corresponding features.</p>
+</section>
+<section id="learning-from-recent-observations" class="level3">
+<h3 class="anchored" data-anchor-id="learning-from-recent-observations">Learning from recent observations</h3>
+<p>Calendar features describe the usual pattern. What information are they missing about an unusually busy or quiet day? Recent rental counts may help. A <strong>lag feature</strong> supplies a past observation as an input for the current prediction.</p>
+<div id="b9bb61c6" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-12T04:26:51.116222Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-12T04:26:51.116168Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-12T04:26:51.120544Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-12T04:26:51.120161Z&quot;}}" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> add_lags(frame, column, lags):</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Add past values; rows must be sorted and regularly spaced."""</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> frame.assign(<span class="op">**</span>{</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f"</span><span class="sc">{</span>column<span class="sc">}</span><span class="ss">_lag</span><span class="sc">{</span>lag<span class="sc">}</span><span class="ss">"</span>: frame[column].shift(lag) <span class="cf">for</span> lag <span class="kw">in</span> lags</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>lagged <span class="op">=</span> add_lags(rentals.to_frame(), <span class="st">"rentals"</span>, [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">8</span>])</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>display(lagged.head(<span class="dv">10</span>))</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>lag_features <span class="op">=</span> lagged.drop(columns<span class="op">=</span><span class="st">"rentals"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">rentals</th>
+<th data-quarto-table-cell-role="th">rentals_lag1</th>
+<th data-quarto-table-cell-role="th">rentals_lag2</th>
+<th data-quarto-table-cell-role="th">rentals_lag3</th>
+<th data-quarto-table-cell-role="th">rentals_lag4</th>
+<th data-quarto-table-cell-role="th">rentals_lag5</th>
+<th data-quarto-table-cell-role="th">rentals_lag8</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">starttime</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2015-08-01 00:00:00</th>
+<td>3</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2015-08-01 03:00:00</th>
+<td>0</td>
+<td>3.0</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2015-08-01 06:00:00</th>
+<td>9</td>
+<td>0.0</td>
+<td>3.0</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2015-08-01 09:00:00</th>
+<td>41</td>
+<td>9.0</td>
+<td>0.0</td>
+<td>3.0</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2015-08-01 12:00:00</th>
+<td>39</td>
+<td>41.0</td>
+<td>9.0</td>
+<td>0.0</td>
+<td>3.0</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2015-08-01 15:00:00</th>
+<td>27</td>
+<td>39.0</td>
+<td>41.0</td>
+<td>9.0</td>
+<td>0.0</td>
+<td>3.0</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2015-08-01 18:00:00</th>
+<td>12</td>
+<td>27.0</td>
+<td>39.0</td>
+<td>41.0</td>
+<td>9.0</td>
+<td>0.0</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2015-08-01 21:00:00</th>
+<td>4</td>
+<td>12.0</td>
+<td>27.0</td>
+<td>39.0</td>
+<td>41.0</td>
+<td>9.0</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2015-08-02 00:00:00</th>
+<td>3</td>
+<td>4.0</td>
+<td>12.0</td>
+<td>27.0</td>
+<td>39.0</td>
+<td>41.0</td>
+<td>3.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2015-08-02 03:00:00</th>
+<td>4</td>
+<td>3.0</td>
+<td>4.0</td>
+<td>12.0</td>
+<td>27.0</td>
+<td>39.0</td>
+<td>0.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p><code>shift(1)</code> brings the previous row’s count into the current row. Here that means three hours earlier; <code>shift(8)</code> means one day earlier. The initial rows have missing lag values because our dataset contains no earlier observations. We use an imputer fitted only on each training fold. Dropping the initial incomplete rows is another reasonable option.</p>
+<p>This interpretation assumes regular spacing. With missing timestamps, a previous row may be several intervals old. Check the spacing and, if necessary, align to a regular time grid before constructing interval-based lags. Filling missing timestamps creates missing observations; it does not make their values known.</p>
+<div id="9f58e050" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-12T04:26:51.121291Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-12T04:26:51.121242Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-12T04:26:51.175751Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-12T04:26:51.175477Z&quot;}}" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>lag_ridge_model <span class="op">=</span> compare(<span class="st">"Ridge: lags"</span>, make_pipeline(SimpleImputer(), Ridge()), lag_features)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="19_time-series_files/figure-html/cell-17-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Mean cross-validation MAE: 7.75 rentals</code></pre>
+</div>
+</div>
+<p>Lag features describe the recent history rather than the position in the week. Inspect whether the linear model follows the peaks and troughs, and whether the validation pattern resembles its training fit. Its coefficients combine several recent counts, which may themselves be strongly related.</p>
+<p>Would a nonlinear relationship between recent counts and the next count help? Keep the features unchanged and try a forest.</p>
+<div id="c197a2e7" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-12T04:26:51.176790Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-12T04:26:51.176741Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-12T04:26:51.350058Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-12T04:26:51.349738Z&quot;}}" data-execution_count="17">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>lag_forest_model <span class="op">=</span> compare(<span class="st">"Forest: lags"</span>, make_pipeline(SimpleImputer(), forest), lag_features)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="19_time-series_files/figure-html/cell-18-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Mean cross-validation MAE: 6.05 rentals</code></pre>
+</div>
+</div>
+<p>Compare both lag-only models with the calendar models. A model using recent counts may follow local changes while missing a recurring peak that is easier to anticipate from the clock.</p>
+</section>
+<section id="combining-calendar-and-recent-history" class="level3">
+<h3 class="anchored" data-anchor-id="combining-calendar-and-recent-history">Combining calendar and recent history</h3>
+<p>These two feature sets describe different information: when an interval occurs and what happened recently. Can their combination capture what either misses alone? First, keep the calendar interactions for Ridge and add the lag features.</p>
+<div id="c57afe56" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-12T04:26:51.350991Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-12T04:26:51.350940Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-12T04:26:51.415170Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-12T04:26:51.414809Z&quot;}}" data-execution_count="18">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>combined <span class="op">=</span> pd.concat([calendar_features, lag_features], axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>lag_columns <span class="op">=</span> lag_features.columns.tolist()</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>combined_preprocessor <span class="op">=</span> ColumnTransformer([</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"calendar"</span>, make_pipeline(</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>        OneHotEncoder(handle_unknown<span class="op">=</span><span class="st">"ignore"</span>, sparse_output<span class="op">=</span><span class="va">False</span>),</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>        PolynomialFeatures(interaction_only<span class="op">=</span><span class="va">True</span>, include_bias<span class="op">=</span><span class="va">False</span>),</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    ), [<span class="st">"hour"</span>, <span class="st">"weekday"</span>]),</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"lags"</span>, SimpleImputer(), lag_columns),</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>combined_ridge <span class="op">=</span> make_pipeline(combined_preprocessor, Ridge())</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>combined_model <span class="op">=</span> compare(<span class="st">"Ridge: calendar + lags"</span>, combined_ridge, combined)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="19_time-series_files/figure-html/cell-19-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Mean cross-validation MAE: 5.09 rentals</code></pre>
+</div>
+</div>
+<p>Finally, combine numeric calendar features and lags for the forest. The forest can learn calendar interactions through its splits, so we do not need to supply the one-hot interaction expansion used for Ridge. Compare its training fit and validation predictions: a tighter training fit alone is not evidence of improvement.</p>
+<div id="9ab8bd58" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-12T04:26:51.416082Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-12T04:26:51.416029Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-12T04:26:51.628068Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-12T04:26:51.627769Z&quot;}}" data-execution_count="19">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>combined_forest <span class="op">=</span> make_pipeline(SimpleImputer(), forest)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>combined_forest_model <span class="op">=</span> compare(<span class="st">"Forest: calendar + lags"</span>, combined_forest, combined)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>display(pd.Series(validation_results, name<span class="op">=</span><span class="st">"Mean validation MAE"</span>).sort_values())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="19_time-series_files/figure-html/cell-20-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Mean cross-validation MAE: 5.56 rentals</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>Forest: hour + weekday           4.363437
+Ridge: calendar interactions     4.792812
+Ridge: calendar + lags           5.086453
+Forest: calendar + lags          5.558854
+Forest: lags                     6.048437
+Ridge: one-hot calendar          6.930686
+Forest: hour                     6.974753
+Ridge: lags                      7.752851
+Ridge: numeric calendar         10.002101
+Forest: timestamp               11.396250
+Name: Mean validation MAE, dtype: float64</code></pre>
+</div>
+</div>
+<p>Compare these errors with the simple baselines. More features do not guarantee better forecasts. Five recent intervals may contain little information beyond the calendar pattern, while a daily lag offers a different kind of history. The appropriate lag lengths depend on the sampling interval and the patterns we expect.</p>
+</section>
+<section id="one-final-test" class="level3">
+<h3 class="anchored" data-anchor-id="one-final-test">One final test</h3>
+<p>We now select among the candidates using validation MAE. This small dataset makes those comparisons uncertain, so small differences should not be treated as decisive. The test below evaluates the selected procedure once, under the same repeated one-step prediction setup.</p>
+<div id="99dfd6ec" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-12T04:26:51.629154Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-12T04:26:51.629096Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-12T04:26:51.683644Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-12T04:26:51.683283Z&quot;}}" data-execution_count="20">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>candidates <span class="op">=</span> {</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Forest: timestamp"</span>: (forest, calendar[[<span class="st">"elapsed_seconds"</span>]]),</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Forest: hour"</span>: (forest, calendar[[<span class="st">"hour"</span>]]),</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Forest: hour + weekday"</span>: (forest, calendar_features),</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Ridge: numeric calendar"</span>: (Ridge(), calendar_features),</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Ridge: one-hot calendar"</span>: (calendar_ridge, calendar_features),</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Ridge: calendar interactions"</span>: (interaction_ridge, calendar_features),</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Ridge: lags"</span>: (make_pipeline(SimpleImputer(), Ridge()), lag_features),</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Forest: lags"</span>: (make_pipeline(SimpleImputer(), forest), lag_features),</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Ridge: calendar + lags"</span>: (combined_ridge, combined),</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Forest: calendar + lags"</span>: (combined_forest, combined),</span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>best_name <span class="op">=</span> <span class="bu">min</span>(validation_results, key<span class="op">=</span>validation_results.get)</span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>selected_model, selected_features <span class="op">=</span> candidates[best_name]</span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>fitted_model <span class="op">=</span> clone(selected_model).fit(selected_features.iloc[:n_train], train)</span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>test_predictions <span class="op">=</span> fitted_model.predict(selected_features.iloc[n_train:])</span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Selected:"</span>, best_name)</span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Final test MAE: </span><span class="sc">{</span>mean_absolute_error(test, test_predictions)<span class="sc">:.2f}</span><span class="ss"> rentals"</span>)</span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> test.plot(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">3</span>), label<span class="op">=</span><span class="st">"Observed"</span>, ylabel<span class="op">=</span><span class="st">"Rentals"</span>)</span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>pd.Series(test_predictions, index<span class="op">=</span>test.index).plot(ax<span class="op">=</span>ax, label<span class="op">=</span><span class="st">"Forecast"</span>)</span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Selected: Forest: hour + weekday
+Final test MAE: 3.53 rentals</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="19_time-series_files/figure-html/cell-21-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="forecasting-multiple-steps-ahead" class="level2">
+<h2 class="anchored" data-anchor-id="forecasting-multiple-steps-ahead">Forecasting multiple steps ahead</h2>
+<p>Imagine standing at the beginning of a three-hour interval and requesting predictions for the next five intervals. Can we use all the lag rows we constructed above?</p>
+<p>No.&nbsp;For the first forecast we know the preceding counts. For the second, the most recent count belongs to an interval that has not finished yet. Our earlier evaluation allowed observations to arrive between predictions; this request does not.</p>
+<section id="recursive-forecasting" class="level3">
+<h3 class="anchored" data-anchor-id="recursive-forecasting">Recursive forecasting</h3>
+<p>One option is to fit a one-step model and repeatedly feed its predictions back as lag inputs. This is <strong>recursive</strong>, or iterative, forecasting. The example below uses the first five lags. It fits on complete training rows and forecasts five intervals from one fixed origin. It does not read any test rental counts.</p>
+<div id="9909ca86" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-12T04:26:51.684598Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-12T04:26:51.684532Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-12T04:26:51.727887Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-12T04:26:51.727495Z&quot;}}" data-execution_count="21">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>recursive_columns <span class="op">=</span> [<span class="ss">f"rentals_lag</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">"</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">6</span>)]</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>complete <span class="op">=</span> lagged.iloc[:n_train].dropna(subset<span class="op">=</span>recursive_columns)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>one_step_model <span class="op">=</span> clone(forest).fit(complete[recursive_columns], complete[<span class="st">"rentals"</span>])</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>history <span class="op">=</span> train.tolist()</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>recursive_predictions <span class="op">=</span> []</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">5</span>):</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>    next_features <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>        [[history[<span class="op">-</span>i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">6</span>)]], columns<span class="op">=</span>recursive_columns</span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>    prediction <span class="op">=</span> one_step_model.predict(next_features)[<span class="dv">0</span>]</span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>    recursive_predictions.append(prediction)</span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>    history.append(prediction)</span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame({<span class="st">"Recursive forecast"</span>: recursive_predictions}, index<span class="op">=</span>test.index[:<span class="dv">5</span>]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Recursive forecast</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">starttime</th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2015-08-24 00:00:00</th>
+<td>6.11</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2015-08-24 03:00:00</th>
+<td>4.76</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2015-08-24 06:00:00</th>
+<td>13.45</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2015-08-24 09:00:00</th>
+<td>18.81</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2015-08-24 12:00:00</th>
+<td>19.40</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>This reuses one model, but later inputs contain earlier prediction errors. Errors can propagate, and training on observed lags differs from predicting with estimated lags. Performance should be checked separately at each horizon using historical forecast origins.</p>
+</section>
+<section id="direct-forecasting" class="level3">
+<h3 class="anchored" data-anchor-id="direct-forecasting">Direct forecasting</h3>
+<p>Alternatively, train a separate model for each horizon. At origin <span class="math inline">\(t\)</span>, every model uses information already available at <span class="math inline">\(t\)</span>, but one predicts the interval starting at <span class="math inline">\(t\)</span>, another the interval starting three hours later, and so on. Construct each horizon’s target by shifting the outcome forward relative to the origin’s features. Exclude training examples whose target interval crosses the training cutoff.</p>
+<p>Direct forecasting avoids feeding predictions back into inputs, but requires more models and leaves fewer complete training examples at longer horizons. Future calendar features are known in advance; future observed weather or rental counts are not. Weather forecasts could be inputs if equivalent forecasts were available when training and evaluating.</p>
+<p>A third option is a multi-output model that predicts several horizons at once. Some such models share information across outputs; others fit outputs independently. We will not develop these models here.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Check your understanding
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>You forecast all of next week’s demand on Sunday evening. A validation feature for Thursday contains Wednesday’s observed demand. What is wrong?</p>
+<p>Wednesday’s demand was unknown at the forecast origin. Use a prediction in a recursive approach, or construct a direct model using only information available on Sunday. Merely placing Thursday after the training dates does not prevent this leakage.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="seasonality-trends-and-extrapolation" class="level2">
+<h2 class="anchored" data-anchor-id="seasonality-trends-and-extrapolation">Seasonality, trends, and extrapolation</h2>
+<p>Calendar features capture recurring patterns, but what if the overall level changes over several years? A <strong>trend</strong> is a sustained upward or downward movement over time. It is different from seasonality: December peaks can recur while the level of sales also rises.</p>
+<p>The monthly retail-sales series below comes from the Federal Reserve Bank of St.&nbsp;Louis. We use it to examine these two patterns, rather than repeat the full forecasting workflow.</p>
+<div id="af84202b" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-12T04:26:51.728838Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-12T04:26:51.728786Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-12T04:26:51.762453Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-12T04:26:51.762014Z&quot;}}" data-execution_count="22">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>retail <span class="op">=</span> pd.read_csv(DATA_DIR <span class="op">/</span> <span class="st">"MRTSSM448USN.csv"</span>, parse_dates<span class="op">=</span>[<span class="st">"DATE"</span>])</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>retail.columns <span class="op">=</span> [<span class="st">"date"</span>, <span class="st">"sales"</span>]</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>retail.plot(x<span class="op">=</span><span class="st">"date"</span>, y<span class="op">=</span><span class="st">"sales"</span>, figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">3</span>), ylabel<span class="op">=</span><span class="st">"Sales (millions of dollars)"</span>)</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>retail_train <span class="op">=</span> retail.loc[retail[<span class="st">"date"</span>] <span class="op">&lt;=</span> pd.Timestamp(<span class="st">"2016-01-01"</span>)].copy()</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>first_date <span class="op">=</span> retail_train[<span class="st">"date"</span>].<span class="bu">min</span>()</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>retail_train[<span class="st">"days_since_start"</span>] <span class="op">=</span> (retail_train[<span class="st">"date"</span>] <span class="op">-</span> first_date).dt.days</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>display(retail_train.head())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="19_time-series_files/figure-html/cell-23-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">sales</th>
+<th data-quarto-table-cell-role="th">days_since_start</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>1992-01-01</td>
+<td>6938</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>1992-02-01</td>
+<td>7524</td>
+<td>31</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>1992-03-01</td>
+<td>8475</td>
+<td>60</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>1992-04-01</td>
+<td>9401</td>
+<td>91</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>1992-05-01</td>
+<td>9558</td>
+<td>121</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>An elapsed-time feature gives a linear model a way to represent a trend. A positive coefficient extends growth at a constant rate, including beyond the training period. That is an assumption, not a guarantee about future sales. Real trends can change, flatten, or reverse.</p>
+<p>A standard random forest does not extend that slope. With elapsed time as its only feature, later timestamps reach outermost leaves. With calendar and lag features too, its predictions can vary, but it still does not extrapolate a growing trend in the way a linear model can. Regression-forest predictions are averages of training targets and remain within their observed range.</p>
+<p>One possible approach is to estimate a trend and model the remaining variation separately. Both stages must be fitted inside each training fold. This adds assumptions and complexity; start by checking whether the forecast horizon and data support a stable trend.</p>
+<section id="choosing-an-approach" class="level3">
+<h3 class="anchored" data-anchor-id="choosing-an-approach">Choosing an approach</h3>
+<p>Start by specifying the prediction time and available information. Inspect the sampling interval, gaps, recurring patterns, and changes in level. Establish simple baselines, then compare a small number of model–feature combinations with temporal validation. Calendar features are useful when behaviour repeats; lag features help when recent observations contain additional information. Choose the evaluation setup to match whether new observations arrive between predictions.</p>
+<p>Our <a href="chapter-19-time-series-demo.ipynb">Rain in Australia demo</a> applies this workflow to multiple locations and irregular observations. Specialized methods such as ARIMA and neural sequence models offer other ways to represent temporal structure. They still require careful definitions of the task, available information, and evaluation procedure.</p>
+</section>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<ul>
+<li><strong>Define the forecasting task before choosing a model.</strong> Specify when predictions are made, which future intervals they describe, and what information is available at prediction time.</li>
+<li><strong>Evaluate in time order.</strong> Use chronological holdouts and temporal cross-validation, fit preprocessing within each training fold, and compare against persistence or seasonal baselines. Reserve the final test period for evaluating the selected approach.</li>
+<li><strong>Choose temporal features that suit the model.</strong> Calendar features expose recurring patterns; one-hot encoding and interactions let linear models represent separate calendar effects and their combinations. Lag features supply information from past observations.</li>
+<li><strong>Check what a lag actually represents.</strong> A previous row is not necessarily a previous time interval. With multiple series, construct lags within each series and account for missing timestamps.</li>
+<li><strong>Match evaluation to the forecast horizon.</strong> Repeated one-step forecasts can use observations that arrive between predictions. Forecasting several steps at once cannot use those future observations: recursive forecasting feeds predictions back into inputs, while direct forecasting uses a separate model for each horizon.</li>
+<li><strong>Distinguish seasonality from trend.</strong> Seasonality repeats; a trend changes the overall level over time. A linear time feature can extend a trend, subject to its assumptions, while a standard regression forest does not extrapolate that trend beyond its learned partitions.</li>
+</ul>
+<p>For a new forecasting problem, start with simple baselines and a small number of model–feature combinations. Use validation that reproduces the intended prediction process to decide whether additional features or complexity help.</p>
+
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/UBC-CS\.github\.io\/cpsc330-book\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
+          if (lineIds.length > 0) {
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            placeBand(gutterDiv, el, lastEl);
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+<nav class="page-navigation" aria-label="Page">
+  <div class="nav-page nav-page-previous">
+      <a href="../book/18_natural-language-processing.html" class="pagination-link" aria-label="Chapter 18: Natural Language Processing">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Chapter 18: Natural Language Processing</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
