@@ -24,9 +24,11 @@ project:
     - book/16_recommender-systems.ipynb
     - book/17_intro_to_computer-vision.ipynb
     - book/18_natural-language-processing.ipynb
+    - book/19_time-series.ipynb
     - book/chapter-03-ml-fundamentals-demo.ipynb
     - book/chapter-04-decision-boundaries-KNN-demo.ipynb
     - book/chapter-05-06-preprocessing-demo.ipynb
+    - book/chapter-19-time-series-demo.ipynb
 
 website:
   title: "CPSC 330: Applied Machine Learning"
@@ -77,6 +79,7 @@ website:
           contents:
             - book/17_intro_to_computer-vision.ipynb
             - book/18_natural-language-processing.ipynb
+            - book/19_time-series.ipynb
 
     - id: demos
       title: Demos
@@ -88,6 +91,7 @@ website:
         - book/chapter-03-ml-fundamentals-demo.ipynb
         - book/chapter-04-decision-boundaries-KNN-demo.ipynb
         - book/chapter-05-06-preprocessing-demo.ipynb
+        - book/chapter-19-time-series-demo.ipynb
 format:
   html:
     theme: cosmo
