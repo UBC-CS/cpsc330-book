@@ -74,7 +74,7 @@ website:
           contents:
             - book/14_K-Means.ipynb
             - book/15_DBSCAN-hierarchical.ipynb
-        - section: Working with Different Data Types
+        - section: Working with Different Types of Data
           contents:
             - book/16_recommender-systems.ipynb          
             - book/17_intro_to_computer-vision.ipynb
