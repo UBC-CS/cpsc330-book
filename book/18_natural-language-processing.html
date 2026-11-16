@@ -375,7 +375,7 @@ window.Quarto = {
   <ul>
   <li><a href="#why-is-language-difficult" id="toc-why-is-language-difficult" class="nav-link" data-scroll-target="#why-is-language-difficult">Why is language difficult?</a></li>
   <li><a href="#context-changes-meaning" id="toc-context-changes-meaning" class="nav-link" data-scroll-target="#context-changes-meaning">Context changes meaning</a></li>
-  <li><a href="#from-language-to-numbers" id="toc-from-language-to-numbers" class="nav-link" data-scroll-target="#from-language-to-numbers">From language to numbers</a></li>
+  <li><a href="#representing-language-numerically" id="toc-representing-language-numerically" class="nav-link" data-scroll-target="#representing-language-numerically">Representing language numerically</a></li>
   </ul></li>
   <li><a href="#representing-text" id="toc-representing-text" class="nav-link" data-scroll-target="#representing-text">Representing text</a>
   <ul>
@@ -393,7 +393,7 @@ window.Quarto = {
   <li><a href="#embeddings-also-encode-bias" id="toc-embeddings-also-encode-bias" class="nav-link" data-scroll-target="#embeddings-also-encode-bias">Embeddings also encode bias</a></li>
   <li><a href="#optional-practice-interpreting-word-embeddings" id="toc-optional-practice-interpreting-word-embeddings" class="nav-link" data-scroll-target="#optional-practice-interpreting-word-embeddings">Optional practice: Interpreting word embeddings</a></li>
   </ul></li>
-  <li><a href="#from-word-embeddings-to-sentence-or-text-embeddings" id="toc-from-word-embeddings-to-sentence-or-text-embeddings" class="nav-link" data-scroll-target="#from-word-embeddings-to-sentence-or-text-embeddings">From word embeddings to sentence or text embeddings</a></li>
+  <li><a href="#sentence-and-text-embeddings" id="toc-sentence-and-text-embeddings" class="nav-link" data-scroll-target="#sentence-and-text-embeddings">Sentence and text embeddings</a></li>
   </ul></li>
   <li><a href="#information-retrieval" id="toc-information-retrieval" class="nav-link" data-scroll-target="#information-retrieval">Information retrieval</a>
   <ul>
@@ -402,10 +402,10 @@ window.Quarto = {
   <li><a href="#evaluating-retrieval" id="toc-evaluating-retrieval" class="nav-link" data-scroll-target="#evaluating-retrieval">Evaluating retrieval</a></li>
   <li><a href="#exercise-18.1-compare-retrieval-methods" id="toc-exercise-18.1-compare-retrieval-methods" class="nav-link" data-scroll-target="#exercise-18.1-compare-retrieval-methods">Exercise 18.1: Compare retrieval methods</a></li>
   </ul></li>
-  <li><a href="#language-models-and-llms" id="toc-language-models-and-llms" class="nav-link" data-scroll-target="#language-models-and-llms">Language models and LLMs</a>
+  <li><a href="#language-models-and-large-language-models-llms" id="toc-language-models-and-large-language-models-llms" class="nav-link" data-scroll-target="#language-models-and-large-language-models-llms">Language models and large language models (LLMs)</a>
   <ul>
   <li><a href="#what-did-you-just-do" id="toc-what-did-you-just-do" class="nav-link" data-scroll-target="#what-did-you-just-do">What did you just do?</a></li>
-  <li><a href="#from-language-models-to-llms" id="toc-from-language-models-to-llms" class="nav-link" data-scroll-target="#from-language-models-to-llms">From language models to LLMs</a></li>
+  <li><a href="#large-language-models" id="toc-large-language-models" class="nav-link" data-scroll-target="#large-language-models">Large language models</a></li>
   <li><a href="#clear-instructions-and-supplied-evidence" id="toc-clear-instructions-and-supplied-evidence" class="nav-link" data-scroll-target="#clear-instructions-and-supplied-evidence">Clear instructions and supplied evidence</a></li>
   </ul></li>
   <li><a href="#retrieval-augmented-generation" id="toc-retrieval-augmented-generation" class="nav-link" data-scroll-target="#retrieval-augmented-generation">Retrieval-augmented generation</a>
@@ -530,8 +530,8 @@ window.Quarto = {
 <p>The nearby words make <em>bank</em> mean different things. Language also permits the reverse problem: two sentences can express similar ideas with few words in common. <em>The assignment deadline passed while I was ill</em> and <em>I was sick when my homework was due</em> are likely asking about the same policy. A useful NLP system needs to handle both exact wording and paraphrases.</p>
 <p>This observation will matter throughout the chapter. Search based only on matching words may miss a relevant passage, while a model that focuses only on broad similarity may overlook an important exact term.</p>
 </section>
-<section id="from-language-to-numbers" class="level3">
-<h3 class="anchored" data-anchor-id="from-language-to-numbers">From language to numbers</h3>
+<section id="representing-language-numerically" class="level3">
+<h3 class="anchored" data-anchor-id="representing-language-numerically">Representing language numerically</h3>
 <p>Machine learning models operate on numbers, not directly on words. Before a model can classify, retrieve, or generate text, the system must decide how to represent language numerically. That representation determines which similarities and differences the model can notice.</p>
 <p>No representation captures every aspect of meaning. The right question is therefore not ‘’Does the computer truly understand this sentence?’’ but ‘’Does this representation retain the information needed for our task?’’ We begin with representations based on word counts and then move to embeddings designed to capture some aspects of meaning.</p>
 </section>
@@ -1225,8 +1225,8 @@ Figure&nbsp;1: A schematic illustration of the king–queen analogy. The displac
 </div>
 </section>
 </section>
-<section id="from-word-embeddings-to-sentence-or-text-embeddings" class="level3">
-<h3 class="anchored" data-anchor-id="from-word-embeddings-to-sentence-or-text-embeddings">From word embeddings to sentence or text embeddings</h3>
+<section id="sentence-and-text-embeddings" class="level3">
+<h3 class="anchored" data-anchor-id="sentence-and-text-embeddings">Sentence and text embeddings</h3>
 <p>Traditional word2vec gives each vocabulary item one vector. The word <em>bank</em> therefore has the same representation in <em>bank account</em> and <em>river bank</em>. It also does not directly give us one vector for a new sentence or document. Averaging its word vectors is possible, but doing so loses word order and often loses important context.</p>
 <p>For information retrieval, we want to compare a user’s query with sentences, passages, or documents. Modern <strong>text-embedding models</strong> map each complete piece of text to a dense vector. Texts expressing similar meanings tend to receive similar vectors even when they use different words.</p>
 <p>These embeddings remain imperfect. They can miss specialized terminology, subtle negation, or important contextual distinctions, and they can reproduce biases in their training data. We should treat similarity as a useful model output, not as proof that two texts mean the same thing.</p>
@@ -1444,7 +1444,7 @@ Figure&nbsp;2: The main components of an information-retrieval system. Documents
 </div>
 </div>
 </div>
-<p>The identifier <code>HUB-7X</code> points to the USB-C hub. Inspecting <code>tfidf.build_analyzer()("HUB-7X")</code> would show the tokens <code>hub</code> and <code>7x</code>: the vectorizer matches terms rather than checking an entire identifier as one unit. When a model number must match exactly, check that constraint explicitly.</p>
+<p>The identifier <code>HUB-7X</code> points to the USB-C hub. The vectorizer splits text into smaller units called <strong>tokens</strong>. For example, inspecting <code>tfidf.build_analyzer()("HUB-7X")</code> would show the tokens <code>hub</code> and <code>7x</code>, rather than the entire identifier as one unit. The vectorizer matches these terms; when a model number must match exactly, check that constraint explicitly.</p>
 <p>The remaining results have score zero. They are returned because we asked for three results, not because the retriever found three useful matches. Their order is just a tie. Now consider a need expressed using words that do not occur in the relevant product description.</p>
 <div id="chapter17-15" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>semantic_query <span class="op">=</span> <span class="st">"How can I avoid hearing people talk while I study?"</span></span>
@@ -1643,8 +1643,8 @@ Figure&nbsp;2: The main components of an information-retrieval system. Documents
 </div>
 </section>
 </section>
-<section id="language-models-and-llms" class="level2">
-<h2 class="anchored" data-anchor-id="language-models-and-llms">Language models and LLMs</h2>
+<section id="language-models-and-large-language-models-llms" class="level2">
+<h2 class="anchored" data-anchor-id="language-models-and-large-language-models-llms">Language models and large language models (LLMs)</h2>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1669,7 +1669,7 @@ Figure&nbsp;2: The main components of an information-retrieval system. Documents
 <td></td>
 </tr>
 <tr class="even">
-<td><em>Peanut butter and …</em></td>
+<td><em>My model works perfectly on …</em></td>
 <td></td>
 </tr>
 <tr class="odd">
@@ -1687,19 +1687,21 @@ Figure&nbsp;2: The main components of an information-retrieval system. Documents
 </div>
 <section id="what-did-you-just-do" class="level3">
 <h3 class="anchored" data-anchor-id="what-did-you-just-do">What did you just do?</h3>
-<p>You acted like a <strong>language model</strong>: you used the preceding context to assign probabilities to possible continuations. A language model does this with <strong>tokens</strong>, which may be complete words, parts of words, punctuation, or other units. We can summarize its task as</p>
+<p>You acted like a <strong>language model</strong>: you used the preceding context to assign probabilities to possible continuations.</p>
+<p>In the activity, we predicted complete words. Language models work with <strong>tokens</strong>: units of text that may be whole words, parts of words, or punctuation. A <strong>tokenizer</strong> splits text into these units. For example, a tokenizer might keep <code>model</code> as one token but split <code>overfitting</code> into several pieces. The exact split depends on the tokenizer, so one word does not always equal one token.</p>
+<p>A language model predicts a probability distribution over the next token given the preceding tokens. We can summarize its task as</p>
 <p><span class="math display">\[
 P(\text{next token} \mid \text{context}).
 \]</span></p>
-<p>There is not always one correct next token. A model estimates a distribution and uses it to choose a continuation. For example, after <em>Peanut butter and</em>, the model might choose <em>jelly</em>. It then predicts another token using <em>Peanut butter and jelly</em> as the context. Repeating this process one token at a time produces text. A plausible continuation can still contain an incorrect claim: predicting likely text is not the same as checking its truth. Models that predict plausible sequences can also support applications such as transcription, translation, and summarization.</p>
+<p>There is not always one correct next token. A model estimates a distribution and uses it to choose a continuation. For simplicity, suppose each word below is one token. After <em>My model works perfectly on</em>, the model might choose <em>training</em>, then <em>data</em>. It then predicts another token using <em>My model works perfectly on training data</em> as the context, perhaps choosing <em>but</em>. Repeating this process one token at a time produces text. A plausible continuation can still contain an incorrect claim: predicting likely text is not the same as checking its truth. Models that predict plausible sequences can also support applications such as transcription, translation, and summarization.</p>
 <p>The basic idea predates modern neural networks. In 1948, Claude Shannon described language probabilistically and constructed increasingly realistic approximations to English. He later studied how well people could predict upcoming characters. Modern language models pursue the same broad idea at a vastly larger scale: learn regularities in language by predicting what comes next.</p>
 </section>
-<section id="from-language-models-to-llms" class="level3">
-<h3 class="anchored" data-anchor-id="from-language-models-to-llms">From language models to LLMs</h3>
+<section id="large-language-models" class="level3">
+<h3 class="anchored" data-anchor-id="large-language-models">Large language models</h3>
 <p>A <strong>large language model (LLM)</strong> is a language model implemented with a large neural network and trained on a large collection of data. During <strong>pretraining</strong>, it learns to predict tokens from text. Many models then undergo <strong>post-training</strong>, including methods such as instruction tuning and preference-based training, to make their responses more useful. Reinforcement learning from human feedback (RLHF) is one possible post-training method; not every LLM uses the same recipe.</p>
 <p>Instruction tuning uses examples of instructions and responses to help the model continue a prompt in the form of a useful answer. This helps connect next-token prediction to the assistants we interact with, but does not guarantee that their answers are correct.</p>
 <p>The embedding model we used earlier returns a numerical vector for comparing texts. A generative language model instead produces new text, such as an answer to a question.</p>
-<p>For our purposes, we can use an LLM without studying its internal neural-network architecture. We provide a <strong>prompt</strong>—the input text containing our instructions and any relevant information—and the model generates a response:</p>
+<p>For our purposes, we can use an LLM without studying its internal neural-network architecture. We provide a <strong>prompt</strong> (the input text containing our instructions and any relevant information) and the model generates a response:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>generated_text <span class="op">=</span> language_model(prompt)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="clear-instructions-and-supplied-evidence" class="level3">
@@ -1712,8 +1714,9 @@ P(\text{next token} \mid \text{context}).
 <p><strong>Prompt B:</strong> I cycle home after evening labs in Vancouver rain and carry a laptop. Recommend exactly two products and explain briefly how each addresses my needs.</p>
 </blockquote>
 <p>If you have access to an LLM, try both. Which prompt produces a more relevant and appropriately formatted response? Does either response make unsupported assumptions? Prompt B communicates the situation, constraints, and requested output more clearly, so it will often elicit a better response.</p>
-<p>The model’s <strong>weights remain unchanged</strong> when we improve a prompt. We are not training it; we are eliciting different behaviour from the same model. Rephrasing a question cannot reliably supply facts that the model lacks, such as the current contents of a private product catalog. A model’s parameters are not a dependable database, and its answers can be outdated or unsupported.</p>
-<p>We can, however, supply new evidence in the prompt. The model can use that evidence without changing its weights. Its <strong>context window</strong> limits how many tokens it can process at once. Inserting an entire document collection may exceed that limit, and irrelevant text can be distracting. Instead, we can retrieve a small amount of relevant evidence and add it to the prompt before generation. This motivates <strong>retrieval-augmented generation</strong>.</p>
+<p>Suppose we ask the model to recommend two products <strong>from our campus-survival store</strong>. A clearer prompt explains the shopper’s needs, but it does not tell the model what the store sells. The model might suggest unavailable products or invent product details.</p>
+<p>Our retrieval system can help: it finds relevant catalog descriptions, which we can include in the prompt. The language model then uses this evidence to explain how the products meet the shopper’s needs, without changing its weights.</p>
+<p>For a small catalog, we could include every description. Larger collections may exceed the model’s <strong>context window</strong>, or the number of tokens it can process at once. Retrieving relevant passages supplies focused evidence. Combining retrieval with text generation this way is called <strong>retrieval-augmented generation (RAG)</strong>.</p>
 </section>
 </section>
 <section id="retrieval-augmented-generation" class="level2">
