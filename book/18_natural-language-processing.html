@@ -387,6 +387,7 @@ window.Quarto = {
   </ul></li>
   <li><a href="#dense-representations-word-embeddings" id="toc-dense-representations-word-embeddings" class="nav-link" data-scroll-target="#dense-representations-word-embeddings">Dense representations: word embeddings</a>
   <ul class="collapse">
+  <li><a href="#measuring-similarity-between-vectors" id="toc-measuring-similarity-between-vectors" class="nav-link" data-scroll-target="#measuring-similarity-between-vectors">Measuring similarity between vectors</a></li>
   <li><a href="#exploring-pretrained-word2vec-embeddings" id="toc-exploring-pretrained-word2vec-embeddings" class="nav-link" data-scroll-target="#exploring-pretrained-word2vec-embeddings">Exploring pretrained word2vec embeddings</a></li>
   <li><a href="#analogies-as-vector-arithmetic" id="toc-analogies-as-vector-arithmetic" class="nav-link" data-scroll-target="#analogies-as-vector-arithmetic">Analogies as vector arithmetic</a></li>
   <li><a href="#embeddings-also-encode-bias" id="toc-embeddings-also-encode-bias" class="nav-link" data-scroll-target="#embeddings-also-encode-bias">Embeddings also encode bias</a></li>
@@ -532,7 +533,7 @@ window.Quarto = {
 <section id="from-language-to-numbers" class="level3">
 <h3 class="anchored" data-anchor-id="from-language-to-numbers">From language to numbers</h3>
 <p>Machine learning models operate on numbers, not directly on words. Before a model can classify, retrieve, or generate text, the system must decide how to represent language numerically. That representation determines which similarities and differences the model can notice.</p>
-<p>No representation captures every aspect of meaning. The right question is therefore not “Does the computer truly understand this sentence?” but “Does this representation retain the information needed for our task?” We begin with representations based on word counts and then move to embeddings designed to capture some aspects of meaning.</p>
+<p>No representation captures every aspect of meaning. The right question is therefore not ‘’Does the computer truly understand this sentence?’’ but ‘’Does this representation retain the information needed for our task?’’ We begin with representations based on word counts and then move to embeddings designed to capture some aspects of meaning.</p>
 </section>
 </section>
 <section id="representing-text" class="level2">
@@ -979,18 +980,99 @@ Number of nonzero entries: 231</code></pre>
 <p>You shall know a word by the company it keeps. — J. R. Firth, 1957</p>
 </blockquote>
 <p>Suppose you did not know the word <em>glorp</em>, but repeatedly saw sentences such as <em>The movie was glorp and moving</em>, <em>What a delightful, glorp story</em>, and <em>We loved the glorp ending</em>. The surrounding words provide clues about how <em>glorp</em> is being used. Word-embedding algorithms learn from this kind of co-occurrence at a much larger scale.</p>
-<p><strong>word2vec</strong> is a family of algorithms for learning word embeddings by predicting words from their surrounding context, or surrounding words from a target word. We will not study its training algorithm here. Instead, we will explore what a pretrained word2vec model learned.</p>
+<p><strong>Word2vec</strong> is a family of algorithms for learning word embeddings by predicting words from their surrounding context, or surrounding words from a target word. We will explore the embeddings from a pretrained word2vec model rather than study its training algorithm. To find out which words the model places near one another, we first need a way to compare their vectors.</p>
+<section id="measuring-similarity-between-vectors" class="level4">
+<h4 class="anchored" data-anchor-id="measuring-similarity-between-vectors">Measuring similarity between vectors</h4>
+<p>We want related words to have nearby vectors. But what does ‘’nearby’’ mean? We could compare the positions of the vectors’ endpoints, or compare the directions in which they point. These choices need not give us the same neighbours. The same question arises when comparing bag-of-words documents, images, or items to recommend.</p>
+<p>Recall <strong>Euclidean distance</strong>, which measures the straight-line distance between two points. For vectors <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> with <span class="math inline">\(n\)</span> coordinates,</p>
+<p><span class="math display">\[
+d(a,b)=\sqrt{\sum_{i=1}^{n}(a_i-b_i)^2}.
+\]</span></p>
+<p>Smaller distances mean closer vectors. However, multiplying a vector by two moves its endpoint even though its direction stays the same. For word counts, this could happen if we repeated a document twice: every count would double, but the relative frequencies would be unchanged.</p>
+<p>The <strong>dot product</strong> multiplies corresponding coordinates and adds the results:</p>
+<p><span class="math display">\[
+a\cdot b=\sum_{i=1}^{n}a_i b_i.
+\]</span></p>
+<p>When used as a similarity score, larger values mean more similar vectors. The score depends on both direction and magnitude (vector length). In particular, doubling one vector doubles its dot product with the other. For nonnegative word-count vectors, this can favour longer documents simply because their counts are larger.</p>
+<p><strong>Cosine similarity</strong> removes the effect of magnitude by dividing the dot product by the product of the vector lengths:</p>
+<p><span class="math display">\[
+\operatorname{cosine\ similarity}(a,b)=\frac{a\cdot b}{\lVert a\rVert_2\lVert b\rVert_2},
+\qquad
+\lVert a\rVert_2=\sqrt{\sum_{i=1}^{n}a_i^2}.
+\]</span></p>
+<p>Here, <span class="math inline">\(\lVert a\rVert_2\)</span> is the <strong>L2 norm</strong>, or length, of <span class="math inline">\(a\)</span>; we calculate the length of <span class="math inline">\(b\)</span> in the same way. Cosine similarity compares directions: it is 1 for vectors pointing in the same direction, 0 for perpendicular vectors, and <span class="math inline">\(-1\)</span> for vectors pointing in opposite directions. Nonnegative word-count and TF–IDF vectors have cosine similarities between 0 and 1; dense embeddings can also have negative similarities. The formula requires both vectors to be nonzero.</p>
+<p>Do not confuse <strong>cosine similarity</strong> with <strong>cosine distance</strong>, commonly defined as <span class="math inline">\(1-\operatorname{cosine\ similarity}(a,b)\)</span>. Larger similarity means more similar; smaller distance means more similar.</p>
+<p>Consider two documents represented by counts of three vocabulary terms. The second has twice the count of every term in the first. Before running the code, predict their cosine similarity.</p>
+<div id="vector-similarity-example" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>])</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> np.array([<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">2</span>])</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Euclidean distance: </span><span class="sc">{</span>np<span class="sc">.</span>linalg<span class="sc">.</span>norm(a <span class="op">-</span> b)<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Dot product: </span><span class="sc">{</span>np<span class="sc">.</span>dot(a, b)<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Cosine similarity: </span><span class="sc">{</span>cosine_similarity([a], [b])[<span class="dv">0</span>, <span class="dv">0</span>]<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Euclidean distance: 2.4495
+Dot product: 12.0000
+Cosine similarity: 1.0000</code></pre>
+</div>
+</div>
+<p>The Euclidean distance is about 2.4495, and the dot product is 12. Neither score has a universal cutoff for “similar”. Cosine similarity is 1: the vectors have identical directions because the relative word frequencies match. This does not prove that the documents mean the same thing—bag-of-words still ignores word order.</p>
+<p><strong>Normalizing a vector to length 1</strong> means dividing each coordinate by its L2 norm. For two such vectors, the dot product equals cosine similarity because both lengths in the denominator are 1. Euclidean distance also produces the same ranking: for unit-length vectors, <span class="math inline">\(d(a,b)^2=2-2(a\cdot b)\)</span>. This connects to <code>TfidfVectorizer</code>, which normalizes its document vectors to length 1 by default, and explains why a dot product can compute cosine similarity when embeddings have already been normalized.</p>
+<p>Cosine similarity is useful when direction matters more than magnitude, as in many text-comparison tasks. Dot product can be useful when magnitude carries information worth retaining. For learned embeddings, use a similarity measure suited to how the model was trained and evaluate the resulting neighbours for your task. None of these measures automatically captures meaning.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Discussion: which item is most similar?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>Suppose a recommendation system compares a query vector with three item vectors. Using the figure below, predict which item ranks first under each measure: Euclidean distance, dot product, and cosine similarity. Explain which feature of the picture you used for each choice. You do not need exact coordinates.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/distance-metrics.png" class="img-fluid figure-img" alt="Four vectors share an origin. Item A extends far beyond the query, item B ends near the query endpoint, and the shorter item C points most closely in the query direction." width="600"></p>
+<figcaption>A query vector and three candidate item vectors in a two-dimensional space.</figcaption>
+</figure>
+</div>
+<p><em>Adapted from <a href="https://developers.google.com/machine-learning/recommendation/overview/candidate-generation">Google’s recommendation-systems course</a>.</em></p>
+<p>How would normalizing all four vectors to length 1 change your answers?</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Discussion
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>Euclidean distance favours B:</strong> its endpoint is closest to the query’s endpoint. <strong>Dot product favours A:</strong> its large magnitude more than compensates for its directional mismatch in this example. <strong>Cosine similarity favours C:</strong> it makes the smallest angle with the query, regardless of its shorter length.</p>
+<p>After normalization, all three measures favour C. Each vector keeps its direction but its endpoint moves onto the unit circle, so all three measures give the same ranking. The choice of similarity measure and whether we normalize vectors are therefore connected decisions.</p>
+</div>
+</div>
+</div>
+<p>We will use cosine similarity to explore the word embeddings below, focusing on their directions rather than their magnitudes.</p>
+</section>
 <section id="exploring-pretrained-word2vec-embeddings" class="level4">
 <h4 class="anchored" data-anchor-id="exploring-pretrained-word2vec-embeddings">Exploring pretrained word2vec embeddings</h4>
 <p>The following examples use vectors from the historical <code>word2vec-google-news-300</code> model, which was trained on roughly 100 billion words from Google News. The complete model contains about three million words and phrases and requires more than 1.5 GB of storage. To keep the chapter reproducible, this repository contains a 410-word subset chosen for the demonstrations below. It contains the original 300-dimensional vectors, but it is not a general-purpose vocabulary.</p>
 <p>Phrases in this vocabulary use underscores, as in <code>computer_programmer</code>. Because these embeddings were learned from news text rather than written by hand, their geometry reflects statistical patterns in that corpus.</p>
 <div id="chapter17-08c" class="cell" data-execution_count="5">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> gensim.models <span class="im">import</span> KeyedVectors</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>word_vectors <span class="op">=</span> KeyedVectors.load(<span class="st">"data/google-news-word2vec-subset.kv"</span>)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Vocabulary in course subset: </span><span class="sc">{</span><span class="bu">len</span>(word_vectors)<span class="sc">:,}</span><span class="ss"> words and phrases"</span>)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Dimensions per word: </span><span class="sc">{</span>word_vectors<span class="sc">.</span>vector_size<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>word_vectors[<span class="st">"UBC"</span>][:<span class="dv">10</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> gensim.models <span class="im">import</span> KeyedVectors</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>word_vectors <span class="op">=</span> KeyedVectors.load(<span class="st">"data/google-news-word2vec-subset.kv"</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Vocabulary in course subset: </span><span class="sc">{</span><span class="bu">len</span>(word_vectors)<span class="sc">:,}</span><span class="ss"> words and phrases"</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Dimensions per word: </span><span class="sc">{</span>word_vectors<span class="sc">.</span>vector_size<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>word_vectors[<span class="st">"UBC"</span>][:<span class="dv">10</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Vocabulary in course subset: 410 words and phrases
 Dimensions per word: 300</code></pre>
@@ -1002,10 +1084,10 @@ Dimensions per word: 300</code></pre>
 </div>
 </div>
 <p>The vector for <code>UBC</code> contains 300 numbers. Unlike a bag-of-words vector, it is short and mostly nonzero. A single coordinate is not meant to have a label such as <em>university-ness</em>. Relationships emerge from the vector as a whole.</p>
-<p>We compare vectors using <strong>cosine similarity</strong>, which measures how closely their directions align rather than how large they are. Vectors pointing in similar directions receive higher scores. Think of the cosine distance used in clustering: here, we rank from most similar to least similar.</p>
+<p>We now use cosine similarity to find word vectors pointing in similar directions. Higher scores place words earlier in the ranking.</p>
 <p>A similarity score is not a probability that two words have the same meaning. We will use it to find nearby words, then nearby texts. In the following examples, the neighbours are selected only from our 410-word subset, not from the full Google News vocabulary.</p>
 <div id="chapter17-08e" class="cell" data-execution_count="6">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>word_vectors.most_similar(<span class="st">"UBC"</span>, topn<span class="op">=</span><span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>word_vectors.most_similar(<span class="st">"UBC"</span>, topn<span class="op">=</span><span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="6">
 <pre><code>[('UVic', 0.788647472858429),
  ('SFU', 0.7588528394699097),
@@ -1017,14 +1099,14 @@ Dimensions per word: 300</code></pre>
 <p>The nearby vectors represent universities and related institutions rather than dictionary synonyms for <code>UBC</code>. They are close because they occurred in similar news contexts. The nearest neighbours would change if we trained word2vec on medical notes, novels, or social-media posts.</p>
 <p>We can also compare selected pairs directly.</p>
 <div id="chapter17-08g" class="cell" data-execution_count="7">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>word_pairs <span class="op">=</span> [(<span class="st">"Canada"</span>, <span class="st">"hockey"</span>), (<span class="st">"Japan"</span>, <span class="st">"hockey"</span>)]</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    [</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"word 1"</span>: first, <span class="st">"word 2"</span>: second,</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>         <span class="st">"cosine similarity"</span>: word_vectors.similarity(first, second)}</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> first, second <span class="kw">in</span> word_pairs</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    ]</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>word_pairs <span class="op">=</span> [(<span class="st">"Canada"</span>, <span class="st">"hockey"</span>), (<span class="st">"Japan"</span>, <span class="st">"hockey"</span>)]</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    [</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"word 1"</span>: first, <span class="st">"word 2"</span>: second,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>         <span class="st">"cosine similarity"</span>: word_vectors.similarity(first, second)}</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> first, second <span class="kw">in</span> word_pairs</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="7">
 <div>
 
@@ -1076,22 +1158,22 @@ Figure&nbsp;1: A schematic illustration of the king–queen analogy. The displac
 </div>
 <p><em>Screenshot source: <a href="https://www.youtube.com/watch?v=wjZofJX0v4M&amp;t=802s">3Blue1Brown</a>.</em></p>
 <p>The picture is a two-dimensional illustration of the relationship. The Google News vectors actually have 300 dimensions, so we cannot display their full geometry directly. The important idea is the direction: the displacement from <em>man</em> to <em>woman</em> is approximately similar to the displacement from <em>king</em> to <em>queen</em>.</p>
-<p>We then find the word vector nearest to the result. The helper below expresses the question as “word 1 is to word 2 as word 3 is to what?”</p>
+<p>We then find the word vector nearest to the result. The helper below expresses the question as ‘’word 1 is to word 2 as word 3 is to what?’’</p>
 <div id="chapter17-08i" class="cell" data-execution_count="8">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> analogy(word1, word2, word3, model<span class="op">=</span>word_vectors):</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    result, similarity <span class="op">=</span> model.most_similar(</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>        positive<span class="op">=</span>[word2, word3], negative<span class="op">=</span>[word1], topn<span class="op">=</span><span class="dv">1</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    )[<span class="dv">0</span>]</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {<span class="st">"result"</span>: result, <span class="st">"cosine similarity"</span>: similarity}</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>analogy(<span class="st">"man"</span>, <span class="st">"king"</span>, <span class="st">"woman"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> analogy(word1, word2, word3, model<span class="op">=</span>word_vectors):</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    result, similarity <span class="op">=</span> model.most_similar(</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>        positive<span class="op">=</span>[word2, word3], negative<span class="op">=</span>[word1], topn<span class="op">=</span><span class="dv">1</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    )[<span class="dv">0</span>]</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {<span class="st">"result"</span>: result, <span class="st">"cosine similarity"</span>: similarity}</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>analogy(<span class="st">"man"</span>, <span class="st">"king"</span>, <span class="st">"woman"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="8">
 <pre><code>{'result': 'queen', 'cosine similarity': 0.7118191719055176}</code></pre>
 </div>
 </div>
 <div id="chapter17-08j" class="cell" data-execution_count="9">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>analogy(<span class="st">"Montreal"</span>, <span class="st">"Canadiens"</span>, <span class="st">"Vancouver"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>analogy(<span class="st">"Montreal"</span>, <span class="st">"Canadiens"</span>, <span class="st">"Vancouver"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="9">
 <pre><code>{'result': 'Canucks', 'cosine similarity': 0.8213266134262085}</code></pre>
 </div>
@@ -1102,7 +1184,7 @@ Figure&nbsp;1: A schematic illustration of the king–queen analogy. The displac
 <h4 class="anchored" data-anchor-id="embeddings-also-encode-bias">Embeddings also encode bias</h4>
 <p>Learned associations are not always desirable. Before running the next cell, predict its result. What occupational relationship might the model infer?</p>
 <div id="chapter17-08m" class="cell" data-execution_count="10">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>analogy(<span class="st">"man"</span>, <span class="st">"computer_programmer"</span>, <span class="st">"woman"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>analogy(<span class="st">"man"</span>, <span class="st">"computer_programmer"</span>, <span class="st">"woman"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="10">
 <pre><code>{'result': 'homemaker', 'cosine similarity': 0.5627118945121765}</code></pre>
 </div>
@@ -1120,7 +1202,7 @@ Figure&nbsp;1: A schematic illustration of the king–queen analogy. The displac
 <li>Nearest neighbours learned from Google News will necessarily be the most useful neighbours in another domain.</li>
 </ol>
 <div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1129,7 +1211,7 @@ Figure&nbsp;1: A schematic illustration of the king–queen analogy. The displac
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>None of the four claims is justified by these demonstrations.</p>
 <ol type="1">
@@ -1153,22 +1235,22 @@ Figure&nbsp;1: A schematic illustration of the king–queen analogy. The displac
 <p>Before looking at the output, predict which two sentences will be most similar. Will sentences about studying and sound necessarily express the same need?</p>
 <p>The following cell downloads a pretrained sentence-embedding model on its first run. Model-dependent cells are not executed during the book build; their saved outputs are shown instead. Run them locally to explore different texts.</p>
 <div id="chapter18-recipe-embeddings" class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sentence_transformers <span class="im">import</span> SentenceTransformer</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>embedding_model <span class="op">=</span> SentenceTransformer(<span class="st">"all-MiniLM-L6-v2"</span>)</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>sentences <span class="op">=</span> [</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"I need a quiet place to study."</span>,</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"I want to do my coursework somewhere without noise."</span>,</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"I like studying with music playing in the background."</span>,</span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"My phone is running out of battery."</span>,</span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>sentence_embeddings <span class="op">=</span> embedding_model.encode(</span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    sentences, normalize_embeddings<span class="op">=</span><span class="va">True</span></span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Embedding matrix shape:"</span>, sentence_embeddings.shape)</span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame(</span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    sentence_embeddings[:, :<span class="dv">5</span>], index<span class="op">=</span>sentences</span>
-<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>).<span class="bu">round</span>(<span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sentence_transformers <span class="im">import</span> SentenceTransformer</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>embedding_model <span class="op">=</span> SentenceTransformer(<span class="st">"all-MiniLM-L6-v2"</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>sentences <span class="op">=</span> [</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"I need a quiet place to study."</span>,</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"I want to do my coursework somewhere without noise."</span>,</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"I like studying with music playing in the background."</span>,</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"My phone is running out of battery."</span>,</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>sentence_embeddings <span class="op">=</span> embedding_model.encode(</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>    sentences, normalize_embeddings<span class="op">=</span><span class="va">True</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Embedding matrix shape:"</span>, sentence_embeddings.shape)</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame(</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>    sentence_embeddings[:, :<span class="dv">5</span>], index<span class="op">=</span>sentences</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>).<span class="bu">round</span>(<span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Embedding matrix shape: (4, 384)</code></pre>
 </div>
@@ -1226,43 +1308,43 @@ Figure&nbsp;1: A schematic illustration of the king–queen analogy. The displac
 </div>
 </div>
 </div>
-<div id="cell-37" class="cell">
+<div id="cell-40" class="cell">
 <details class="code-fold">
 <summary>Show heat-map code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>similarities <span class="op">=</span> cosine_similarity(sentence_embeddings)</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> [<span class="st">"Quiet place"</span>, <span class="st">"Coursework without noise"</span>, <span class="st">"Study with music"</span>, <span class="st">"Low phone battery"</span>]</span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="fl">5.5</span>))</span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>image <span class="op">=</span> ax.imshow(similarities, cmap<span class="op">=</span><span class="st">"viridis"</span>, vmin<span class="op">=-</span><span class="dv">1</span>, vmax<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>ax.set_xticks(<span class="bu">range</span>(<span class="bu">len</span>(labels)), labels, rotation<span class="op">=</span><span class="dv">30</span>, ha<span class="op">=</span><span class="st">"right"</span>)</span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>ax.set_yticks(<span class="bu">range</span>(<span class="bu">len</span>(labels)), labels)</span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> row <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(labels)):</span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> col <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(labels)):</span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>        ax.text(</span>
-<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>            col, row, <span class="ss">f"</span><span class="sc">{</span>similarities[row, col]<span class="sc">:.2f}</span><span class="ss">"</span>,</span>
-<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>            ha<span class="op">=</span><span class="st">"center"</span>, va<span class="op">=</span><span class="st">"center"</span>,</span>
-<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>            color<span class="op">=</span><span class="st">"black"</span> <span class="cf">if</span> similarities[row, col] <span class="op">&gt;</span> <span class="fl">0.4</span> <span class="cf">else</span> <span class="st">"white"</span>,</span>
-<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>fig.colorbar(image, ax<span class="op">=</span>ax, label<span class="op">=</span><span class="st">"Cosine similarity"</span>, ticks<span class="op">=</span>[<span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>])</span>
-<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
-<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>similarities <span class="op">=</span> cosine_similarity(sentence_embeddings)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> [<span class="st">"Quiet place"</span>, <span class="st">"Coursework without noise"</span>, <span class="st">"Study with music"</span>, <span class="st">"Low phone battery"</span>]</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="fl">5.5</span>))</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>image <span class="op">=</span> ax.imshow(similarities, cmap<span class="op">=</span><span class="st">"viridis"</span>, vmin<span class="op">=-</span><span class="dv">1</span>, vmax<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>ax.set_xticks(<span class="bu">range</span>(<span class="bu">len</span>(labels)), labels, rotation<span class="op">=</span><span class="dv">30</span>, ha<span class="op">=</span><span class="st">"right"</span>)</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>ax.set_yticks(<span class="bu">range</span>(<span class="bu">len</span>(labels)), labels)</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> row <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(labels)):</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> col <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(labels)):</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>        ax.text(</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>            col, row, <span class="ss">f"</span><span class="sc">{</span>similarities[row, col]<span class="sc">:.2f}</span><span class="ss">"</span>,</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>            ha<span class="op">=</span><span class="st">"center"</span>, va<span class="op">=</span><span class="st">"center"</span>,</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>            color<span class="op">=</span><span class="st">"black"</span> <span class="cf">if</span> similarities[row, col] <span class="op">&gt;</span> <span class="fl">0.4</span> <span class="cf">else</span> <span class="st">"white"</span>,</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>fig.colorbar(image, ax<span class="op">=</span>ax, label<span class="op">=</span><span class="st">"Cosine similarity"</span>, ticks<span class="op">=</span>[<span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>])</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="18_natural-language-processing_files/figure-html/cell-13-output-1.png" class="img-fluid figure-img" alt="A four-by-four annotated heat map. The two requests for quiet have similarity 0.73, their similarities to studying with music are 0.54 and 0.49, and similarities to the phone-battery sentence are close to zero. Each diagonal entry is 1."></p>
+<p><img src="18_natural-language-processing_files/figure-html/cell-14-output-1.png" class="img-fluid figure-img" alt="A four-by-four annotated heat map. The two requests for quiet have similarity 0.73, their similarities to studying with music are 0.54 and 0.49, and similarities to the phone-battery sentence are close to zero. Each diagonal entry is 1."></p>
 <figcaption>Cosine similarity between campus-themed sentences. Short axis labels follow the sentence order above.</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Each row of <code>sentence_embeddings</code> represents one sentence; the 384 columns are learned features. Unlike our sparse representations, the columns no longer correspond to vocabulary terms. The first few coordinates show what an embedding looks like, but individual coordinates do not have simple labels such as “contains battery.” Interpret relationships through the vectors as a whole.</p>
+<p>Each row of <code>sentence_embeddings</code> represents one sentence; the 384 columns are learned features. Unlike our sparse representations, the columns no longer correspond to vocabulary terms. The first few coordinates show what an embedding looks like, but individual coordinates do not have simple labels such as ‘’contains battery.’’ Interpret relationships through the vectors as a whole.</p>
 <p>The heat map compares every pair of sentences. Brighter cells indicate higher cosine similarity; the numbers give the exact scores rounded to two decimal places. The short axis labels follow the order of the sentences above. Each sentence has similarity 1 with itself. Compare the two requests for quiet with the preference for background music and the sentence about a phone battery. These scores reflect the model’s learned associations, not a guarantee that two sentences express the same need.</p>
 <p>We requested <code>normalize_embeddings=True</code>, which rescales each vector to length 1 without changing its direction. For these vectors, a dot product gives the same score as cosine similarity; we use <code>cosine_similarity</code> to make the comparison explicit.</p>
 <p>You used sentence embeddings in homework 6 to cluster recipe titles. For retrieval, we will instead encode a query and compare its vector with catalog-description vectors. <strong>The representation can be reused; what we do with it changes.</strong></p>
 <div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1271,7 +1353,7 @@ Figure&nbsp;1: A schematic illustration of the king–queen analogy. The displac
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The first two sentences express a similar need using different words: a quiet place for academic work. The third also concerns studying and sound, but expresses a different preference. A model can recognize this shared topic without fully capturing the distinction between wanting quiet and wanting music. The battery sentence concerns a different need.</p>
 <p>In the saved output, the first two sentences have similarity about 0.73. Their similarities to the background-music sentence are lower (about 0.54 and 0.49), and their similarities to the battery sentence are close to zero. Even when two sentences have a relatively high similarity, check whether their differences matter for the task. Recommending a way to block sound to someone who wants background music could miss what they are asking for.</p>
@@ -1309,16 +1391,16 @@ Figure&nbsp;2: The main components of an information-retrieval system. Documents
 <p>We already fitted the TF–IDF vectorizer on the catalog descriptions. At query time, we transform a new query using the same fitted vocabulary, compare it with every document vector, and rank the entries by cosine similarity.</p>
 <p>First consider a query containing an exact product identifier.</p>
 <div id="chapter17-13" class="cell" data-execution_count="11">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sparse_retrieve(query, k<span class="op">=</span><span class="dv">3</span>):</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    query_tfidf <span class="op">=</span> tfidf.transform([query])</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> cosine_similarity(query_tfidf, product_tfidf).ravel()</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    top_indices <span class="op">=</span> np.argsort(scores)[::<span class="op">-</span><span class="dv">1</span>][:k]</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> products.iloc[top_indices].copy()</span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    results[<span class="st">"score"</span>] <span class="op">=</span> scores[top_indices]</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> results[[<span class="st">"product_id"</span>, <span class="st">"title"</span>, <span class="st">"score"</span>, <span class="st">"text"</span>]]</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>sparse_retrieve(<span class="st">"HUB-7X"</span>, k<span class="op">=</span><span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sparse_retrieve(query, k<span class="op">=</span><span class="dv">3</span>):</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    query_tfidf <span class="op">=</span> tfidf.transform([query])</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> cosine_similarity(query_tfidf, product_tfidf).ravel()</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    top_indices <span class="op">=</span> np.argsort(scores)[::<span class="op">-</span><span class="dv">1</span>][:k]</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> products.iloc[top_indices].copy()</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    results[<span class="st">"score"</span>] <span class="op">=</span> scores[top_indices]</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> results[[<span class="st">"product_id"</span>, <span class="st">"title"</span>, <span class="st">"score"</span>, <span class="st">"text"</span>]]</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>sparse_retrieve(<span class="st">"HUB-7X"</span>, k<span class="op">=</span><span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="11">
 <div>
 
@@ -1364,8 +1446,8 @@ Figure&nbsp;2: The main components of an information-retrieval system. Documents
 <p>The identifier <code>HUB-7X</code> points to the USB-C hub. Inspecting <code>tfidf.build_analyzer()("HUB-7X")</code> would show the tokens <code>hub</code> and <code>7x</code>: the vectorizer matches terms rather than checking an entire identifier as one unit. When a model number must match exactly, check that constraint explicitly.</p>
 <p>The remaining results have score zero. They are returned because we asked for three results, not because the retriever found three useful matches. Their order is just a tie. Now consider a need expressed using words that do not occur in the relevant product description.</p>
 <div id="chapter17-15" class="cell" data-execution_count="12">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>semantic_query <span class="op">=</span> <span class="st">"How can I avoid hearing people talk while I study?"</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>sparse_retrieve(semantic_query, k<span class="op">=</span><span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>semantic_query <span class="op">=</span> <span class="st">"How can I avoid hearing people talk while I study?"</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>sparse_retrieve(semantic_query, k<span class="op">=</span><span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="12">
 <div>
 
@@ -1421,10 +1503,10 @@ Figure&nbsp;2: The main components of an information-retrieval system. Documents
 <h3 class="anchored" data-anchor-id="dense-retrieval-with-a-pretrained-embedding-model">Dense retrieval with a pretrained embedding model</h3>
 <p>We now use the same sentence-embedding model to encode every catalog description. Dense retrieval embeds the query into the same vector space and compares it with those document vectors, allowing differently worded texts to receive similar vectors. We reuse the pretrained model rather than training one on our tiny catalog.</p>
 <div id="chapter17-18" class="cell" data-execution_count="13">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>product_embeddings <span class="op">=</span> embedding_model.encode(</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    products[<span class="st">"text"</span>].tolist(), normalize_embeddings<span class="op">=</span><span class="va">True</span></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>product_embeddings.shape</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>product_embeddings <span class="op">=</span> embedding_model.encode(</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    products[<span class="st">"text"</span>].tolist(), normalize_embeddings<span class="op">=</span><span class="va">True</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>product_embeddings.shape</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.</code></pre>
 </div>
@@ -1439,16 +1521,16 @@ Figure&nbsp;2: The main components of an information-retrieval system. Documents
 </div>
 <p>The model produces one 384-dimensional dense vector for each catalog entry. Because we requested normalized vectors, their dot products are equal to their cosine similarities.</p>
 <div id="chapter17-20" class="cell" data-execution_count="14">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dense_retrieve(query, k<span class="op">=</span><span class="dv">3</span>):</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    query_embedding <span class="op">=</span> embedding_model.encode([query], normalize_embeddings<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> cosine_similarity(query_embedding, product_embeddings).ravel()</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    top_indices <span class="op">=</span> np.argsort(scores)[::<span class="op">-</span><span class="dv">1</span>][:k]</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> products.iloc[top_indices].copy()</span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    results[<span class="st">"score"</span>] <span class="op">=</span> scores[top_indices]</span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> results[[<span class="st">"product_id"</span>, <span class="st">"title"</span>, <span class="st">"score"</span>, <span class="st">"text"</span>]]</span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>dense_retrieve(semantic_query, k<span class="op">=</span><span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dense_retrieve(query, k<span class="op">=</span><span class="dv">3</span>):</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    query_embedding <span class="op">=</span> embedding_model.encode([query], normalize_embeddings<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> cosine_similarity(query_embedding, product_embeddings).ravel()</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    top_indices <span class="op">=</span> np.argsort(scores)[::<span class="op">-</span><span class="dv">1</span>][:k]</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> products.iloc[top_indices].copy()</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    results[<span class="st">"score"</span>] <span class="op">=</span> scores[top_indices]</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> results[[<span class="st">"product_id"</span>, <span class="st">"title"</span>, <span class="st">"score"</span>, <span class="st">"text"</span>]]</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>dense_retrieve(semantic_query, k<span class="op">=</span><span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="14">
 <div>
 
@@ -1508,7 +1590,7 @@ Figure&nbsp;2: The main components of an information-retrieval system. Documents
 <p>A few appealing search results are not enough to establish that a retriever works. Start with several realistic queries and identify which documents would help answer each one. Then inspect the top results: did they include the evidence you needed? Did irrelevant results crowd it out? Include exact terms, paraphrases, and questions the collection cannot answer.</p>
 <p>Use these observations to improve the system, then check it on held-out queries rather than repeatedly tuning to the same examples. This is the same reason we protected test data when comparing classifiers.</p>
 <div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1517,7 +1599,7 @@ Figure&nbsp;2: The main components of an information-retrieval system. Documents
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>For more systematic evaluation, useful search terms include <strong>precision@<span class="math inline">\(k\)</span></strong>, <strong>recall@<span class="math inline">\(k\)</span></strong>, <strong>mean reciprocal rank (MRR)</strong>, and <strong>normalized discounted cumulative gain (NDCG)</strong>. They capture different aspects of retrieval quality. We will not develop these metrics here.</p>
 </div>
@@ -1536,7 +1618,7 @@ Figure&nbsp;2: The main components of an information-retrieval system. Documents
 <p>Identify where exact word overlap helps, where a paraphrase creates vocabulary mismatch, and how each system behaves when the requested model number is absent from the catalog.</p>
 <p>For each query, decide which catalog entries would actually be useful. Did each method place those entries in its top three? Explain one irrelevant result rather than treating a high score as proof of relevance.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1545,7 +1627,7 @@ Figure&nbsp;2: The main components of an information-retrieval system. Documents
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Treat these as expectations to check against your results, rather than required rankings.</p>
 <ol type="1">
@@ -1617,7 +1699,7 @@ P(\text{next token} \mid \text{context}).
 <p>Instruction tuning uses examples of instructions and responses to help the model continue a prompt in the form of a useful answer. This helps connect next-token prediction to the assistants we interact with, but does not guarantee that their answers are correct.</p>
 <p>The embedding model we used earlier returns a numerical vector for comparing texts. A generative language model instead produces new text, such as an answer to a question.</p>
 <p>For our purposes, we can use an LLM without studying its internal neural-network architecture. We provide a <strong>prompt</strong>—the input text containing our instructions and any relevant information—and the model generates a response:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>generated_text <span class="op">=</span> language_model(prompt)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>generated_text <span class="op">=</span> language_model(prompt)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="clear-instructions-and-supplied-evidence" class="level3">
 <h3 class="anchored" data-anchor-id="clear-instructions-and-supplied-evidence">Clear instructions and supplied evidence</h3>
@@ -1657,33 +1739,33 @@ Figure&nbsp;3: A RAG pipeline retrieves catalog documents relevant to a rainy ev
 <h3 class="anchored" data-anchor-id="step-1-split-documents-into-chunks">Step 1: Split documents into chunks</h3>
 <p>Long documents are commonly divided into smaller <strong>chunks</strong> before they are embedded. Small chunks can isolate a precise passage, but they may omit context needed to interpret it. Large chunks retain more context, but they may mix several topics and consume more of the model’s context window. Overlap can preserve text near a boundary at the cost of storing repeated content.</p>
 <p>Each catalog description is already a short, natural chunk, so the function below leaves these entries intact. The same code would split longer descriptions. Production systems often use token-aware or structure-aware splitting so headings, sentences, and paragraphs are not broken arbitrarily.</p>
-<p>For example, imagine a longer description contains: <em>“The hub supports two monitors. This requires a laptop with Thunderbolt support.”</em> A boundary between those sentences could leave a retrieved chunk with the claim but without its qualification. Keeping the sentences together, or including overlap, could preserve the evidence needed to answer “Will it support two monitors on my laptop?” The goal is to retrieve enough context to interpret a claim, not merely a matching phrase.</p>
+<p>For example, imagine a longer description contains: *‘’The hub supports two monitors. This requires a laptop with Thunderbolt support.’‘* A boundary between those sentences could leave a retrieved chunk with the claim but without its qualification. Keeping the sentences together, or including overlap, could preserve the evidence needed to answer’‘Will it support two monitors on my laptop?’’ The goal is to retrieve enough context to interpret a claim, not merely a matching phrase.</p>
 <div id="chapter17-30" class="cell" data-execution_count="15">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> split_into_chunks(text, chunk_size<span class="op">=</span><span class="dv">50</span>, overlap<span class="op">=</span><span class="dv">10</span>):</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> overlap <span class="op">&gt;=</span> chunk_size:</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"overlap must be smaller than chunk_size"</span>)</span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    words <span class="op">=</span> text.split()</span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    step <span class="op">=</span> chunk_size <span class="op">-</span> overlap</span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [<span class="st">" "</span>.join(words[start : start <span class="op">+</span> chunk_size])</span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> start <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, <span class="bu">len</span>(words), step)]</span>
-<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>chunk_records <span class="op">=</span> []</span>
-<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> product <span class="kw">in</span> products.itertuples(index<span class="op">=</span><span class="va">False</span>):</span>
-<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> chunk_number, chunk_text <span class="kw">in</span> <span class="bu">enumerate</span>(split_into_chunks(product.text)):</span>
-<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>        chunk_records.append(</span>
-<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>            {</span>
-<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>                <span class="st">"chunk_id"</span>: <span class="ss">f"</span><span class="sc">{</span>product<span class="sc">.</span>product_id<span class="sc">}</span><span class="ss">-</span><span class="sc">{</span>chunk_number<span class="sc">}</span><span class="ss">"</span>,</span>
-<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>                <span class="st">"product_id"</span>: product.product_id,</span>
-<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>                <span class="st">"title"</span>: product.title,</span>
-<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a>                <span class="st">"item_type"</span>: product.item_type,</span>
-<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>                <span class="st">"text"</span>: chunk_text,</span>
-<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a>            }</span>
-<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb28-23"><a href="#cb28-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-24"><a href="#cb28-24" aria-hidden="true" tabindex="-1"></a>chunks <span class="op">=</span> pd.DataFrame(chunk_records)</span>
-<span id="cb28-25"><a href="#cb28-25" aria-hidden="true" tabindex="-1"></a>chunks</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> split_into_chunks(text, chunk_size<span class="op">=</span><span class="dv">50</span>, overlap<span class="op">=</span><span class="dv">10</span>):</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> overlap <span class="op">&gt;=</span> chunk_size:</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"overlap must be smaller than chunk_size"</span>)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    words <span class="op">=</span> text.split()</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>    step <span class="op">=</span> chunk_size <span class="op">-</span> overlap</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [<span class="st">" "</span>.join(words[start : start <span class="op">+</span> chunk_size])</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> start <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, <span class="bu">len</span>(words), step)]</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>chunk_records <span class="op">=</span> []</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> product <span class="kw">in</span> products.itertuples(index<span class="op">=</span><span class="va">False</span>):</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> chunk_number, chunk_text <span class="kw">in</span> <span class="bu">enumerate</span>(split_into_chunks(product.text)):</span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>        chunk_records.append(</span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>            {</span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>                <span class="st">"chunk_id"</span>: <span class="ss">f"</span><span class="sc">{</span>product<span class="sc">.</span>product_id<span class="sc">}</span><span class="ss">-</span><span class="sc">{</span>chunk_number<span class="sc">}</span><span class="ss">"</span>,</span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>                <span class="st">"product_id"</span>: product.product_id,</span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>                <span class="st">"title"</span>: product.title,</span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>                <span class="st">"item_type"</span>: product.item_type,</span>
+<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a>                <span class="st">"text"</span>: chunk_text,</span>
+<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-24"><a href="#cb30-24" aria-hidden="true" tabindex="-1"></a>chunks <span class="op">=</span> pd.DataFrame(chunk_records)</span>
+<span id="cb30-25"><a href="#cb30-25" aria-hidden="true" tabindex="-1"></a>chunks</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="15">
 <div>
 
@@ -1824,33 +1906,33 @@ Figure&nbsp;3: A RAG pipeline retrieves catalog documents relevant to a rainy ev
 <p>We embed chunks because these are the units the retriever will return. The DataFrame acts as our small document store, and the NumPy array acts as our vector store.</p>
 <p>Our query explicitly asks for products, so we use the <code>item_type</code> metadata to exclude articles before ranking. Metadata filters are useful when a query contains constraints that should be enforced exactly rather than approximated through semantic similarity.</p>
 <div id="chapter17-32" class="cell" data-execution_count="16">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>chunk_embeddings <span class="op">=</span> embedding_model.encode(</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>    chunks[<span class="st">"text"</span>].tolist(), normalize_embeddings<span class="op">=</span><span class="va">True</span></span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> retrieve_chunks(query, k<span class="op">=</span><span class="dv">3</span>, item_type<span class="op">=</span><span class="va">None</span>):</span>
-<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>    query_embedding <span class="op">=</span> embedding_model.encode([query], normalize_embeddings<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> cosine_similarity(query_embedding, chunk_embeddings).ravel()</span>
-<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>    candidate_indices <span class="op">=</span> chunks.index</span>
-<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> item_type <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
-<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>        candidate_indices <span class="op">=</span> chunks.index[chunks[<span class="st">"item_type"</span>] <span class="op">==</span> item_type]</span>
-<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>    candidate_scores <span class="op">=</span> scores[candidate_indices]</span>
-<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>    top_indices <span class="op">=</span> candidate_indices[np.argsort(candidate_scores)[::<span class="op">-</span><span class="dv">1</span>][:k]]</span>
-<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> chunks.loc[top_indices].copy()</span>
-<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>    results[<span class="st">"score"</span>] <span class="op">=</span> scores[top_indices]</span>
-<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> results[</span>
-<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>        [<span class="st">"chunk_id"</span>, <span class="st">"product_id"</span>, <span class="st">"title"</span>, <span class="st">"item_type"</span>, <span class="st">"score"</span>, <span class="st">"text"</span>]</span>
-<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>    ]</span>
-<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>rag_query <span class="op">=</span> (</span>
-<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">"I commute by bike after evening labs in Vancouver rain and carry a laptop. "</span></span>
-<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Which two products should I consider, and why?"</span></span>
-<span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb29-27"><a href="#cb29-27" aria-hidden="true" tabindex="-1"></a>retrieve_chunks(rag_query, k<span class="op">=</span><span class="dv">2</span>, item_type<span class="op">=</span><span class="st">"product"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>chunk_embeddings <span class="op">=</span> embedding_model.encode(</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>    chunks[<span class="st">"text"</span>].tolist(), normalize_embeddings<span class="op">=</span><span class="va">True</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> retrieve_chunks(query, k<span class="op">=</span><span class="dv">3</span>, item_type<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    query_embedding <span class="op">=</span> embedding_model.encode([query], normalize_embeddings<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> cosine_similarity(query_embedding, chunk_embeddings).ravel()</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>    candidate_indices <span class="op">=</span> chunks.index</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> item_type <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>        candidate_indices <span class="op">=</span> chunks.index[chunks[<span class="st">"item_type"</span>] <span class="op">==</span> item_type]</span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>    candidate_scores <span class="op">=</span> scores[candidate_indices]</span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>    top_indices <span class="op">=</span> candidate_indices[np.argsort(candidate_scores)[::<span class="op">-</span><span class="dv">1</span>][:k]]</span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> chunks.loc[top_indices].copy()</span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>    results[<span class="st">"score"</span>] <span class="op">=</span> scores[top_indices]</span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> results[</span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>        [<span class="st">"chunk_id"</span>, <span class="st">"product_id"</span>, <span class="st">"title"</span>, <span class="st">"item_type"</span>, <span class="st">"score"</span>, <span class="st">"text"</span>]</span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>rag_query <span class="op">=</span> (</span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">"I commute by bike after evening labs in Vancouver rain and carry a laptop. "</span></span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Which two products should I consider, and why?"</span></span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a>retrieve_chunks(rag_query, k<span class="op">=</span><span class="dv">2</span>, item_type<span class="op">=</span><span class="st">"product"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="16">
 <div>
 
@@ -1898,33 +1980,33 @@ Figure&nbsp;3: A RAG pipeline retrieves catalog documents relevant to a rainy ev
 <p>The prompt tells the model how to use the retrieved text. In applications where unsupported answers are costly, it is useful to instruct the model to say when the context is insufficient. We also attach source identifiers so that the answer can point back to evidence.</p>
 <p>Our prompt is deliberately specific to the catalog task: recommend two products. If you adapt the pipeline to answer policy questions or summarize recipes, change these instructions to match the new task.</p>
 <div id="chapter17-34" class="cell" data-execution_count="17">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> build_rag_prompt(query, retrieved_chunks):</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    context_blocks <span class="op">=</span> []</span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> row <span class="kw">in</span> retrieved_chunks.itertuples(index<span class="op">=</span><span class="va">False</span>):</span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>        context_blocks.append(</span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"SOURCE ID: </span><span class="sc">{</span>row<span class="sc">.</span>chunk_id<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span></span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"PRODUCT TITLE: </span><span class="sc">{</span>row<span class="sc">.</span>title<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span></span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"DESCRIPTION: </span><span class="sc">{</span>row<span class="sc">.</span>text<span class="sc">}</span><span class="ss">"</span></span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>    context <span class="op">=</span> <span class="st">"</span><span class="ch">\n\n</span><span class="st">"</span>.join(context_blocks)</span>
-<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="ss">f"""Answer the question using only the context below.</span></span>
-<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a><span class="ss">If the context does not contain enough information, say that you do not know.</span></span>
-<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a><span class="ss">Recommend exactly two products. Use their exact titles, explain briefly why each</span></span>
-<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a><span class="ss">fits the user's needs, and cite each supporting source ID in square brackets.</span></span>
-<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a><span class="ss">CONTEXT</span></span>
-<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a><span class="sc">{</span>context<span class="sc">}</span></span>
-<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a><span class="ss">QUESTION</span></span>
-<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a><span class="sc">{</span>query<span class="sc">}</span></span>
-<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a><span class="ss">ANSWER</span></span>
-<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a><span class="ss">"""</span></span>
-<span id="cb30-24"><a href="#cb30-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-25"><a href="#cb30-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-26"><a href="#cb30-26" aria-hidden="true" tabindex="-1"></a>rag_chunks <span class="op">=</span> retrieve_chunks(rag_query, k<span class="op">=</span><span class="dv">2</span>, item_type<span class="op">=</span><span class="st">"product"</span>)</span>
-<span id="cb30-27"><a href="#cb30-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(build_rag_prompt(rag_query, rag_chunks))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> build_rag_prompt(query, retrieved_chunks):</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>    context_blocks <span class="op">=</span> []</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> row <span class="kw">in</span> retrieved_chunks.itertuples(index<span class="op">=</span><span class="va">False</span>):</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>        context_blocks.append(</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"SOURCE ID: </span><span class="sc">{</span>row<span class="sc">.</span>chunk_id<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"PRODUCT TITLE: </span><span class="sc">{</span>row<span class="sc">.</span>title<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"DESCRIPTION: </span><span class="sc">{</span>row<span class="sc">.</span>text<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>    context <span class="op">=</span> <span class="st">"</span><span class="ch">\n\n</span><span class="st">"</span>.join(context_blocks)</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="ss">f"""Answer the question using only the context below.</span></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a><span class="ss">If the context does not contain enough information, say that you do not know.</span></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a><span class="ss">Recommend exactly two products. Use their exact titles, explain briefly why each</span></span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a><span class="ss">fits the user's needs, and cite each supporting source ID in square brackets.</span></span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a><span class="ss">CONTEXT</span></span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a><span class="sc">{</span>context<span class="sc">}</span></span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a><span class="ss">QUESTION</span></span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a><span class="sc">{</span>query<span class="sc">}</span></span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a><span class="ss">ANSWER</span></span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a><span class="ss">"""</span></span>
+<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a>rag_chunks <span class="op">=</span> retrieve_chunks(rag_query, k<span class="op">=</span><span class="dv">2</span>, item_type<span class="op">=</span><span class="st">"product"</span>)</span>
+<span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(build_rag_prompt(rag_query, rag_chunks))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Answer the question using only the context below.
 If the context does not contain enough information, say that you do not know.
@@ -1947,44 +2029,44 @@ ANSWER
 </code></pre>
 </div>
 </div>
-<p>Inspecting the prompt is an important debugging step. The language model cannot use evidence that the retriever failed to include. Notice also that the retrieved text is untrusted input. A document could contain instructions such as “ignore the user’s question.” Robust applications must distinguish application instructions from document content and defend against this form of <strong>prompt injection</strong>.</p>
+<p>Inspecting the prompt is an important debugging step. The language model cannot use evidence that the retriever failed to include. Notice also that the retrieved text is untrusted input. A document could contain instructions such as ‘’ignore the user’s question.’’ Robust applications must distinguish application instructions from document content and defend against this form of <strong>prompt injection</strong>.</p>
 </section>
 <section id="step-4-generate-an-answer" class="level3">
 <h3 class="anchored" data-anchor-id="step-4-generate-an-answer">Step 4: Generate an answer</h3>
 <p>Retrieval and generation are separate parts of the pipeline. The same retrieved chunks and prompt can be sent to a small local model, a larger local model, or a hosted LLM. Here we use <code>google/flan-t5-small</code> so that the example can run on an ordinary computer. It is not an LLM by contemporary standards, and its output quality should not be taken as a limit of RAG.</p>
 <p>The saved output is shown in the rendered book, but the cell is not executed during the build. Running it locally downloads the model. Output can vary across library and model versions.</p>
 <div id="chapter17-37" class="cell" data-execution_count="18">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> AutoModelForSeq2SeqLM, AutoTokenizer</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>generator_name <span class="op">=</span> <span class="st">"google/flan-t5-small"</span></span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>generator_tokenizer <span class="op">=</span> AutoTokenizer.from_pretrained(generator_name)</span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>generator_model <span class="op">=</span> AutoModelForSeq2SeqLM.from_pretrained(generator_name)</span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> generate_text(prompt, max_new_tokens<span class="op">=</span><span class="dv">100</span>):</span>
-<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>    model_inputs <span class="op">=</span> generator_tokenizer(prompt, return_tensors<span class="op">=</span><span class="st">"pt"</span>, truncation<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>    output_ids <span class="op">=</span> generator_model.generate(</span>
-<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>        <span class="op">**</span>model_inputs,</span>
-<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>        max_new_tokens<span class="op">=</span>max_new_tokens,</span>
-<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>        do_sample<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> generator_tokenizer.decode(output_ids[<span class="dv">0</span>], skip_special_tokens<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> answer_with_rag(query, k<span class="op">=</span><span class="dv">3</span>, item_type<span class="op">=</span><span class="va">None</span>):</span>
-<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>    retrieved <span class="op">=</span> retrieve_chunks(query, k<span class="op">=</span>k, item_type<span class="op">=</span>item_type)</span>
-<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>    prompt <span class="op">=</span> build_rag_prompt(query, retrieved)</span>
-<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>    answer <span class="op">=</span> generate_text(prompt)</span>
-<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
-<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">"answer"</span>: answer,</span>
-<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a>        <span class="st">"sources"</span>: retrieved[[<span class="st">"chunk_id"</span>, <span class="st">"title"</span>, <span class="st">"score"</span>, <span class="st">"text"</span>]],</span>
-<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a>        <span class="st">"prompt"</span>: prompt,</span>
-<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-28"><a href="#cb32-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-29"><a href="#cb32-29" aria-hidden="true" tabindex="-1"></a>rag_result <span class="op">=</span> answer_with_rag(rag_query, k<span class="op">=</span><span class="dv">2</span>, item_type<span class="op">=</span><span class="st">"product"</span>)</span>
-<span id="cb32-30"><a href="#cb32-30" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(rag_result[<span class="st">"answer"</span>])</span>
-<span id="cb32-31"><a href="#cb32-31" aria-hidden="true" tabindex="-1"></a>display(rag_result[<span class="st">"sources"</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> AutoModelForSeq2SeqLM, AutoTokenizer</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>generator_name <span class="op">=</span> <span class="st">"google/flan-t5-small"</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>generator_tokenizer <span class="op">=</span> AutoTokenizer.from_pretrained(generator_name)</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>generator_model <span class="op">=</span> AutoModelForSeq2SeqLM.from_pretrained(generator_name)</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> generate_text(prompt, max_new_tokens<span class="op">=</span><span class="dv">100</span>):</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>    model_inputs <span class="op">=</span> generator_tokenizer(prompt, return_tensors<span class="op">=</span><span class="st">"pt"</span>, truncation<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>    output_ids <span class="op">=</span> generator_model.generate(</span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>        <span class="op">**</span>model_inputs,</span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>        max_new_tokens<span class="op">=</span>max_new_tokens,</span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>        do_sample<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> generator_tokenizer.decode(output_ids[<span class="dv">0</span>], skip_special_tokens<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> answer_with_rag(query, k<span class="op">=</span><span class="dv">3</span>, item_type<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a>    retrieved <span class="op">=</span> retrieve_chunks(query, k<span class="op">=</span>k, item_type<span class="op">=</span>item_type)</span>
+<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a>    prompt <span class="op">=</span> build_rag_prompt(query, retrieved)</span>
+<span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a>    answer <span class="op">=</span> generate_text(prompt)</span>
+<span id="cb34-22"><a href="#cb34-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb34-23"><a href="#cb34-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">"answer"</span>: answer,</span>
+<span id="cb34-24"><a href="#cb34-24" aria-hidden="true" tabindex="-1"></a>        <span class="st">"sources"</span>: retrieved[[<span class="st">"chunk_id"</span>, <span class="st">"title"</span>, <span class="st">"score"</span>, <span class="st">"text"</span>]],</span>
+<span id="cb34-25"><a href="#cb34-25" aria-hidden="true" tabindex="-1"></a>        <span class="st">"prompt"</span>: prompt,</span>
+<span id="cb34-26"><a href="#cb34-26" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb34-27"><a href="#cb34-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-28"><a href="#cb34-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-29"><a href="#cb34-29" aria-hidden="true" tabindex="-1"></a>rag_result <span class="op">=</span> answer_with_rag(rag_query, k<span class="op">=</span><span class="dv">2</span>, item_type<span class="op">=</span><span class="st">"product"</span>)</span>
+<span id="cb34-30"><a href="#cb34-30" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(rag_result[<span class="st">"answer"</span>])</span>
+<span id="cb34-31"><a href="#cb34-31" aria-hidden="true" tabindex="-1"></a>display(rag_result[<span class="st">"sources"</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
 {"model_id":"a29fd04a288e4158a05d5e7e3fab80f6","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
@@ -2070,36 +2152,36 @@ ANSWER
 <p>The weak answer above is a useful reminder that a RAG pipeline is not tied to one language model. We can keep the catalog, embeddings, retriever, and prompt exactly as they are and replace only the generator. A more capable instruction-tuned chat model will often follow constraints such as “exactly two products” and source citations better, although no model guarantees a correct or fully supported answer.</p>
 <p>The optional cell below uses <code>Qwen/Qwen2.5-1.5B-Instruct</code>. It is not executed when the book is rendered because it requires a substantially larger download and more memory than FLAN-T5-small. Students with suitable hardware can run it themselves—or pass <code>rag_result["prompt"]</code> to another local or hosted instruction-following LLM. The retrieval part of the pipeline does not need to change.</p>
 <div id="chapter17-qwen-code" class="cell" data-execution_count="19">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> AutoModelForCausalLM, AutoTokenizer</span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>qwen_name <span class="op">=</span> <span class="st">"Qwen/Qwen2.5-1.5B-Instruct"</span></span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>qwen_tokenizer <span class="op">=</span> AutoTokenizer.from_pretrained(qwen_name)</span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>qwen_model <span class="op">=</span> AutoModelForCausalLM.from_pretrained(</span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>    qwen_name, torch_dtype<span class="op">=</span><span class="st">"auto"</span></span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>messages <span class="op">=</span> [</span>
-<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>    {</span>
-<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"role"</span>: <span class="st">"system"</span>,</span>
-<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"content"</span>: <span class="st">"Follow the user's instructions and use only the supplied context."</span>,</span>
-<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>    },</span>
-<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: rag_result[<span class="st">"prompt"</span>]},</span>
-<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a>model_inputs <span class="op">=</span> qwen_tokenizer.apply_chat_template(</span>
-<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a>    messages,</span>
-<span id="cb35-19"><a href="#cb35-19" aria-hidden="true" tabindex="-1"></a>    add_generation_prompt<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb35-20"><a href="#cb35-20" aria-hidden="true" tabindex="-1"></a>    tokenize<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb35-21"><a href="#cb35-21" aria-hidden="true" tabindex="-1"></a>    return_dict<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb35-22"><a href="#cb35-22" aria-hidden="true" tabindex="-1"></a>    return_tensors<span class="op">=</span><span class="st">"pt"</span>,</span>
-<span id="cb35-23"><a href="#cb35-23" aria-hidden="true" tabindex="-1"></a>).to(qwen_model.device)</span>
-<span id="cb35-24"><a href="#cb35-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-25"><a href="#cb35-25" aria-hidden="true" tabindex="-1"></a>output_ids <span class="op">=</span> qwen_model.generate(</span>
-<span id="cb35-26"><a href="#cb35-26" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>model_inputs, max_new_tokens<span class="op">=</span><span class="dv">160</span>, do_sample<span class="op">=</span><span class="va">False</span></span>
-<span id="cb35-27"><a href="#cb35-27" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb35-28"><a href="#cb35-28" aria-hidden="true" tabindex="-1"></a>new_token_ids <span class="op">=</span> output_ids[<span class="dv">0</span>, model_inputs[<span class="st">"input_ids"</span>].shape[<span class="dv">1</span>] :]</span>
-<span id="cb35-29"><a href="#cb35-29" aria-hidden="true" tabindex="-1"></a>qwen_answer <span class="op">=</span> qwen_tokenizer.decode(new_token_ids, skip_special_tokens<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb35-30"><a href="#cb35-30" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(qwen_answer)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> AutoModelForCausalLM, AutoTokenizer</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>qwen_name <span class="op">=</span> <span class="st">"Qwen/Qwen2.5-1.5B-Instruct"</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>qwen_tokenizer <span class="op">=</span> AutoTokenizer.from_pretrained(qwen_name)</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>qwen_model <span class="op">=</span> AutoModelForCausalLM.from_pretrained(</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>    qwen_name, torch_dtype<span class="op">=</span><span class="st">"auto"</span></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>messages <span class="op">=</span> [</span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"role"</span>: <span class="st">"system"</span>,</span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"content"</span>: <span class="st">"Follow the user's instructions and use only the supplied context."</span>,</span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: rag_result[<span class="st">"prompt"</span>]},</span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a>model_inputs <span class="op">=</span> qwen_tokenizer.apply_chat_template(</span>
+<span id="cb37-18"><a href="#cb37-18" aria-hidden="true" tabindex="-1"></a>    messages,</span>
+<span id="cb37-19"><a href="#cb37-19" aria-hidden="true" tabindex="-1"></a>    add_generation_prompt<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb37-20"><a href="#cb37-20" aria-hidden="true" tabindex="-1"></a>    tokenize<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb37-21"><a href="#cb37-21" aria-hidden="true" tabindex="-1"></a>    return_dict<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb37-22"><a href="#cb37-22" aria-hidden="true" tabindex="-1"></a>    return_tensors<span class="op">=</span><span class="st">"pt"</span>,</span>
+<span id="cb37-23"><a href="#cb37-23" aria-hidden="true" tabindex="-1"></a>).to(qwen_model.device)</span>
+<span id="cb37-24"><a href="#cb37-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-25"><a href="#cb37-25" aria-hidden="true" tabindex="-1"></a>output_ids <span class="op">=</span> qwen_model.generate(</span>
+<span id="cb37-26"><a href="#cb37-26" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>model_inputs, max_new_tokens<span class="op">=</span><span class="dv">160</span>, do_sample<span class="op">=</span><span class="va">False</span></span>
+<span id="cb37-27"><a href="#cb37-27" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb37-28"><a href="#cb37-28" aria-hidden="true" tabindex="-1"></a>new_token_ids <span class="op">=</span> output_ids[<span class="dv">0</span>, model_inputs[<span class="st">"input_ids"</span>].shape[<span class="dv">1</span>] :]</span>
+<span id="cb37-29"><a href="#cb37-29" aria-hidden="true" tabindex="-1"></a>qwen_answer <span class="op">=</span> qwen_tokenizer.decode(new_token_ids, skip_special_tokens<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb37-30"><a href="#cb37-30" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(qwen_answer)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
 {"model_id":"b52a8fea9d134798b90e3587b42667d7","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
@@ -2164,7 +2246,7 @@ ANSWER
 <p>Indexing is normally done only when documents are added or changed. Query processing happens for every user request.</p>
 <p>We implemented the pipeline directly to make each step visible.</p>
 <div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2173,7 +2255,7 @@ ANSWER
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>If you would like to build on this example, explore <a href="https://docs.langchain.com/oss/python/deepagents/retrieval">LangChain’s retrieval guide</a>. LangChain provides reusable components for loading documents, splitting text, embedding chunks, retrieving passages, and connecting to language models.</p>
 <p>Start with the guide’s <strong>2-step RAG</strong> approach: retrieve relevant passages, then supply them to a model to generate an answer. This follows the same sequence we implemented here. As you explore, identify where the framework performs each familiar step, and keep inspecting the retrieved evidence, prompt, and answer. You do not need LangChain to complete this chapter.</p>
@@ -2193,7 +2275,7 @@ ANSWER
 <p>These failures call for different fixes. Changing the prompt will not recover a document that was never retrieved. Changing the embedding model will not correct an inaccurate source document. Evaluate intermediate outputs instead of treating the system as one black box.</p>
 <p>Evaluation should cover both retrieval and the generated answer—for example, whether the answer addresses the question and whether its claims are supported by the retrieved context. For this chapter, inspecting a small set of queries, retrieved passages, and answers is enough to practise this distinction.</p>
 <div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2202,7 +2284,7 @@ ANSWER
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Frameworks such as Ragas provide automated metrics for retrieval and generated answers. These can help when evaluating many queries, but their scores should complement inspection and human evaluation.</p>
 </div>
@@ -2236,15 +2318,15 @@ ANSWER
 </section>
 <section id="exercise-18.2-diagnose-a-failed-answer" class="level4">
 <h4 class="anchored" data-anchor-id="exercise-18.2-diagnose-a-failed-answer">Exercise 18.2: Diagnose a failed answer</h4>
-<p>A shopper asks, “Do you sell a HUB-7Y?” That exact model is absent from the catalog, but the retriever returns the similar <code>HUB-7X</code>. The generator answers, “Yes, the HUB-7Y is available.”</p>
+<p>A shopper asks, ‘’Do you sell a HUB-7Y?’’ That exact model is absent from the catalog, but the retriever returns the similar <code>HUB-7X</code>. The generator answers, ‘’Yes, the HUB-7Y is available.’’</p>
 <ol type="1">
 <li>Does the retrieved passage support the answer?</li>
 <li>Is the main failure in retrieval, generation, or the knowledge base?</li>
-<li>What should a better answer say? Distinguish “not listed in this catalog” from “the store does not sell it.”</li>
+<li>What should a better answer say? Distinguish ‘’not listed in this catalog’’ from ‘’the store does not sell it.’’</li>
 </ol>
 <p>Explain your reasoning using the retrieved description rather than the model’s confidence or writing style.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2253,12 +2335,12 @@ ANSWER
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li>No.&nbsp;The retrieved passage describes HUB-7X, not HUB-7Y. Similar identifiers are not interchangeable.</li>
 <li>The unsupported assertion is a <strong>generation failure</strong>: the model claims availability without evidence. Returning a related item is not necessarily a retrieval failure when no exact match exists. The catalog also has an information gap for this question, but absence alone does not tell us whether the catalog is incomplete or the store does not sell the item.</li>
-<li>A supported answer would be: “I cannot confirm whether HUB-7Y is available from this catalog. It lists HUB-7X, a different model.”</li>
+<li>A supported answer would be: ‘’I cannot confirm whether HUB-7Y is available from this catalog. It lists HUB-7X, a different model.’’</li>
 </ol>
 <p>The existing prompt asks for exactly two recommendations. For an availability question, revise that instruction so the generator can answer the question directly and acknowledge missing evidence.</p>
 </div>
@@ -2278,7 +2360,7 @@ ANSWER
 <li>identify one change that improves the pipeline and one trade-off introduced by that change.</li>
 </ol>
 <div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2287,7 +2369,7 @@ ANSWER
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>There is no single correct set of documents or rankings. A useful investigation should make the following visible:</p>
 <ul>
