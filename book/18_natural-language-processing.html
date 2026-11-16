@@ -84,7 +84,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-d5bde1813c17e638aa9db7d6e99fa2da.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-086656755c3132a9248a47320a9aa99b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -192,7 +192,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/16_recommender-systems.html">Working with Different Data Types</a></li><li class="breadcrumb-item"><a href="../book/18_natural-language-processing.html">Chapter 18: Natural Language Processing</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/16_recommender-systems.html">Working with Different Types of Data</a></li><li class="breadcrumb-item"><a href="../book/18_natural-language-processing.html">Chapter 18: Natural Language Processing</a></li></ol></nav>
         <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -331,7 +331,7 @@ window.Quarto = {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="true">
- <span class="menu-text" id="quarto-sidebar-section-3-label">Working with Different Data Types</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+ <span class="menu-text" id="quarto-sidebar-section-3-label">Working with Different Types of Data</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
       </div>
       <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
@@ -432,7 +432,7 @@ window.Quarto = {
 <!-- main -->
 <main class="content" id="quarto-document-content" tabindex="-1">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/16_recommender-systems.html">Working with Different Data Types</a></li><li class="breadcrumb-item"><a href="../book/18_natural-language-processing.html">Chapter 18: Natural Language Processing</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/16_recommender-systems.html">Working with Different Types of Data</a></li><li class="breadcrumb-item"><a href="../book/18_natural-language-processing.html">Chapter 18: Natural Language Processing</a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title">Chapter 18: Natural Language Processing</h1>
 </div>
@@ -1064,7 +1064,7 @@ Dimensions per word: 300</code></pre>
 <p><span class="math display">\[
 v(\text{king}) - v(\text{man}) + v(\text{woman}).
 \]</span></p>
-<div id="fig-king-queen-analogy" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="A vector diagram showing that the arrow from man to woman is approximately parallel to the arrow from king to queen">
+<div id="fig-king-queen-analogy" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A vector diagram showing that the arrow from man to woman is approximately parallel to the arrow from king to queen" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-king-queen-analogy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="img/king-queen-ex-illustration.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%" alt="A vector diagram showing that the arrow from man to woman is approximately parallel to the arrow from king to queen">
@@ -1283,7 +1283,7 @@ Figure&nbsp;1: A schematic illustration of the king–queen analogy. The displac
 <section id="information-retrieval" class="level2">
 <h2 class="anchored" data-anchor-id="information-retrieval">Information retrieval</h2>
 <p><strong>Information retrieval</strong> (IR) is the task of finding useful items in a collection in response to a query. Unlike a classifier, which predicts a label, a retrieval system returns a ranked list. Several results may be useful, and relevance depends partly on what the user intends.</p>
-<div id="fig-information-retrieval-pipeline" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="Documents pass through document processing into a document index. A query passes through query processing into a query vector. A search component compares them using dense, keyword, or hybrid search and returns a ranked list of documents.">
+<div id="fig-information-retrieval-pipeline" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Documents pass through document processing into a document index. A query passes through query processing into a query vector. A search component compares them using dense, keyword, or hybrid search and returns a ranked list of documents." data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-information-retrieval-pipeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="img/IR.jpeg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%" alt="Documents pass through document processing into a document index. A query passes through query processing into a query vector. A search component compares them using dense, keyword, or hybrid search and returns a ranked list of documents.">
@@ -1641,7 +1641,7 @@ P(\text{next token} \mid \text{context}).
 <li><strong>Augment:</strong> place those chunks, the query, and instructions in a prompt.</li>
 <li><strong>Generate:</strong> ask a language model to answer from the supplied context.</li>
 </ol>
-<div id="fig-rag-bike-example" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="A user asks which two products would help with a rainy bicycle commute after an evening lab while carrying a laptop. A retriever selects relevant documents from an indexed corpus. The documents and query enter a prompt, and an LLM generates the recommendations waterproof laptop backpack and bike-light set.">
+<div id="fig-rag-bike-example" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A user asks which two products would help with a rainy bicycle commute after an evening lab while carrying a laptop. A retriever selects relevant documents from an indexed corpus. The documents and query enter a prompt, and an LLM generates the recommendations waterproof laptop backpack and bike-light set." data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-rag-bike-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="img/RAG-bike-ex.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%" alt="A user asks which two products would help with a rainy bicycle commute after an evening lab while carrying a laptop. A retriever selects relevant documents from an indexed corpus. The documents and query enter a prompt, and an LLM generates the recommendations waterproof laptop backpack and bike-light set.">
