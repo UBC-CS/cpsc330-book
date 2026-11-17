@@ -84,7 +84,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-d5bde1813c17e638aa9db7d6e99fa2da.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-086656755c3132a9248a47320a9aa99b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -984,32 +984,32 @@ Number of nonzero entries: 231</code></pre>
 <section id="measuring-similarity-between-vectors" class="level4">
 <h4 class="anchored" data-anchor-id="measuring-similarity-between-vectors">Measuring similarity between vectors</h4>
 <p>We want related words to have nearby vectors. But what does “nearby” mean? We could compare the positions of the vectors’ endpoints, or compare the directions in which they point. These choices need not give us the same neighbours. The same question arises when comparing bag-of-words documents, images, or items to recommend.</p>
-<p>Recall <strong>Euclidean distance</strong>, which measures the straight-line distance between two points. For vectors <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> with <span class="math inline">\(n\)</span> coordinates,</p>
+<p>Recall <strong>Euclidean distance</strong>, which measures the straight-line distance between two points. For vectors <span class="math inline">\(\mathbf{u}\)</span> and <span class="math inline">\(\mathbf{v}\)</span> with <span class="math inline">\(d\)</span> coordinates,</p>
 <p><span class="math display">\[
-d(a,b)=\sqrt{\sum_{i=1}^{n}(a_i-b_i)^2}.
+d(\mathbf{u},\mathbf{v})=\sqrt{\sum_{i=1}^{d}(u_i-v_i)^2}.
 \]</span></p>
 <p>Smaller distances mean closer vectors. However, multiplying a vector by two moves its endpoint even though its direction stays the same. For word counts, this could happen if we repeated a document twice: every count would double, but the relative frequencies would be unchanged.</p>
-<p>The <strong>dot product</strong> multiplies corresponding coordinates and adds the results:</p>
+<p>The <strong>dot product</strong> multiplies corresponding coordinates and adds the results. Treating the vectors as column vectors, we can also write it using a transpose:</p>
 <p><span class="math display">\[
-a\cdot b=\sum_{i=1}^{n}a_i b_i.
+\mathbf{u}\cdot \mathbf{v}=\mathbf{u}^{T}\mathbf{v}=\sum_{i=1}^{d}u_i v_i.
 \]</span></p>
 <p>When used as a similarity score, larger values mean more similar vectors. The score depends on both direction and magnitude (vector length). In particular, doubling one vector doubles its dot product with the other. For nonnegative word-count vectors, this can favour longer documents simply because their counts are larger.</p>
 <p><strong>Cosine similarity</strong> removes the effect of magnitude by dividing the dot product by the product of the vector lengths:</p>
 <p><span class="math display">\[
-\operatorname{cosine\ similarity}(a,b)=\frac{a\cdot b}{\lVert a\rVert_2\lVert b\rVert_2},
+\operatorname{cosine\ similarity}(\mathbf{u},\mathbf{v})=\frac{\mathbf{u}\cdot \mathbf{v}}{\lVert \mathbf{u}\rVert_2\lVert \mathbf{v}\rVert_2},
 \qquad
-\lVert a\rVert_2=\sqrt{\sum_{i=1}^{n}a_i^2}.
+\lVert \mathbf{u}\rVert_2=\sqrt{\sum_{i=1}^{d}u_i^2}.
 \]</span></p>
-<p>Here, <span class="math inline">\(\lVert a\rVert_2\)</span> is the <strong>L2 norm</strong>, or length, of <span class="math inline">\(a\)</span>; we calculate the length of <span class="math inline">\(b\)</span> in the same way. Cosine similarity compares directions: it is 1 for vectors pointing in the same direction, 0 for perpendicular vectors, and <span class="math inline">\(-1\)</span> for vectors pointing in opposite directions. Nonnegative word-count and TF–IDF vectors have cosine similarities between 0 and 1; dense embeddings can also have negative similarities. The formula requires both vectors to be nonzero.</p>
-<p>Do not confuse <strong>cosine similarity</strong> with <strong>cosine distance</strong>, commonly defined as <span class="math inline">\(1-\operatorname{cosine\ similarity}(a,b)\)</span>. Larger similarity means more similar; smaller distance means more similar.</p>
+<p>Here, <span class="math inline">\(\lVert \mathbf{u}\rVert_2\)</span> is the <strong>L2 norm</strong>, or length, of <span class="math inline">\(\mathbf{u}\)</span>; we calculate the length of <span class="math inline">\(\mathbf{v}\)</span> in the same way. Cosine similarity compares directions: it is 1 for vectors pointing in the same direction, 0 for perpendicular vectors, and <span class="math inline">\(-1\)</span> for vectors pointing in opposite directions. Nonnegative word-count and TF–IDF vectors have cosine similarities between 0 and 1; dense embeddings can also have negative similarities. The formula requires both vectors to be nonzero.</p>
+<p>Do not confuse <strong>cosine similarity</strong> with <strong>cosine distance</strong>, commonly defined as <span class="math inline">\(1-\operatorname{cosine\ similarity}(\mathbf{u},\mathbf{v})\)</span>. Larger similarity means more similar; smaller distance means more similar.</p>
 <p>Consider two documents represented by counts of three vocabulary terms. The second has twice the count of every term in the first. Before running the code, predict their cosine similarity.</p>
 <div id="vector-similarity-example" class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>])</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> np.array([<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">2</span>])</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>u <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>])</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>v <span class="op">=</span> np.array([<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">2</span>])</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Euclidean distance: </span><span class="sc">{</span>np<span class="sc">.</span>linalg<span class="sc">.</span>norm(a <span class="op">-</span> b)<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Dot product: </span><span class="sc">{</span>np<span class="sc">.</span>dot(a, b)<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Cosine similarity: </span><span class="sc">{</span>cosine_similarity([a], [b])[<span class="dv">0</span>, <span class="dv">0</span>]<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Euclidean distance: </span><span class="sc">{</span>np<span class="sc">.</span>linalg<span class="sc">.</span>norm(u <span class="op">-</span> v)<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Dot product: </span><span class="sc">{</span>np<span class="sc">.</span>dot(u, v)<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Cosine similarity: </span><span class="sc">{</span>cosine_similarity([u], [v])[<span class="dv">0</span>, <span class="dv">0</span>]<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Euclidean distance: 2.4495
 Dot product: 12.0000
@@ -1017,7 +1017,7 @@ Cosine similarity: 1.0000</code></pre>
 </div>
 </div>
 <p>The Euclidean distance is about 2.4495, and the dot product is 12. Neither score has a universal cutoff for “similar”. Cosine similarity is 1: the vectors have identical directions because the relative word frequencies match. This does not prove that the documents mean the same thing—bag-of-words still ignores word order.</p>
-<p><strong>Normalizing a vector to length 1</strong> means dividing each coordinate by its L2 norm. For two such vectors, the dot product equals cosine similarity because both lengths in the denominator are 1. Euclidean distance also produces the same ranking: for unit-length vectors, <span class="math inline">\(d(a,b)^2=2-2(a\cdot b)\)</span>. This connects to <code>TfidfVectorizer</code>, which normalizes its document vectors to length 1 by default, and explains why a dot product can compute cosine similarity when embeddings have already been normalized.</p>
+<p><strong>Normalizing a vector to length 1</strong> means dividing each coordinate by its L2 norm. For two such vectors, the dot product equals cosine similarity because both lengths in the denominator are 1. Euclidean distance also produces the same ranking: for unit-length vectors, <span class="math inline">\(d(\mathbf{u},\mathbf{v})^2=2-2(\mathbf{u}\cdot \mathbf{v})\)</span>. This connects to <code>TfidfVectorizer</code>, which normalizes its document vectors to length 1 by default, and explains why a dot product can compute cosine similarity when embeddings have already been normalized.</p>
 <p>Cosine similarity is useful when direction matters more than magnitude, as in many text-comparison tasks. Dot product can be useful when magnitude carries information worth retaining. For learned embeddings, use a similarity measure suited to how the model was trained and evaluate the resulting neighbours for your task. None of these measures automatically captures meaning.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="true" aria-label="Toggle callout">
