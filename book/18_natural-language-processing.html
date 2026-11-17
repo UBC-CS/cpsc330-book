@@ -84,7 +84,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-086656755c3132a9248a47320a9aa99b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-d5bde1813c17e638aa9db7d6e99fa2da.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -533,7 +533,7 @@ window.Quarto = {
 <section id="representing-language-numerically" class="level3">
 <h3 class="anchored" data-anchor-id="representing-language-numerically">Representing language numerically</h3>
 <p>Machine learning models operate on numbers, not directly on words. Before a model can classify, retrieve, or generate text, the system must decide how to represent language numerically. That representation determines which similarities and differences the model can notice.</p>
-<p>No representation captures every aspect of meaning. The right question is therefore not ‘’Does the computer truly understand this sentence?’’ but ‘’Does this representation retain the information needed for our task?’’ We begin with representations based on word counts and then move to embeddings designed to capture some aspects of meaning.</p>
+<p>No representation captures every aspect of meaning. The right question is therefore not “Does the computer truly understand this sentence?” but “Does this representation retain the information needed for our task?” We begin with representations based on word counts and then move to embeddings designed to capture some aspects of meaning.</p>
 </section>
 </section>
 <section id="representing-text" class="level2">
@@ -983,7 +983,7 @@ Number of nonzero entries: 231</code></pre>
 <p><strong>Word2vec</strong> is a family of algorithms for learning word embeddings by predicting words from their surrounding context, or surrounding words from a target word. We will explore the embeddings from a pretrained word2vec model rather than study its training algorithm. To find out which words the model places near one another, we first need a way to compare their vectors.</p>
 <section id="measuring-similarity-between-vectors" class="level4">
 <h4 class="anchored" data-anchor-id="measuring-similarity-between-vectors">Measuring similarity between vectors</h4>
-<p>We want related words to have nearby vectors. But what does ‘’nearby’’ mean? We could compare the positions of the vectors’ endpoints, or compare the directions in which they point. These choices need not give us the same neighbours. The same question arises when comparing bag-of-words documents, images, or items to recommend.</p>
+<p>We want related words to have nearby vectors. But what does “nearby” mean? We could compare the positions of the vectors’ endpoints, or compare the directions in which they point. These choices need not give us the same neighbours. The same question arises when comparing bag-of-words documents, images, or items to recommend.</p>
 <p>Recall <strong>Euclidean distance</strong>, which measures the straight-line distance between two points. For vectors <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> with <span class="math inline">\(n\)</span> coordinates,</p>
 <p><span class="math display">\[
 d(a,b)=\sqrt{\sum_{i=1}^{n}(a_i-b_i)^2}.
@@ -1158,7 +1158,7 @@ Figure&nbsp;1: A schematic illustration of the king–queen analogy. The displac
 </div>
 <p><em>Screenshot source: <a href="https://www.youtube.com/watch?v=wjZofJX0v4M&amp;t=802s">3Blue1Brown</a>.</em></p>
 <p>The picture is a two-dimensional illustration of the relationship. The Google News vectors actually have 300 dimensions, so we cannot display their full geometry directly. The important idea is the direction: the displacement from <em>man</em> to <em>woman</em> is approximately similar to the displacement from <em>king</em> to <em>queen</em>.</p>
-<p>We then find the word vector nearest to the result. The helper below expresses the question as ‘’word 1 is to word 2 as word 3 is to what?’’</p>
+<p>We then find the word vector nearest to the result. The helper below expresses the question as “word 1 is to word 2 as word 3 is to what?”</p>
 <div id="chapter17-08i" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> analogy(word1, word2, word3, model<span class="op">=</span>word_vectors):</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    result, similarity <span class="op">=</span> model.most_similar(</span>
@@ -1339,7 +1339,7 @@ Figure&nbsp;1: A schematic illustration of the king–queen analogy. The displac
 </div>
 </div>
 </div>
-<p>Each row of <code>sentence_embeddings</code> represents one sentence; the 384 columns are learned features. Unlike our sparse representations, the columns no longer correspond to vocabulary terms. The first few coordinates show what an embedding looks like, but individual coordinates do not have simple labels such as ‘’contains battery.’’ Interpret relationships through the vectors as a whole.</p>
+<p>Each row of <code>sentence_embeddings</code> represents one sentence; the 384 columns are learned features. Unlike our sparse representations, the columns no longer correspond to vocabulary terms. The first few coordinates show what an embedding looks like, but individual coordinates do not have simple labels such as “contains battery.” Interpret relationships through the vectors as a whole.</p>
 <p>The heat map compares every pair of sentences. Brighter cells indicate higher cosine similarity; the numbers give the exact scores rounded to two decimal places. The short axis labels follow the order of the sentences above. Each sentence has similarity 1 with itself. Compare the two requests for quiet with the preference for background music and the sentence about a phone battery. These scores reflect the model’s learned associations, not a guarantee that two sentences express the same need.</p>
 <p>We requested <code>normalize_embeddings=True</code>, which rescales each vector to length 1 without changing its direction. For these vectors, a dot product gives the same score as cosine similarity; we use <code>cosine_similarity</code> to make the comparison explicit.</p>
 <p>You used sentence embeddings in homework 6 to cluster recipe titles. For retrieval, we will instead encode a query and compare its vector with catalog-description vectors. <strong>The representation can be reused; what we do with it changes.</strong></p>
@@ -1743,7 +1743,7 @@ Figure&nbsp;3: A RAG pipeline retrieves catalog documents relevant to a rainy ev
 <h3 class="anchored" data-anchor-id="step-1-split-documents-into-chunks">Step 1: Split documents into chunks</h3>
 <p>Long documents are commonly divided into smaller <strong>chunks</strong> before they are embedded. Small chunks can isolate a precise passage, but they may omit context needed to interpret it. Large chunks retain more context, but they may mix several topics and consume more of the model’s context window. Overlap can preserve text near a boundary at the cost of storing repeated content.</p>
 <p>Each catalog description is already a short, natural chunk, so the function below leaves these entries intact. The same code would split longer descriptions. Production systems often use token-aware or structure-aware splitting so headings, sentences, and paragraphs are not broken arbitrarily.</p>
-<p>For example, imagine a longer description contains: *‘’The hub supports two monitors. This requires a laptop with Thunderbolt support.’‘* A boundary between those sentences could leave a retrieved chunk with the claim but without its qualification. Keeping the sentences together, or including overlap, could preserve the evidence needed to answer’‘Will it support two monitors on my laptop?’’ The goal is to retrieve enough context to interpret a claim, not merely a matching phrase.</p>
+<p>For example, imagine a longer description contains: <em>“The hub supports two monitors. This requires a laptop with Thunderbolt support.”</em> A boundary between those sentences could leave a retrieved chunk with the claim but without its qualification. Keeping the sentences together, or including overlap, could preserve the evidence needed to answer “Will it support two monitors on my laptop?” The goal is to retrieve enough context to interpret a claim, not merely a matching phrase.</p>
 <div id="chapter17-30" class="cell" data-execution_count="15">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> split_into_chunks(text, chunk_size<span class="op">=</span><span class="dv">50</span>, overlap<span class="op">=</span><span class="dv">10</span>):</span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> overlap <span class="op">&gt;=</span> chunk_size:</span>
@@ -2033,7 +2033,7 @@ ANSWER
 </code></pre>
 </div>
 </div>
-<p>Inspecting the prompt is an important debugging step. The language model cannot use evidence that the retriever failed to include. Notice also that the retrieved text is untrusted input. A document could contain instructions such as ‘’ignore the user’s question.’’ Robust applications must distinguish application instructions from document content and defend against this form of <strong>prompt injection</strong>.</p>
+<p>Inspecting the prompt is an important debugging step. The language model cannot use evidence that the retriever failed to include. Notice also that the retrieved text is untrusted input. A document could contain instructions such as “ignore the user’s question.” Robust applications must distinguish application instructions from document content and defend against this form of <strong>prompt injection</strong>.</p>
 </section>
 <section id="step-4-generate-an-answer" class="level3">
 <h3 class="anchored" data-anchor-id="step-4-generate-an-answer">Step 4: Generate an answer</h3>
@@ -2322,11 +2322,11 @@ ANSWER
 </section>
 <section id="exercise-18.2-diagnose-a-failed-answer" class="level4">
 <h4 class="anchored" data-anchor-id="exercise-18.2-diagnose-a-failed-answer">Exercise 18.2: Diagnose a failed answer</h4>
-<p>A shopper asks, ‘’Do you sell a HUB-7Y?’’ That exact model is absent from the catalog, but the retriever returns the similar <code>HUB-7X</code>. The generator answers, ‘’Yes, the HUB-7Y is available.’’</p>
+<p>A shopper asks, “Do you sell a HUB-7Y?” That exact model is absent from the catalog, but the retriever returns the similar <code>HUB-7X</code>. The generator answers, “Yes, the HUB-7Y is available.”</p>
 <ol type="1">
 <li>Does the retrieved passage support the answer?</li>
 <li>Is the main failure in retrieval, generation, or the knowledge base?</li>
-<li>What should a better answer say? Distinguish ‘’not listed in this catalog’’ from ‘’the store does not sell it.’’</li>
+<li>What should a better answer say? Distinguish “not listed in this catalog” from “the store does not sell it.”</li>
 </ol>
 <p>Explain your reasoning using the retrieved description rather than the model’s confidence or writing style.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
@@ -2344,7 +2344,7 @@ ANSWER
 <ol type="1">
 <li>No.&nbsp;The retrieved passage describes HUB-7X, not HUB-7Y. Similar identifiers are not interchangeable.</li>
 <li>The unsupported assertion is a <strong>generation failure</strong>: the model claims availability without evidence. Returning a related item is not necessarily a retrieval failure when no exact match exists. The catalog also has an information gap for this question, but absence alone does not tell us whether the catalog is incomplete or the store does not sell the item.</li>
-<li>A supported answer would be: ‘’I cannot confirm whether HUB-7Y is available from this catalog. It lists HUB-7X, a different model.’’</li>
+<li>A supported answer would be: “I cannot confirm whether HUB-7Y is available from this catalog. It lists HUB-7X, a different model.”</li>
 </ol>
 <p>The existing prompt asks for exactly two recommendations. For an availability question, revise that instruction so the generator can answer the question directly and acknowledge missing evidence.</p>
 </div>
