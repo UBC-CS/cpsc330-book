@@ -1,0 +1,1906 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.11.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Chapter 20: Survival analysis – CPSC 330: Applied Machine Learning</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../book/19_time-series.html" rel="prev">
+<link href="../book/img/UBC-CS-logo.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-b0411c18390e2402e0b3261b63c4bf0b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Site">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">CPSC 330: Applied Machine Learning</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../index.html" aria-current="page"> 
+<span class="menu-text">Book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../demos.html"> 
+<span class="menu-text">Demos</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" aria-label="Toolbar">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/16_recommender-systems.html">Working with Different Types of Data</a></li><li class="breadcrumb-item"><a href="../book/20_survival-analysis.html">Chapter 20: Survival analysis</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="Section">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../book/img/UBC-CS-logo.png" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../book/img/UBC-CS-logo.png" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../learning-objectives.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Detailed Learning Objectives</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/01_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1: Course Introduction</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-1-label">Foundations and Supervised Learning</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/02_terminology-baselines-decision-trees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2: From Data to a First Model</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/03_ml-fundamentals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3: Machine Learning Fundamentals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/04_kNNs-SVM-RBF.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4: Similarity-Based Models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/05_preprocessing-pipelines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5: Preprocessing and Pipelines</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/06_column-transformer-text-feats.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6: Column Transformers and Text Features</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/07_linear-models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7: Linear Models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/08_hyperparameter-optimization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8: Hyperparameter Optimization</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/09_classification-metrics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9: Classification Metrics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/10_regression-metrics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10: Regression Metrics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/11_ensembles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11: Ensembles</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/12_feat-importances.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 12: Feature Importances and Model Interpretation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/13_feature-engineering-selection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 13: Feature Engineering and Selection</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-2-label">Unsupervised Learning and Recommendation</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/14_K-Means.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 14: K-Means Clustering</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/15_DBSCAN-hierarchical.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 15: DBSCAN and Hierarchical Clustering</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-3-label">Working with Different Types of Data</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/16_recommender-systems.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 16: Recommender Systems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/17_intro_to_computer-vision.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 17: Introduction to Computer Vision</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/18_natural-language-processing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 18: Natural Language Processing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/19_time-series.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 19: Time series</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/20_survival-analysis.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Chapter 20: Survival analysis</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#learning-outcomes" id="toc-learning-outcomes" class="nav-link active" data-scroll-target="#learning-outcomes">Learning outcomes</a></li>
+  <li><a href="#why-we-need-survival-analysis" id="toc-why-we-need-survival-analysis" class="nav-link" data-scroll-target="#why-we-need-survival-analysis">Why we need survival analysis</a>
+  <ul>
+  <li><a href="#what-about-classification" id="toc-what-about-classification" class="nav-link" data-scroll-target="#what-about-classification">What about classification?</a></li>
+  <li><a href="#a-customer-churn-example" id="toc-a-customer-churn-example" class="nav-link" data-scroll-target="#a-customer-churn-example">A customer churn example</a></li>
+  <li><a href="#two-tempting-shortcuts" id="toc-two-tempting-shortcuts" class="nav-link" data-scroll-target="#two-tempting-shortcuts">Two tempting shortcuts</a></li>
+  <li><a href="#exercise-20.1-what-information-are-we-throwing-away" id="toc-exercise-20.1-what-information-are-we-throwing-away" class="nav-link" data-scroll-target="#exercise-20.1-what-information-are-we-throwing-away">Exercise 20.1: What information are we throwing away?</a></li>
+  </ul></li>
+  <li><a href="#learning-from-censored-observations" id="toc-learning-from-censored-observations" class="nav-link" data-scroll-target="#learning-from-censored-observations">Learning from censored observations</a>
+  <ul>
+  <li><a href="#estimating-a-survival-curve" id="toc-estimating-a-survival-curve" class="nav-link" data-scroll-target="#estimating-a-survival-curve">Estimating a survival curve</a></li>
+  <li><a href="#kaplanmeier-for-the-telecom-data" id="toc-kaplanmeier-for-the-telecom-data" class="nav-link" data-scroll-target="#kaplanmeier-for-the-telecom-data">Kaplan–Meier for the telecom data</a></li>
+  <li><a href="#exercise-20.2-read-the-curve" id="toc-exercise-20.2-read-the-curve" class="nav-link" data-scroll-target="#exercise-20.2-read-the-curve">Exercise 20.2: Read the curve</a></li>
+  </ul></li>
+  <li><a href="#using-features-the-cox-proportional-hazards-model" id="toc-using-features-the-cox-proportional-hazards-model" class="nav-link" data-scroll-target="#using-features-the-cox-proportional-hazards-model">Using features: the Cox proportional hazards model</a>
+  <ul>
+  <li><a href="#preparing-the-features" id="toc-preparing-the-features" class="nav-link" data-scroll-target="#preparing-the-features">Preparing the features</a></li>
+  <li><a href="#fitting-and-interpreting-the-model" id="toc-fitting-and-interpreting-the-model" class="nav-link" data-scroll-target="#fitting-and-interpreting-the-model">Fitting and interpreting the model</a></li>
+  </ul></li>
+  <li><a href="#making-and-evaluating-predictions" id="toc-making-and-evaluating-predictions" class="nav-link" data-scroll-target="#making-and-evaluating-predictions">Making and evaluating predictions</a>
+  <ul>
+  <li><a href="#predictions-from-signup" id="toc-predictions-from-signup" class="nav-link" data-scroll-target="#predictions-from-signup">Predictions from signup</a></li>
+  <li><a href="#the-outlook-for-an-existing-customer" id="toc-the-outlook-for-an-existing-customer" class="nav-link" data-scroll-target="#the-outlook-for-an-existing-customer">The outlook for an existing customer</a></li>
+  <li><a href="#exercise-20.3-which-prediction-answers-the-question" id="toc-exercise-20.3-which-prediction-answers-the-question" class="nav-link" data-scroll-target="#exercise-20.3-which-prediction-answers-the-question">Exercise 20.3: Which prediction answers the question?</a></li>
+  <li><a href="#evaluating-a-survival-model" id="toc-evaluating-a-survival-model" class="nav-link" data-scroll-target="#evaluating-a-survival-model">Evaluating a survival model</a></li>
+  </ul></li>
+  <li><a href="#practical-guidance-and-limitations" id="toc-practical-guidance-and-limitations" class="nav-link" data-scroll-target="#practical-guidance-and-limitations">Practical guidance and limitations</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/16_recommender-systems.html">Working with Different Types of Data</a></li><li class="breadcrumb-item"><a href="../book/20_survival-analysis.html">Chapter 20: Survival analysis</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Chapter 20: Survival analysis</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="learning-outcomes" class="level2 unnumbered callout-lo">
+<h2 class="unnumbered anchored" data-anchor-id="learning-outcomes">Learning outcomes</h2>
+<p>By the end of this chapter, you should be able to:</p>
+<ul>
+<li>Recognize right-censored outcomes and explain what information they contain.</li>
+<li>Explain why ordinary regression and snapshot classification do not directly answer a censored time-to-event question.</li>
+<li>Interpret a Kaplan–Meier survival curve and explain how censored observations contribute to it.</li>
+<li>Fit a Cox proportional hazards model and interpret coefficients as hazard ratios.</li>
+<li>Distinguish predictions from signup from predictions of remaining time for an existing customer.</li>
+<li>Evaluate survival predictions on held-out data and recognize important assumptions and limitations.</li>
+</ul>
+</section>
+<p><strong>Imports</strong></p>
+<p>This chapter uses <code>lifelines</code> alongside our familiar Python tools. If needed, install it in the environment used to run this notebook:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pip install lifelines</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="survival-003" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-22T01:02:12.578125Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-22T01:02:12.578045Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-22T01:02:27.833650Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-22T01:02:27.833217Z&quot;}}" data-execution_count="1">
+<details class="code-fold">
+<summary>Show imports and setup</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lifelines <span class="im">import</span> CoxPHFitter, KaplanMeierFitter</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lifelines.plotting <span class="im">import</span> add_at_risk_counts</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.compose <span class="im">import</span> ColumnTransformer</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> Ridge</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> make_pipeline</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> OneHotEncoder, StandardScaler</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>DATA_DIR <span class="op">=</span> Path(<span class="st">"data"</span>) <span class="cf">if</span> Path(<span class="st">"data"</span>).is_dir() <span class="cf">else</span> Path(<span class="st">"book"</span>) <span class="op">/</span> <span class="st">"data"</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">"font.size"</span>] <span class="op">=</span> <span class="dv">12</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Matplotlib is building the font cache; this may take a moment.</code></pre>
+</div>
+</div>
+<section id="why-we-need-survival-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="why-we-need-survival-analysis">Why we need survival analysis</h2>
+<p>Imagine you work for a subscription-based telecom company. Your team wants to anticipate when customers might leave so that it can plan retention efforts. A prediction of when a customer will leave could help decide when to contact them, although it would not tell us whether a particular promotion would persuade them to stay.</p>
+<p>You already know classification and regression. We could classify customers as likely to churn, or use regression to predict the number of months until they leave. Before choosing a model, though, we need to ask: <strong>what target values do we actually have?</strong></p>
+<p>Suppose our records contain these three customers. We measure time from each customer’s signup.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 23%">
+<col style="width: 30%">
+<col style="width: 23%">
+<col style="width: 23%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Customer</th>
+<th style="text-align: right;">Observed duration</th>
+<th>Churn observed?</th>
+<th>What we know about time to churn</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td style="text-align: right;">4 months</td>
+<td>Yes</td>
+<td>They churned at month 4.</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td style="text-align: right;">4 months</td>
+<td>No</td>
+<td>They stayed beyond month 4; their final duration is unknown.</td>
+</tr>
+<tr class="odd">
+<td>C</td>
+<td style="text-align: right;">18 months</td>
+<td>No</td>
+<td>They stayed beyond month 18; their final duration is unknown.</td>
+</tr>
+</tbody>
+</table>
+<p>A and B have the same observed duration, but very different outcomes. For A, four months is a completed subscription. For B, it is only the duration observed so far.</p>
+<div id="survival-005" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-22T01:02:27.834990Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-22T01:02:27.834869Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-22T01:02:27.910380Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-22T01:02:27.910020Z&quot;}}" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="fl">2.8</span>))</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> y, (customer, duration, observed) <span class="kw">in</span> <span class="bu">enumerate</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    [(<span class="st">"A"</span>, <span class="dv">4</span>, <span class="va">True</span>), (<span class="st">"B"</span>, <span class="dv">4</span>, <span class="va">False</span>), (<span class="st">"C"</span>, <span class="dv">18</span>, <span class="va">False</span>)]</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    ax.hlines(y, <span class="dv">0</span>, duration, color<span class="op">=</span><span class="st">"tab:blue"</span>, linewidth<span class="op">=</span><span class="dv">3</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    ax.plot(duration, y, <span class="st">"X"</span> <span class="cf">if</span> observed <span class="cf">else</span> <span class="st">"o"</span>, color<span class="op">=</span><span class="st">"tab:blue"</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            markerfacecolor<span class="op">=</span><span class="st">"tab:blue"</span> <span class="cf">if</span> observed <span class="cf">else</span> <span class="st">"white"</span>, markersize<span class="op">=</span><span class="dv">9</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    ax.text(duration <span class="op">+</span> <span class="fl">0.6</span>, y, <span class="st">"Churn"</span> <span class="cf">if</span> observed <span class="cf">else</span> <span class="st">"Observation ends"</span>, va<span class="op">=</span><span class="st">"center"</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(yticks<span class="op">=</span>[<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>], yticklabels<span class="op">=</span>[<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>],</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>       xlabel<span class="op">=</span><span class="st">"Months since each customer's signup"</span>, xlim<span class="op">=</span>(<span class="op">-</span><span class="fl">0.5</span>, <span class="dv">26</span>), ylim<span class="op">=</span>(<span class="op">-</span><span class="fl">0.5</span>, <span class="fl">2.5</span>))</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>ax.invert_yaxis()</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"An observed event and two incomplete lifetimes"</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="20_survival-analysis_files/figure-html/cell-3-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The open circles mark the end of observation, not churn. These timelines align customers by time since signup; they need not have joined on the same calendar date.</p>
+<p>B and C are <strong>right-censored</strong>: we stopped observing them before observing the event. Their durations give us lower bounds on their time to churn. Censoring does not mean that a customer will never leave, and it does not erase what we already know about their subscription.</p>
+<p>This is the gap in our current toolbox. An ordinary regressor expects an exact numerical target for every training example. Here, some targets are exact event times and others are bounds. We need an approach that can learn from both.</p>
+<p>Although the name <strong>survival analysis</strong> comes from studying lifetimes, its methods apply to time until many kinds of events: equipment failure, finding a job, or leaving a subscription service. We must define both the event and the time origin. Here they are churn and signup, respectively.</p>
+<section id="what-about-classification" class="level3">
+<h3 class="anchored" data-anchor-id="what-about-classification">What about classification?</h3>
+<p>Suppose we collect a snapshot of customer records, with a <code>Churn</code> column indicating whether churn has been observed. A classifier trained on this column learns to distinguish customers recorded as having churned from those recorded as active. That is different from predicting their eventual subscription length. In particular, an active customer observed for two months has had much less opportunity to churn than one observed for two years.</p>
+<p>Classification can still answer a useful question such as “Will this customer churn within six months of signup?” But we need labels for that specific horizon. A customer who churned at month 4 has a known positive label; a customer still active at month 8 has a known negative label. For a customer whose observation ends at month 2 without churn, the six-month label is unknown. Labelling that customer negative would be a mistake.</p>
+<p>To answer questions about timing, we need to retain how long each customer was observed and whether churn occurred. Let’s see what happens when we try to use our familiar regression workflow on data with this structure.</p>
+</section>
+<section id="a-customer-churn-example" class="level3">
+<h3 class="anchored" data-anchor-id="a-customer-churn-example">A customer churn example</h3>
+<p>To explore this problem, we will use the <a href="https://www.kaggle.com/datasets/blastchar/telco-customer-churn">Telco Customer Churn dataset</a>. For this teaching example, we interpret <code>tenure</code> as the number of months from signup to churn or the end of observation, and <code>Churn</code> as the indicator that churn was observed.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>What this dataset can establish
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The table is a snapshot, rather than a documented longitudinal record of every customer’s history. Our interpretation of duration, event status, and follow-up is a teaching assumption. Before using these methods operationally, we would verify how customers were sampled, how churn and follow-up were recorded, and which features were available at prediction time.</p>
+<p>In particular, current contract and billing information need not be the information available at signup. We will use these attributes to demonstrate the models, but the resulting predictions are not a validated deployment workflow.</p>
+</div>
+</div>
+<p>As usual, we reserve a test set before fitting models or preprocessing.</p>
+<div id="survival-009" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-22T01:02:27.911414Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-22T01:02:27.911346Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-22T01:02:27.928661Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-22T01:02:27.928219Z&quot;}}" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(DATA_DIR <span class="op">/</span> <span class="st">"WA_Fn-UseC_-Telco-Customer-Churn.csv"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>train_df, test_df <span class="op">=</span> train_test_split(df, test_size<span class="op">=</span><span class="fl">0.25</span>, random_state<span class="op">=</span><span class="dv">123</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>train_df <span class="op">=</span> train_df.copy()</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>test_df <span class="op">=</span> test_df.copy()</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>display(train_df[[<span class="st">"tenure"</span>, <span class="st">"Churn"</span>, <span class="st">"Contract"</span>, <span class="st">"MonthlyCharges"</span>]].head())</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>display(train_df[<span class="st">"Churn"</span>].value_counts())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">tenure</th>
+<th data-quarto-table-cell-role="th">Churn</th>
+<th data-quarto-table-cell-role="th">Contract</th>
+<th data-quarto-table-cell-role="th">MonthlyCharges</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6464</th>
+<td>50</td>
+<td>No</td>
+<td>Month-to-month</td>
+<td>70.35</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5707</th>
+<td>2</td>
+<td>No</td>
+<td>Month-to-month</td>
+<td>45.55</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">3442</th>
+<td>29</td>
+<td>No</td>
+<td>Month-to-month</td>
+<td>98.80</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3932</th>
+<td>2</td>
+<td>Yes</td>
+<td>Month-to-month</td>
+<td>78.55</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6124</th>
+<td>57</td>
+<td>No</td>
+<td>One year</td>
+<td>59.30</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>Churn
+No     3912
+Yes    1370
+Name: count, dtype: int64</code></pre>
+</div>
+</div>
+</section>
+<section id="two-tempting-shortcuts" class="level3">
+<h3 class="anchored" data-anchor-id="two-tempting-shortcuts">Two tempting shortcuts</h3>
+<p>The <code>tenure</code> column looks like a numerical regression target. But its meaning depends on <code>Churn</code>: for some rows it is a completed subscription length, while for others it is follow-up so far. Could we still adapt our usual regression workflow? Consider these two choices before running any code.</p>
+<p><strong>Use only customers who churned.</strong> We have their completed subscription lengths, so we could discard the other rows and fit a regressor. But the retained customers are selected because their event was observed during follow-up. Customers with longer event times are more likely to remain censored. We would discard their evidence of longer survival and generally bias the estimated lifetime downward under the usual independent-censoring setup.</p>
+<p><strong>Treat every observed tenure as a completed lifetime.</strong> This keeps all the rows, but treats active customers as if they churned when observation ended. For each censored customer, the supplied target is shorter than their eventual subscription. We would be learning observed follow-up time rather than the time to churn.</p>
+<p>Neither changing regressors nor tuning hyperparameters repairs the meaning of these targets. We can illustrate the two shortcuts with the familiar <code>Ridge</code> model. We use a small set of features to keep attention on the target.</p>
+<div id="survival-011" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-22T01:02:27.929616Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-22T01:02:27.929541Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-22T01:02:27.969254Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-22T01:02:27.968917Z&quot;}}" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>numeric_features <span class="op">=</span> [<span class="st">"MonthlyCharges"</span>]</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>categorical_features <span class="op">=</span> [<span class="st">"Contract"</span>, <span class="st">"InternetService"</span>, <span class="st">"PaymentMethod"</span>]</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>feature_columns <span class="op">=</span> numeric_features <span class="op">+</span> categorical_features <span class="op">+</span> [<span class="st">"SeniorCitizen"</span>]</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_regression_pipeline():</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    preprocessing <span class="op">=</span> ColumnTransformer([</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"numeric"</span>, StandardScaler(), numeric_features),</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"categorical"</span>, OneHotEncoder(handle_unknown<span class="op">=</span><span class="st">"ignore"</span>, sparse_output<span class="op">=</span><span class="va">False</span>),</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>         categorical_features),</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"binary"</span>, <span class="st">"passthrough"</span>, [<span class="st">"SeniorCitizen"</span>]),</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    ])</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> make_pipeline(preprocessing, Ridge())</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>churned <span class="op">=</span> train_df[<span class="st">"Churn"</span>].eq(<span class="st">"Yes"</span>)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>observed_events_only <span class="op">=</span> make_regression_pipeline()</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>observed_events_only.fit(</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    train_df.loc[churned, feature_columns], train_df.loc[churned, <span class="st">"tenure"</span>]</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>follow_up_as_target <span class="op">=</span> make_regression_pipeline()</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>follow_up_as_target.fit(train_df[feature_columns], train_df[<span class="st">"tenure"</span>])</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>naive_predictions <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Events-only regression"</span>: observed_events_only.predict(test_df[feature_columns].head()),</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Follow-up regression"</span>: follow_up_as_target.predict(test_df[feature_columns].head()),</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>naive_predictions.index.name <span class="op">=</span> <span class="st">"Customer index"</span></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>display(naive_predictions.<span class="bu">round</span>(<span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Events-only regression</th>
+<th data-quarto-table-cell-role="th">Follow-up regression</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Customer index</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>0.2</td>
+<td>5.6</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>51.3</td>
+<td>52.8</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>40.5</td>
+<td>40.3</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>13.1</td>
+<td>19.8</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>50.0</td>
+<td>51.7</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>These numbers are predictions from two incorrectly specified workflows, not estimates we should trust. Their difference alone does not measure the bias: for censored customers, we still do not know the eventual event time. Evaluating only on customers whose churn was observed would repeat the selection problem.</p>
+</section>
+<section id="exercise-20.1-what-information-are-we-throwing-away" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-20.1-what-information-are-we-throwing-away">Exercise 20.1: What information are we throwing away?</h3>
+<p>A customer is still subscribed when observation ends at month 15.</p>
+<ol type="1">
+<li>What do we know about their time to churn? What do we not know?</li>
+<li>What incorrect statement about this customer would each shortcut make?</li>
+<li>A colleague proposes replacing their unknown churn time with the mean tenure of customers who churned. Explain why ordinary missing-value imputation does not preserve the information in this record.</li>
+</ol>
+</section>
+</section>
+<section id="learning-from-censored-observations" class="level2">
+<h2 class="anchored" data-anchor-id="learning-from-censored-observations">Learning from censored observations</h2>
+<p>Both shortcuts lose the distinction between an observed event and the end of observation. Survival analysis starts by preserving that distinction: each outcome has two parts, an <strong>observed duration</strong> and an <strong>event indicator</strong>. We use <code>1</code> when churn was observed and <code>0</code> when the record was right-censored. The zero means “event not observed,” not “event impossible.”</p>
+<p>We keep the duration in months. It is part of the outcome, not a predictor to be scaled or supplied to the model as an input feature.</p>
+<div id="survival-014" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-22T01:02:27.970130Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-22T01:02:27.970066Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-22T01:02:27.973203Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-22T01:02:27.972828Z&quot;}}" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> frame <span class="kw">in</span> (train_df, test_df):</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    frame[<span class="st">"event_observed"</span>] <span class="op">=</span> frame[<span class="st">"Churn"</span>].<span class="bu">map</span>({<span class="st">"Yes"</span>: <span class="dv">1</span>, <span class="st">"No"</span>: <span class="dv">0</span>})</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>display(train_df[[<span class="st">"tenure"</span>, <span class="st">"event_observed"</span>]].head())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">tenure</th>
+<th data-quarto-table-cell-role="th">event_observed</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6464</th>
+<td>50</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5707</th>
+<td>2</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">3442</th>
+<td>29</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3932</th>
+<td>2</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6124</th>
+<td>57</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>A survival model need not guess one completed target for each censored customer. Instead, it uses the information that their event time exceeds their observed duration.</p>
+<p>There is an important assumption behind this use of censoring. For Kaplan–Meier estimation, censoring must be independent of event time; for regression, we usually assume this independence after accounting for the model’s features. Intuitively, customers whose observation ends should not have systematically different future churn prospects from comparable customers who remain under observation.</p>
+<p>Ending a study on a fixed date can make this assumption reasonable, although changes across signup cohorts may still matter. Losing track specifically of customers who are about to leave is more problematic. Survival analysis handles incomplete follow-up under assumptions; it does not automatically fix a biased observation process.</p>
+<section id="estimating-a-survival-curve" class="level3">
+<h3 class="anchored" data-anchor-id="estimating-a-survival-curve">Estimating a survival curve</h3>
+<p>We now have a way to represent both kinds of outcome. How can we combine them to learn something useful? Before using customer features, let’s ask about customers as a group: <strong>what proportion remain subscribed beyond a given duration?</strong> The <strong>survival function</strong> answers this question. If <span class="math inline">\(T\)</span> is time to churn, then</p>
+<p><span class="math display">\[S(t) = P(T &gt; t).\]</span></p>
+<p>For example, <span class="math inline">\(S(12)=0.8\)</span> means that the probability of remaining subscribed beyond 12 months is 0.8. It does not mean that 80% of the customers who are active today will stay for another 12 months; those customers have already survived for different lengths of time.</p>
+<p>Without censoring, we could count how many customers lasted beyond each time. With censoring, we cannot simply put a customer in the “churned” group when observation ends. The <strong>Kaplan–Meier estimator</strong> builds a curve by using customers for as long as we observe them.</p>
+<p><strong>How a censored customer contributes</strong></p>
+<p>Suppose four customers have these outcomes:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Customer</th>
+<th style="text-align: right;">Observed duration (months)</th>
+<th style="text-align: right;">Event observed</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td>C</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td>D</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>At month 2, all four customers are still under observation immediately before A churns. Three out of four survive this event time, so the estimate drops from 1 to <span class="math inline">\(3/4\)</span>.</p>
+<p>At month 3, observation ends for B. There is no observed churn, so the survival estimate stays at <span class="math inline">\(3/4\)</span>. B no longer contributes to later event times.</p>
+<p>At month 4, C and D are still under observation immediately before C churns. One out of these two survives this event time. We multiply the previous estimate by <span class="math inline">\(1/2\)</span>, giving <span class="math inline">\((3/4)(1/2)=3/8\)</span>.</p>
+<p>The customers still under observation and event-free just before an event time form the <strong>risk set</strong>. Kaplan–Meier multiplies the fractions surviving each event time. Censored customers contribute to the risk sets until their observation ends; they are neither discarded entirely nor counted as events.</p>
+<div id="survival-017" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-22T01:02:27.974002Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-22T01:02:27.973946Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-22T01:02:28.021012Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-22T01:02:28.020631Z&quot;}}" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>small <span class="op">=</span> pd.DataFrame({<span class="st">"duration"</span>: [<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>], <span class="st">"event"</span>: [<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>]})</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>small_km <span class="op">=</span> KaplanMeierFitter(label<span class="op">=</span><span class="st">"Four-customer example"</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>small_km.fit(small[<span class="st">"duration"</span>], event_observed<span class="op">=</span>small[<span class="st">"event"</span>])</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> small_km.plot_survival_function(ci_show<span class="op">=</span><span class="va">False</span>, show_censors<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"Months since signup"</span>, ylabel<span class="op">=</span><span class="st">"Estimated survival probability"</span>, ylim<span class="op">=</span>(<span class="dv">0</span>, <span class="fl">1.05</span>))</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="20_survival-analysis_files/figure-html/cell-7-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>After month 5, nobody remains under observation. A flat tail does not establish that remaining customers will never churn; we have run out of follow-up.</p>
+</section>
+<section id="kaplanmeier-for-the-telecom-data" class="level3">
+<h3 class="anchored" data-anchor-id="kaplanmeier-for-the-telecom-data">Kaplan–Meier for the telecom data</h3>
+<p>We can now fit the same estimator to the training data. It uses only duration and event status, without any other customer features.</p>
+<div id="survival-019" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-22T01:02:28.021923Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-22T01:02:28.021860Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-22T01:02:28.076475Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-22T01:02:28.076168Z&quot;}}" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>kmf <span class="op">=</span> KaplanMeierFitter(label<span class="op">=</span><span class="st">"All training customers"</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>kmf.fit(train_df[<span class="st">"tenure"</span>], event_observed<span class="op">=</span>train_df[<span class="st">"event_observed"</span>])</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">9</span>, <span class="dv">4</span>))</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>kmf.plot_survival_function(ax<span class="op">=</span>ax)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"Months since signup"</span>, ylabel<span class="op">=</span><span class="st">"Estimated survival probability"</span>, ylim<span class="op">=</span>(<span class="dv">0</span>, <span class="fl">1.05</span>))</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>add_at_risk_counts(kmf, ax<span class="op">=</span>ax)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>display(kmf.predict([<span class="dv">12</span>, <span class="dv">24</span>, <span class="dv">48</span>]).rename(<span class="st">"Estimated probability of staying beyond t"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="20_survival-analysis_files/figure-html/cell-8-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>12    0.845665
+24    0.793375
+48    0.716790
+Name: Estimated probability of staying beyond t, dtype: float64</code></pre>
+</div>
+</div>
+<p>The curve falls at observed churn times. The shaded region gives pointwise 95% confidence intervals for the estimated population survival probability; it is not a range of individual churn times. The counts below the plot help us see how much follow-up supports the curve. Far into the tail, fewer customers remain under observation, so estimates deserve particular caution.</p>
+<p>The ordinary mean of <code>tenure</code> would mix completed subscriptions with incomplete follow-up. It is not the mean time to churn. A survival curve is more informative here, but it also cannot identify what happens beyond the available follow-up without additional assumptions.</p>
+<p>We can also compare curves for groups. For example, do the observed survival patterns differ for senior and non-senior customers?</p>
+<div id="survival-021" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-22T01:02:28.077408Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-22T01:02:28.077334Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-22T01:02:28.113067Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-22T01:02:28.112778Z&quot;}}" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">4</span>))</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> value, label <span class="kw">in</span> [(<span class="dv">0</span>, <span class="st">"Non-senior customers"</span>), (<span class="dv">1</span>, <span class="st">"Senior customers"</span>)]:</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    group <span class="op">=</span> train_df.loc[train_df[<span class="st">"SeniorCitizen"</span>].eq(value)]</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    group_km <span class="op">=</span> KaplanMeierFitter(label<span class="op">=</span>label)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    group_km.fit(group[<span class="st">"tenure"</span>], event_observed<span class="op">=</span>group[<span class="st">"event_observed"</span>])</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    group_km.plot_survival_function(ax<span class="op">=</span>ax)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"Months since signup"</span>, ylabel<span class="op">=</span><span class="st">"Estimated survival probability"</span>, ylim<span class="op">=</span>(<span class="dv">0</span>, <span class="fl">1.05</span>))</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="20_survival-analysis_files/figure-html/cell-9-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>These are unadjusted comparisons. The groups may also differ in contracts, services, and other attributes. A difference between curves does not establish that senior status causes a difference in churn.</p>
+</section>
+<section id="exercise-20.2-read-the-curve" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-20.2-read-the-curve">Exercise 20.2: Read the curve</h3>
+<p>Return to the four-customer example.</p>
+<ol type="1">
+<li>Why does the curve stay flat at month 3 even though one customer leaves observation?</li>
+<li>If B had instead churned at month 3, what would the survival estimate be immediately after month 3?</li>
+<li>Why would dividing the number known to remain subscribed by all four original customers give the wrong estimate after month 4?</li>
+</ol>
+</section>
+</section>
+<section id="using-features-the-cox-proportional-hazards-model" class="level2">
+<h2 class="anchored" data-anchor-id="using-features-the-cox-proportional-hazards-model">Using features: the Cox proportional hazards model</h2>
+<p>The subgroup curves suggest that survival patterns differ across customers. But comparing one grouping at a time leaves other differences mixed together. Senior and non-senior customers, for example, may also have different contracts. How can we use several features together?</p>
+<p>We need a regression model designed for survival outcomes. The <strong>Cox proportional hazards model</strong> keeps the duration/event representation we have just used and adds customer features. It lets us estimate associations while holding the other included features fixed, and produce a survival curve for a particular feature profile.</p>
+<p>First we need to distinguish <strong>survival</strong> from <strong>hazard</strong>. Survival is the probability of remaining event-free beyond a time. Hazard describes the rate at which events occur around that time among individuals who have remained event-free until then. A higher churn hazard means a faster rate of churn among customers still subscribed. A hazard is a rate, not a probability.</p>
+<p>The Cox model assigns a coefficient to each feature. Rather than adding a fixed number of months to a prediction, a feature change multiplies the hazard. A one-unit increase in a feature with coefficient <span class="math inline">\(\beta\)</span>, holding the other features fixed, multiplies hazard by <span class="math inline">\(\exp(\beta)\)</span>. This multiplier is the <strong>hazard ratio</strong>.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Coefficient</th>
+<th>Hazard ratio</th>
+<th>Interpretation, holding other features fixed</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(0\)</span></td>
+<td><span class="math inline">\(1\)</span></td>
+<td>No change in hazard</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\log(2)\)</span></td>
+<td><span class="math inline">\(2\)</span></td>
+<td>Twice the hazard</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\log(0.5)\)</span></td>
+<td><span class="math inline">\(0.5\)</span></td>
+<td>Half the hazard</td>
+</tr>
+</tbody>
+</table>
+<p>Twice the hazard does not mean twice the probability of churn within 12 months, nor half the expected lifetime.</p>
+<p>The <strong>proportional hazards assumption</strong> is that this hazard ratio stays constant over time. The overall churn rate can rise or fall, but the model assumes a feature’s multiplicative effect does not change with duration. A contract that reduces churn early but increases it around renewal could violate this assumption.</p>
+<section id="preparing-the-features" class="level3">
+<h3 class="anchored" data-anchor-id="preparing-the-features">Preparing the features</h3>
+<p>We use the same small feature set as in the regression demonstration. We omit <code>customerID</code>, which is an identifier, and <code>TotalCharges</code>, which accumulates during the subscription and can reveal information about elapsed time. We also leave <code>tenure</code> and <code>event_observed</code> out of the predictors: together, they describe the outcome.</p>
+<p>We retain monthly charges in dollars so that changes in this feature remain easy to interpret. We one-hot encode categories with a reference category (<code>drop="first"</code>). Each retained category is compared with the omitted category for that feature. We fit the encoder on training data only.</p>
+<div id="survival-025" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-22T01:02:28.114056Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-22T01:02:28.113994Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-22T01:02:28.126022Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-22T01:02:28.125640Z&quot;}}" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>survival_preprocessor <span class="op">=</span> ColumnTransformer(</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    [</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"numeric"</span>, <span class="st">"passthrough"</span>, numeric_features),</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"categorical"</span>, OneHotEncoder(drop<span class="op">=</span><span class="st">"first"</span>, handle_unknown<span class="op">=</span><span class="st">"ignore"</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>                                      sparse_output<span class="op">=</span><span class="va">False</span>), categorical_features),</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"binary"</span>, <span class="st">"passthrough"</span>, [<span class="st">"SeniorCitizen"</span>]),</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    ],</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    verbose_feature_names_out<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>survival_preprocessor.fit(train_df[feature_columns])</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>encoded_columns <span class="op">=</span> survival_preprocessor.get_feature_names_out()</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> survival_frame(frame):</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    encoded <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>        survival_preprocessor.transform(frame[feature_columns]),</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>        index<span class="op">=</span>frame.index, columns<span class="op">=</span>encoded_columns,</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> encoded.join(frame[[<span class="st">"tenure"</span>, <span class="st">"event_observed"</span>]])</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>train_surv <span class="op">=</span> survival_frame(train_df)</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>test_surv <span class="op">=</span> survival_frame(test_df)</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>encoder <span class="op">=</span> survival_preprocessor.named_transformers_[<span class="st">"categorical"</span>]</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>display(pd.Series({name: categories[<span class="dv">0</span>] <span class="cf">for</span> name, categories <span class="kw">in</span></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>                   <span class="bu">zip</span>(categorical_features, encoder.categories_)}, name<span class="op">=</span><span class="st">"Reference category"</span>))</span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>display(train_surv.head())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>Contract                      Month-to-month
+InternetService                          DSL
+PaymentMethod      Bank transfer (automatic)
+Name: Reference category, dtype: object</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">MonthlyCharges</th>
+<th data-quarto-table-cell-role="th">Contract_One year</th>
+<th data-quarto-table-cell-role="th">Contract_Two year</th>
+<th data-quarto-table-cell-role="th">InternetService_Fiber optic</th>
+<th data-quarto-table-cell-role="th">InternetService_No</th>
+<th data-quarto-table-cell-role="th">PaymentMethod_Credit card (automatic)</th>
+<th data-quarto-table-cell-role="th">PaymentMethod_Electronic check</th>
+<th data-quarto-table-cell-role="th">PaymentMethod_Mailed check</th>
+<th data-quarto-table-cell-role="th">SeniorCitizen</th>
+<th data-quarto-table-cell-role="th">tenure</th>
+<th data-quarto-table-cell-role="th">event_observed</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6464</th>
+<td>70.35</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>50</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5707</th>
+<td>45.55</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>2</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">3442</th>
+<td>98.80</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>29</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3932</th>
+<td>78.55</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>2</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6124</th>
+<td>59.30</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>57</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="fitting-and-interpreting-the-model" class="level3">
+<h3 class="anchored" data-anchor-id="fitting-and-interpreting-the-model">Fitting and interpreting the model</h3>
+<p>Unlike a scikit-learn regressor, <code>lifelines</code> accepts a single DataFrame containing features and both outcome columns. We tell it which columns are duration and event status.</p>
+<p>We add a small L2 penalty to stabilize coefficient estimates, similar in spirit to <code>Ridge</code>. With the default <code>l1_ratio=0</code>, <code>penalizer=0.1</code> uses L2 regularization. This is a fixed teaching choice, not a value selected using the test set. Regularization does not repair inappropriate features or a violation of proportional hazards.</p>
+<div id="survival-027" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-22T01:02:28.126780Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-22T01:02:28.126723Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-22T01:02:28.153944Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-22T01:02:28.153662Z&quot;}}" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>cph <span class="op">=</span> CoxPHFitter(penalizer<span class="op">=</span><span class="fl">0.1</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>cph.fit(train_surv, duration_col<span class="op">=</span><span class="st">"tenure"</span>, event_col<span class="op">=</span><span class="st">"event_observed"</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>display(cph.summary[[<span class="st">"coef"</span>, <span class="st">"exp(coef)"</span>, <span class="st">"exp(coef) lower 95%"</span>, <span class="st">"exp(coef) upper 95%"</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">coef</th>
+<th data-quarto-table-cell-role="th">exp(coef)</th>
+<th data-quarto-table-cell-role="th">exp(coef) lower 95%</th>
+<th data-quarto-table-cell-role="th">exp(coef) upper 95%</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">covariate</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">MonthlyCharges</th>
+<td>-0.005730</td>
+<td>0.994287</td>
+<td>0.992168</td>
+<td>0.996410</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Contract_One year</th>
+<td>-1.034271</td>
+<td>0.355486</td>
+<td>0.314173</td>
+<td>0.402230</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Contract_Two year</th>
+<td>-1.502138</td>
+<td>0.222654</td>
+<td>0.194800</td>
+<td>0.254490</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">InternetService_Fiber optic</th>
+<td>0.505673</td>
+<td>1.658101</td>
+<td>1.477467</td>
+<td>1.860819</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">InternetService_No</th>
+<td>-0.448655</td>
+<td>0.638486</td>
+<td>0.547884</td>
+<td>0.744071</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">PaymentMethod_Credit card (automatic)</th>
+<td>-0.248840</td>
+<td>0.779705</td>
+<td>0.682731</td>
+<td>0.890453</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">PaymentMethod_Electronic check</th>
+<td>0.513960</td>
+<td>1.671899</td>
+<td>1.504854</td>
+<td>1.857487</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">PaymentMethod_Mailed check</th>
+<td>0.305656</td>
+<td>1.357515</td>
+<td>1.188641</td>
+<td>1.550381</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">SeniorCitizen</th>
+<td>0.052152</td>
+<td>1.053536</td>
+<td>0.942953</td>
+<td>1.177088</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Positive coefficients are associated with higher hazard and lower survival; negative coefficients are associated with lower hazard and higher survival, holding the included features fixed. For example, a contract coefficient compares that contract with the reference contract, rather than comparing customers with and without any contract.</p>
+<p>For monthly charges, a one-dollar change may be too small to interpret conveniently. The hazard ratio for a $10 increase is <span class="math inline">\(\exp(10\beta)\)</span>, because the feature remains in dollars.</p>
+<div id="survival-029" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-22T01:02:28.154919Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-22T01:02:28.154855Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-22T01:02:28.194626Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-22T01:02:28.194274Z&quot;}}" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>charge_hazard_ratio <span class="op">=</span> np.exp(<span class="dv">10</span> <span class="op">*</span> cph.params_[<span class="st">"MonthlyCharges"</span>])</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Hazard ratio for a $10 increase in monthly charges: </span><span class="sc">{</span>charge_hazard_ratio<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">5</span>))</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>cph.plot(ax<span class="op">=</span>ax)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Cox coefficients with 95</span><span class="sc">% c</span><span class="st">onfidence intervals"</span>)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Hazard ratio for a $10 increase in monthly charges: 0.944</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="20_survival-analysis_files/figure-html/cell-12-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The intervals describe uncertainty under the model and its assumptions. They do not establish causal effects. In particular, an association between contract type and churn does not show what would happen if we changed a customer’s contract.</p>
+<p>For a real analysis, we would inspect model diagnostics as well. <code>cph.check_assumptions(train_surv)</code> provides checks and plots for proportional hazards; interpreting them and choosing a remedy requires more statistical detail than we cover here. A model that converges successfully is not necessarily an adequate model.</p>
+</section>
+</section>
+<section id="making-and-evaluating-predictions" class="level2">
+<h2 class="anchored" data-anchor-id="making-and-evaluating-predictions">Making and evaluating predictions</h2>
+<p>Return to the retention team’s question: when might a customer leave? The fitted coefficients describe associations, but the team needs predictions for particular customers. A survival curve lets us ask about a relevant horizon, such as the probability of staying beyond 12 months, without reducing the whole outlook to one event time.</p>
+<section id="predictions-from-signup" class="level3">
+<h3 class="anchored" data-anchor-id="predictions-from-signup">Predictions from signup</h3>
+<p>First, consider curves measured from <strong>signup</strong>. We use held-out customers’ features, excluding the duration and event indicator. These are model illustrations under our fixed-feature interpretation, subject to the snapshot limitations described earlier.</p>
+<div id="survival-032" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-22T01:02:28.195501Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-22T01:02:28.195439Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-22T01:02:28.229538Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-22T01:02:28.229207Z&quot;}}" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>test_X <span class="op">=</span> test_surv.drop(columns<span class="op">=</span>[<span class="st">"tenure"</span>, <span class="st">"event_observed"</span>])</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>example_X <span class="op">=</span> test_X.head(<span class="dv">5</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>survival_predictions <span class="op">=</span> cph.predict_survival_function(example_X, times<span class="op">=</span>np.arange(<span class="dv">0</span>, <span class="dv">73</span>))</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> survival_predictions.plot(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">4</span>))</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"Months since signup"</span>, ylabel<span class="op">=</span><span class="st">"Predicted survival probability"</span>, ylim<span class="op">=</span>(<span class="dv">0</span>, <span class="fl">1.05</span>))</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>display(cph.predict_survival_function(example_X, times<span class="op">=</span>[<span class="dv">12</span>, <span class="dv">24</span>]).T.rename(</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    columns<span class="op">=</span>{<span class="fl">12.0</span>: <span class="st">"P(stay beyond 12 months)"</span>, <span class="fl">24.0</span>: <span class="st">"P(stay beyond 24 months)"</span>}</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="20_survival-analysis_files/figure-html/cell-13-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">P(stay beyond 12 months)</th>
+<th data-quarto-table-cell-role="th">P(stay beyond 24 months)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">941</th>
+<td>0.718279</td>
+<td>0.613673</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1404</th>
+<td>0.971162</td>
+<td>0.957738</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">5515</th>
+<td>0.960181</td>
+<td>0.941801</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3684</th>
+<td>0.820788</td>
+<td>0.747195</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">7017</th>
+<td>0.970727</td>
+<td>0.957105</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Each curve starts at the model’s time origin, signup. It is not automatically a forecast of months from today for an existing customer.</p>
+<p>We can also vary one feature while holding the rest fixed. Here we use the training-set quartiles of monthly charges, so the inputs are plausible dollar amounts. This plot describes the fitted model’s response; changing a price in practice need not have the same effect.</p>
+<div id="survival-034" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-22T01:02:28.230359Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-22T01:02:28.230299Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-22T01:02:28.262737Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-22T01:02:28.262358Z&quot;}}" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>charge_values <span class="op">=</span> train_df[<span class="st">"MonthlyCharges"</span>].quantile([<span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>]).tolist()</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>cph.plot_partial_effects_on_outcome(<span class="st">"MonthlyCharges"</span>, values<span class="op">=</span>charge_values,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>                                    plot_baseline<span class="op">=</span><span class="va">False</span>, figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">4</span>))</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Months since signup"</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Predicted survival probability"</span>)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>plt.ylim(<span class="dv">0</span>, <span class="fl">1.05</span>)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="20_survival-analysis_files/figure-html/cell-14-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="the-outlook-for-an-existing-customer" class="level3">
+<h3 class="anchored" data-anchor-id="the-outlook-for-an-existing-customer">The outlook for an existing customer</h3>
+<p>For retention planning, however, we usually want the outlook for someone who is already subscribed. Suppose a customer has already stayed for 20 months. A prediction from signup includes the possibility of leaving before month 20, but we now know that did not happen. We should <strong>condition on their survival so far</strong>.</p>
+<p>For a customer who has survived to month <span class="math inline">\(a\)</span>, the probability of staying for more than another <span class="math inline">\(u\)</span> months is</p>
+<p><span class="math display">\[\frac{S(a+u)}{S(a)},\]</span></p>
+<p>provided <span class="math inline">\(S(a)&gt;0\)</span>. We keep only the survival beyond month <span class="math inline">\(a\)</span> and rescale that part of the curve to begin at 1. <code>lifelines</code> does this through <code>conditional_after</code>.</p>
+<p>Let’s select active held-out customers with at most 48 months of observed tenure, so that a further 12 months remains within the dataset’s duration range.</p>
+<div id="survival-036" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-22T01:02:28.263655Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-22T01:02:28.263595Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-22T01:02:28.293709Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-22T01:02:28.293357Z&quot;}}" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>active <span class="op">=</span> test_surv.loc[</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    test_surv[<span class="st">"event_observed"</span>].eq(<span class="dv">0</span>) <span class="op">&amp;</span> test_surv[<span class="st">"tenure"</span>].le(<span class="dv">48</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>].head(<span class="dv">3</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>active_X <span class="op">=</span> active.drop(columns<span class="op">=</span>[<span class="st">"tenure"</span>, <span class="st">"event_observed"</span>])</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>remaining_survival <span class="op">=</span> cph.predict_survival_function(</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    active_X, times<span class="op">=</span>np.arange(<span class="dv">0</span>, <span class="dv">25</span>), conditional_after<span class="op">=</span>active[<span class="st">"tenure"</span>].to_numpy()</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> remaining_survival.plot(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">4</span>))</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"Additional months after observation ends"</span>,</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>       ylabel<span class="op">=</span><span class="st">"Predicted conditional survival probability"</span>, ylim<span class="op">=</span>(<span class="dv">0</span>, <span class="fl">1.05</span>))</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>display(pd.DataFrame({</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Months already subscribed"</span>: active[<span class="st">"tenure"</span>],</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"P(stay another 12 months)"</span>: remaining_survival.loc[<span class="dv">12</span>],</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>}))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="20_survival-analysis_files/figure-html/cell-15-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Months already subscribed</th>
+<th data-quarto-table-cell-role="th">P(stay another 12 months)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">941</th>
+<td>13</td>
+<td>0.855102</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1404</th>
+<td>35</td>
+<td>0.984491</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">5515</th>
+<td>18</td>
+<td>0.983319</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>These are predictions of remaining survival, given each customer’s observed tenure. Conditioning on survival does not guarantee a longer expected <em>remaining</em> lifetime than for a new customer; that depends on the fitted survival pattern.</p>
+<p><code>lifelines</code> can also return medians and expected lifetimes. These summaries require care. A median may be unavailable if the curve never falls to 0.5 during follow-up. An expected lifetime depends on the entire tail, including durations we may not have observed. We therefore begin with probabilities at supported horizons rather than treating a single predicted lifetime as a precise answer.</p>
+</section>
+<section id="exercise-20.3-which-prediction-answers-the-question" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-20.3-which-prediction-answers-the-question">Exercise 20.3: Which prediction answers the question?</h3>
+<p>A customer has already stayed for 20 months. A model gives <span class="math inline">\(S(20)=0.8\)</span> and <span class="math inline">\(S(32)=0.6\)</span> for their features.</p>
+<ol type="1">
+<li>What is their predicted probability of remaining subscribed for another 12 months, given survival to month 20?</li>
+<li>Why is <span class="math inline">\(1-S(12)\)</span> not the appropriate predicted probability of churn during their next 12 months?</li>
+<li>If two customers have identical model features but different observed tenures, must their remaining-survival curves be identical? Explain.</li>
+</ol>
+</section>
+<section id="evaluating-a-survival-model" class="level3">
+<h3 class="anchored" data-anchor-id="evaluating-a-survival-model">Evaluating a survival model</h3>
+<p>We can now produce predictions that answer our original question. Before using them, we need to check how well the model performs on customers it did not train on. The incomplete-target problem that motivated survival analysis also affects evaluation.</p>
+<p>Ordinary mean squared error cannot directly compare a predicted event time with every row’s observed tenure. For a censored customer, tenure is a bound, not the true event time. Evaluating only observed events would again select an unrepresentative subset.</p>
+<p>One common survival metric is the <strong>concordance index</strong>, or <strong>c-index</strong>. It asks whether the model correctly ranks risk for pairs of individuals whose event order can be determined. If A churns at month 4 and B is observed event-free through month 10, we know A’s event occurred first. If A is censored at month 4 and B churns at month 10, we do not know which customer’s event time is earlier, so that pair cannot be ordered in the same way.</p>
+<p>A c-index of 1 indicates perfect ordering of comparable pairs; around 0.5 corresponds to chance ordering. This measures ranking, not whether predicted survival probabilities are accurate. A model can rank customers well while systematically overestimating survival.</p>
+<p>We now evaluate our fixed model once on the test set. We also show the training score to distinguish performance on seen and unseen customers.</p>
+<div id="survival-039" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-22T01:02:28.294588Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-22T01:02:28.294514Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-22T01:02:28.309969Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-22T01:02:28.309701Z&quot;}}" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> pd.Series({</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Training c-index"</span>: cph.score(train_surv, scoring_method<span class="op">=</span><span class="st">"concordance_index"</span>),</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Test c-index"</span>: cph.score(test_surv, scoring_method<span class="op">=</span><span class="st">"concordance_index"</span>),</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>display(scores.<span class="bu">round</span>(<span class="dv">3</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>Training c-index    0.824
+Test c-index        0.821
+dtype: float64</code></pre>
+</div>
+</div>
+<p>This random split estimates generalization to customers sampled in a similar way to this snapshot. A deployment on future signup cohorts would call for a time-based evaluation, with features recorded at the intended prediction time. We would also assess whether probabilities match observed survival at relevant horizons, using evaluation methods that account for censoring. The c-index alone cannot establish that the model is ready for retention decisions.</p>
+</section>
+</section>
+<section id="practical-guidance-and-limitations" class="level2">
+<h2 class="anchored" data-anchor-id="practical-guidance-and-limitations">Practical guidance and limitations</h2>
+<p>We began with a familiar choice between classification and regression, then found that neither ordinary workflow preserved the information in our targets. The useful first question was not which algorithm to fit, but what we knew about each customer’s event time. That same question guides the choice of approach in other applications.</p>
+<p>Use survival analysis when the question concerns time until an event and some event times are only partly observed. Kaplan–Meier is a useful starting point for describing a population or comparing unadjusted group curves. Cox regression incorporates multiple features, with interpretable hazard ratios under the proportional hazards assumption.</p>
+<p>If the goal is a single fixed-horizon decision and everyone has sufficient follow-up for that horizon, ordinary classification may be simpler. If all event times are observed exactly, ordinary regression may be reasonable, although time-to-event models can still be useful. The choice follows from the question and the observation process, rather than from the presence of a time column alone.</p>
+<p>Other survival methods include random survival forests and models that allow feature effects to change with time. Some problems also require features that change during follow-up, such as a customer switching plans. These require a richer data representation than one snapshot row per customer.</p>
+<p>We have focused on right censoring. With <strong>left censoring</strong>, an event is known to have happened before a bound, but its exact time is unknown. With <strong>interval censoring</strong>, it is known to have occurred between two observation times. These differ from a record that simply begins late; defining what was observed is essential before choosing a method.</p>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<ul>
+<li><strong>Right-censored outcomes contain partial information.</strong> We know that the event time exceeds the observed duration. Dropping these records loses information; treating their durations as completed lifetimes gives ordinary regression the wrong targets.</li>
+<li><strong>Represent the outcome with duration and event status.</strong> The event indicator distinguishes an observed event from the end of follow-up. A censored record does not mean the event will never happen.</li>
+<li><strong>Use survival curves to describe time to an event.</strong> The survival function gives the probability of remaining event-free beyond a given time. Kaplan–Meier estimates a population curve, with censored individuals contributing while they remain under observation.</li>
+<li><strong>Use Cox regression to incorporate features.</strong> Its coefficients describe multiplicative changes in hazard, holding other included features fixed. The proportional hazards assumption keeps these hazard ratios constant over time; they are associations, not causal effects.</li>
+<li><strong>Distinguish total from remaining survival.</strong> A curve measured from signup differs from the outlook for an existing customer. For that customer, condition on survival through their observed tenure.</li>
+<li><strong>Evaluate with methods that respect censoring.</strong> The c-index measures risk ranking among comparable pairs, not the accuracy of predicted survival probabilities. Use held-out data and check performance at horizons relevant to the intended decision.</li>
+</ul>
+<p>For a new problem, define the event, time origin, and prediction time before choosing a model. Check which features were available then, why observations were censored, and whether the model’s assumptions are reasonable.</p>
+<p><strong>Further reading</strong></p>
+<ul>
+<li><a href="https://www.kaggle.com/datasets/blastchar/telco-customer-churn">Telco Customer Churn dataset</a>.</li>
+<li><a href="https://lifelines.readthedocs.io/en/latest/Survival%20analysis%20with%20lifelines.html">Kaplan–Meier estimation in lifelines</a>.</li>
+<li><a href="https://lifelines.readthedocs.io/en/latest/Survival%20Regression.html">Survival regression, interpretation, and diagnostics</a>.</li>
+<li><a href="https://lifelines.readthedocs.io/en/latest/fitters/regression/CoxPHFitter.html">CoxPHFitter API, including conditional predictions and prediction limitations</a>.</li>
+</ul>
+
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/UBC-CS\.github\.io\/cpsc330-book\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
+          if (lineIds.length > 0) {
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            placeBand(gutterDiv, el, lastEl);
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+<nav class="page-navigation" aria-label="Page">
+  <div class="nav-page nav-page-previous">
+      <a href="../book/19_time-series.html" class="pagination-link" aria-label="Chapter 19: Time series">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Chapter 19: Time series</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
