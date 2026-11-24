@@ -71,6 +71,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
+<link href="../book/21_communication.html" rel="next">
 <link href="../book/19_time-series.html" rel="prev">
 <link href="../book/img/UBC-CS-logo.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
@@ -83,7 +84,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-e0f82035c24cc2a893595c7b428f78fd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-b0411c18390e2402e0b3261b63c4bf0b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -371,8 +372,11 @@ window.Quarto = {
       </div>
       <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
- <span class="menu-text">book/21_communication.ipynb</span>
-  </li>
+  <div class="sidebar-item-container"> 
+  <a href="../book/21_communication.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 21: Communication</span></a>
+  </div>
+</li>
       </ul>
   </li>
     </ul>
@@ -1565,10 +1569,15 @@ Test concordance: 0.817</code></pre>
 </section>
 <section id="summary" class="level2">
 <h2 class="anchored" data-anchor-id="summary">Summary</h2>
-<p>The first question in a time-to-event problem is what we actually know about each outcome. For a right-censored customer, we know how long they stayed under observation, but not their eventual departure time. Dropping the record or pretending observation ended in churn loses that distinction.</p>
-<p><code>lifelines</code> uses observed duration and event status together. Kaplan–Meier estimates overall retention or separate group curves without other predictors. Cox regression incorporates several features; coefficient signs describe faster or slower churn, while predicted survival curves give probabilities at useful times.</p>
-<p>Read every curve with its time origin in mind. “Beyond 12 months from signup” differs from “another 12 months for an existing customer.” Pay attention to uncertainty, the number still observed, feature availability, and model assumptions. Group differences and model predictions describe associations; they do not establish the benefit of a retention intervention.</p>
-<p>Use survival analysis when timing matters and some event times are incompletely observed. If the goal is a single fixed-horizon decision and everyone has sufficient follow-up to label that horizon, classification may be simpler. If every event time is known exactly, ordinary regression may be reasonable. The choice follows from the question and what was observed, rather than from the presence of a time column alone.</p>
+<ul>
+<li><strong>Right-censored outcomes contain partial information.</strong> We know how long a customer stayed under observation, but not their eventual departure time. Dropping the record or pretending observation ended in churn loses that distinction.</li>
+<li><strong>Represent outcomes with duration and event status.</strong> <code>lifelines</code> uses both pieces of information to distinguish observed departures from incomplete follow-up.</li>
+<li><strong>Use Kaplan–Meier to estimate retention.</strong> It produces an overall survival curve or separate group curves without using other predictors.</li>
+<li><strong>Use Cox regression to incorporate several features.</strong> Coefficient signs describe faster or slower churn, holding the other included features fixed. Predicted survival curves give retention probabilities at useful times.</li>
+<li><strong>Read curves with their time origin in mind.</strong> “Beyond 12 months from signup” differs from “another 12 months for an existing customer.”</li>
+<li><strong>Interpret results with care.</strong> Pay attention to uncertainty, the number still observed, feature availability, and model assumptions. Group differences and model predictions describe associations; they do not establish the benefit of a retention intervention.</li>
+<li><strong>Choose the approach to match the question and observations.</strong> Use survival analysis when timing matters and some event times are incompletely observed. Classification may be simpler for a single fixed-horizon decision when everyone has enough follow-up to label that horizon. Ordinary regression may be reasonable when every event time is known exactly. A time column alone does not determine which approach to use.</li>
+</ul>
 <p><strong>Further reading</strong></p>
 <ul>
 <li><a href="https://www.kaggle.com/datasets/blastchar/telco-customer-churn">Telco Customer Churn dataset</a>.</li>
@@ -2065,6 +2074,9 @@ Test concordance: 0.817</code></pre>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="../book/21_communication.html" class="pagination-link" aria-label="Chapter 21: Communication">
+        <span class="nav-page-text">Chapter 21: Communication</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->

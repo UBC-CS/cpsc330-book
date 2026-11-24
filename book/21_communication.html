@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.11.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Chapter 21: Communication – CPSC 330: Applied Machine Learning</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../book/20_survival-analysis.html" rel="prev">
+<link href="../book/img/UBC-CS-logo.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-b0411c18390e2402e0b3261b63c4bf0b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../style.css">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Site">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">CPSC 330: Applied Machine Learning</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../index.html" aria-current="page"> 
+<span class="menu-text">Book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../demos.html"> 
+<span class="menu-text">Demos</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" aria-label="Toolbar">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/21_communication.html">Responsible ML Practice</a></li><li class="breadcrumb-item"><a href="../book/21_communication.html">Chapter 21: Communication</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="Section">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../book/img/UBC-CS-logo.png" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../book/img/UBC-CS-logo.png" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../learning-objectives.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Detailed Learning Objectives</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/01_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1: Course Introduction</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-1-label">Foundations and Supervised Learning</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/02_terminology-baselines-decision-trees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2: From Data to a First Model</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/03_ml-fundamentals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3: Machine Learning Fundamentals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/04_kNNs-SVM-RBF.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4: Similarity-Based Models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/05_preprocessing-pipelines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5: Preprocessing and Pipelines</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/06_column-transformer-text-feats.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6: Column Transformers and Text Features</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/07_linear-models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7: Linear Models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/08_hyperparameter-optimization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8: Hyperparameter Optimization</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/09_classification-metrics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9: Classification Metrics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/10_regression-metrics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10: Regression Metrics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/11_ensembles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11: Ensembles</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/12_feat-importances.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 12: Feature Importances and Model Interpretation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/13_feature-engineering-selection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 13: Feature Engineering and Selection</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-2-label">Unsupervised Learning and Recommendation</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/14_K-Means.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 14: K-Means Clustering</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/15_DBSCAN-hierarchical.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 15: DBSCAN and Hierarchical Clustering</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-3-label">Working with Different Types of Data</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/16_recommender-systems.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 16: Recommender Systems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/17_intro_to_computer-vision.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 17: Introduction to Computer Vision</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/18_natural-language-processing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 18: Natural Language Processing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/19_time-series.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 19: Time series</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/20_survival-analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 20: Survival analysis</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-4-label">Responsible ML Practice</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../book/21_communication.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Chapter 21: Communication</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#learning-outcomes" id="toc-learning-outcomes" class="nav-link active" data-scroll-target="#learning-outcomes">Learning outcomes</a></li>
+  <li><a href="#keep-the-goal-and-the-audience-in-view" id="toc-keep-the-goal-and-the-audience-in-view" class="nav-link" data-scroll-target="#keep-the-goal-and-the-audience-in-view">Keep the goal and the audience in view</a></li>
+  <li><a href="#task-1-explain-a-method-to-a-newcomer" id="toc-task-1-explain-a-method-to-a-newcomer" class="nav-link" data-scroll-target="#task-1-explain-a-method-to-a-newcomer">Task 1: Explain a method to a newcomer</a>
+  <ul>
+  <li><a href="#compare-two-explanations" id="toc-compare-two-explanations" class="nav-link" data-scroll-target="#compare-two-explanations">Compare two explanations</a>
+  <ul class="collapse">
+  <li><a href="#explanation-1" id="toc-explanation-1" class="nav-link" data-scroll-target="#explanation-1">Explanation 1</a></li>
+  <li><a href="#explanation-2" id="toc-explanation-2" class="nav-link" data-scroll-target="#explanation-2">Explanation 2</a></li>
+  <li><a href="#an-introduction-to-grid-search" id="toc-an-introduction-to-grid-search" class="nav-link" data-scroll-target="#an-introduction-to-grid-search">An introduction to Grid Search</a></li>
+  </ul></li>
+  <li><a href="#choose-how-to-explain" id="toc-choose-how-to-explain" class="nav-link" data-scroll-target="#choose-how-to-explain">Choose how to explain</a></li>
+  <li><a href="#build-from-familiar-ideas" id="toc-build-from-familiar-ideas" class="nav-link" data-scroll-target="#build-from-familiar-ideas">Build from familiar ideas</a></li>
+  <li><a href="#use-contrasts-to-clarify-boundaries" id="toc-use-contrasts-to-clarify-boundaries" class="nav-link" data-scroll-target="#use-contrasts-to-clarify-boundaries">Use contrasts to clarify boundaries</a></li>
+  <li><a href="#show-evidence-alongside-the-approach" id="toc-show-evidence-alongside-the-approach" class="nav-link" data-scroll-target="#show-evidence-alongside-the-approach">Show evidence alongside the approach</a></li>
+  <li><a href="#make-communication-a-conversation" id="toc-make-communication-a-conversation" class="nav-link" data-scroll-target="#make-communication-a-conversation">Make communication a conversation</a></li>
+  </ul></li>
+  <li><a href="#task-2-help-a-team-decide-what-to-do-next" id="toc-task-2-help-a-team-decide-what-to-do-next" class="nav-link" data-scroll-target="#task-2-help-a-team-decide-what-to-do-next">Task 2: Help a team decide what to do next</a>
+  <ul>
+  <li><a href="#choose-what-the-manager-needs" id="toc-choose-what-the-manager-needs" class="nav-link" data-scroll-target="#choose-what-the-manager-needs">Choose what the manager needs</a></li>
+  <li><a href="#from-a-prediction-task-to-a-useful-decision" id="toc-from-a-prediction-task-to-a-useful-decision" class="nav-link" data-scroll-target="#from-a-prediction-task-to-a-useful-decision">From a prediction task to a useful decision</a></li>
+  <li><a href="#understand-what-your-audience-needs" id="toc-understand-what-your-audience-needs" class="nav-link" data-scroll-target="#understand-what-your-audience-needs">Understand what your audience needs</a></li>
+  <li><a href="#separate-evidence-from-interpretation" id="toc-separate-evidence-from-interpretation" class="nav-link" data-scroll-target="#separate-evidence-from-interpretation">Separate evidence from interpretation</a></li>
+  <li><a href="#give-collaborators-an-update-they-can-use" id="toc-give-collaborators-an-update-they-can-use" class="nav-link" data-scroll-target="#give-collaborators-an-update-they-can-use">Give collaborators an update they can use</a></li>
+  <li><a href="#communicate-limitations-and-uncertainty-honestly" id="toc-communicate-limitations-and-uncertainty-honestly" class="nav-link" data-scroll-target="#communicate-limitations-and-uncertainty-honestly">Communicate limitations and uncertainty honestly</a></li>
+  <li><a href="#check-what-a-probability-supports" id="toc-check-what-a-probability-supports" class="nav-link" data-scroll-target="#check-what-a-probability-supports">Check what a probability supports</a></li>
+  <li><a href="#what-does-predict_proba-tell-us" id="toc-what-does-predict_proba-tell-us" class="nav-link" data-scroll-target="#what-does-predict_proba-tell-us">What does <code>predict_proba</code> tell us?</a></li>
+  <li><a href="#how-much-should-we-trust-a-reported-score" id="toc-how-much-should-we-trust-a-reported-score" class="nav-link" data-scroll-target="#how-much-should-we-trust-a-reported-score">How much should we trust a reported score?</a></li>
+  <li><a href="#make-limitations-specific-and-actionable" id="toc-make-limitations-specific-and-actionable" class="nav-link" data-scroll-target="#make-limitations-specific-and-actionable">Make limitations specific and actionable</a></li>
+  </ul></li>
+  <li><a href="#task-3-present-a-fair-comparison" id="toc-task-3-present-a-fair-comparison" class="nav-link" data-scroll-target="#task-3-present-a-fair-comparison">Task 3: Present a fair comparison</a>
+  <ul>
+  <li><a href="#one-set-of-results-several-stories" id="toc-one-set-of-results-several-stories" class="nav-link" data-scroll-target="#one-set-of-results-several-stories">One set of results, several stories</a></li>
+  <li><a href="#predict-how-the-story-could-change" id="toc-predict-how-the-story-could-change" class="nav-link" data-scroll-target="#predict-how-the-story-could-change">Predict how the story could change</a></li>
+  <li><a href="#show-a-fair-comparison" id="toc-show-a-fair-comparison" class="nav-link" data-scroll-target="#show-a-fair-comparison">Show a fair comparison</a></li>
+  <li><a href="#complete-the-housing-update" id="toc-complete-the-housing-update" class="nav-link" data-scroll-target="#complete-the-housing-update">Complete the housing update</a></li>
+  </ul></li>
+  <li><a href="#try-it-in-a-different-setting" id="toc-try-it-in-a-different-setting" class="nav-link" data-scroll-target="#try-it-in-a-different-setting">Try it in a different setting</a>
+  <ul>
+  <li><a href="#write-an-update-without-answer-options" id="toc-write-an-update-without-answer-options" class="nav-link" data-scroll-target="#write-an-update-without-answer-options">Write an update without answer options</a></li>
+  </ul></li>
+  <li><a href="#chapter-summary" id="toc-chapter-summary" class="nav-link" data-scroll-target="#chapter-summary">Chapter summary</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../book/21_communication.html">Responsible ML Practice</a></li><li class="breadcrumb-item"><a href="../book/21_communication.html">Chapter 21: Communication</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Chapter 21: Communication</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="learning-outcomes" class="level2 unnumbered callout-lo">
+<h2 class="unnumbered anchored" data-anchor-id="learning-outcomes">Learning outcomes</h2>
+<p>By the end of this chapter, you should be able to:</p>
+<ul>
+<li>Identify why an ML result alone may not answer the question a decision-maker cares about.</li>
+<li>Recognize how an audience’s background and purpose affect the choice of language, examples, and detail.</li>
+<li>Present results with appropriate baselines, context, and recommendations.</li>
+<li>Distinguish model probability estimates from evidence about their reliability.</li>
+<li>Communicate limitations and uncertainty without hiding useful findings.</li>
+<li>Identify misleading visualizations and construct fair comparisons.</li>
+</ul>
+</section>
+<p><strong>Imports</strong></p>
+<div id="21239dba" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-22T02:48:05.473575Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-22T02:48:05.473441Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-22T02:48:06.286383Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-22T02:48:06.285906Z&quot;}}" data-execution_count="1">
+<details class="code-fold">
+<summary>Show imports and setup</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.base <span class="im">import</span> clone</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.compose <span class="im">import</span> TransformedTargetRegressor, make_column_transformer</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> GradientBoostingRegressor, RandomForestRegressor</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.impute <span class="im">import</span> SimpleImputer</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> make_pipeline</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> OneHotEncoder, OrdinalEncoder, StandardScaler</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>DATA_DIR <span class="op">=</span> Path(<span class="st">"data"</span>) <span class="cf">if</span> Path(<span class="st">"data"</span>).is_dir() <span class="cf">else</span> Path(<span class="st">"book"</span>) <span class="op">/</span> <span class="st">"data"</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">"font.size"</span>] <span class="op">=</span> <span class="dv">12</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<section id="keep-the-goal-and-the-audience-in-view" class="level2">
+<h2 class="anchored" data-anchor-id="keep-the-goal-and-the-audience-in-view">Keep the goal and the audience in view</h2>
+<p>An applied ML project rarely belongs to one person. Teammates need to understand an approach before they can improve it. Someone must decide whether the results justify further work, and someone may need to maintain the model after deployment. Good technical work can go unused when the people who need it cannot understand its value or its limitations.</p>
+<p>Communication is therefore part of the ML workflow, from agreeing on the problem to sharing results. The aim is to help others make informed decisions. That means explaining why the work matters while being honest about what the evidence supports.</p>
+<p>In this chapter, you will work through three communication tasks: explain a method to a newcomer, help a project team decide what to do next, and present a fair model comparison. For each task, make a choice before reading the discussion. Write a reason, compare it with a partner’s if possible, and then revisit your choice. The aim is to practise decisions you can use in your own work.</p>
+</section>
+<section id="task-1-explain-a-method-to-a-newcomer" class="level2">
+<h2 class="anchored" data-anchor-id="task-1-explain-a-method-to-a-newcomer">Task 1: Explain a method to a newcomer</h2>
+<section id="compare-two-explanations" class="level3">
+<h3 class="anchored" data-anchor-id="compare-two-explanations">Compare two explanations</h3>
+<p>You already know hyperparameter optimization. Here, focus on how it is explained rather than learning a new method. Read the two original explanations below and consider how they would have felt on Day 1 of CPSC 330.</p>
+<section id="explanation-1" class="level4">
+<h4 class="anchored" data-anchor-id="explanation-1">Explanation 1</h4>
+<p>Machine learning algorithms, like an airplane’s cockpit, typically involve a bunch of knobs and switches that need to be set.</p>
+<p><img src="https://i.pinimg.com/236x/ea/43/f3/ea43f3c7f3a8c92d884ce012c77628fd--cockpit-gauges.jpg" class="img-fluid"></p>
+<p>For example, check out the documentation of the popular random forest algorithm <a href="https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html">here</a>. Here’s a list of the function arguments, along with their default values (from the documentation):</p>
+<blockquote class="blockquote">
+<p>RandomForestClassifier(n_estimators=100, *, criterion=‘gini’, max_depth=None, min_samples_split=2, min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features=‘sqrt’, max_leaf_nodes=None, min_impurity_decrease=0.0, bootstrap=True, oob_score=False, n_jobs=None, random_state=None, verbose=0, warm_start=False, class_weight=None, ccp_alpha=0.0, max_samples=None, monotonic_cst=None)</p>
+</blockquote>
+<p>Holy cow, that’s a lot of knobs and switches! As a machine learning practitioner, how am I supposed to choose <code>n_estimators</code>? Should I leave it at the default of 100? Or try 1000? What about <code>criterion</code> or <code>class_weight</code> for that matter? Should I trust the defaults?</p>
+<p>Enter <a href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html">GridSearchCV</a> to save the day. The general strategy here is to choose the settings that perform best on the specific task of interest. So I can’t say <code>n_estimators=100</code> is better than <code>n_estimators=1000</code> without knowing what problem I’m working on. For a specific problem, you usually have a numerical score that measures performance. <code>GridSearchCV</code> is part of the popular <a href="https://scikit-learn.org/">scikit-learn</a> Python machine learning library. It works by searching over various settings and compares them using cross-validation on the training data.</p>
+<p>The “grid” in “grid search” comes from the fact that it tries all possible combinations on a grid. For example, if you want it to consider setting <code>n_estimators</code> to 100, 150 or 200, and you want it to consider setting <code>criterion</code> to <code>'gini'</code> or <code>'entropy'</code>, then it will search over all 6 possible combinations in a grid of 3 possible values by 2 possible values:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th><code>criterion='gini'</code></th>
+<th><code>criterion='entropy'</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>n_estimators=100</code></td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td><code>n_estimators=150</code></td>
+<td>3</td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td><code>n_estimators=200</code></td>
+<td>5</td>
+<td>6</td>
+</tr>
+</tbody>
+</table>
+<p>Here is a code sample that uses <code>GridSearchCV</code> to select from the 6 options we just mentioned. The problem being solved is classifying images of handwritten digits into the 10 digit categories (0-9). I chose this because the dataset is conveniently built in to scikit-learn:</p>
+<div id="b233eaf9" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-22T02:48:06.287693Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-22T02:48:06.287593Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-22T02:48:11.040993Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-22T02:48:11.040617Z&quot;}}" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.datasets <span class="im">import</span> load_digits</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestClassifier</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> GridSearchCV</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Reserve a test set before comparing settings.</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>digits <span class="op">=</span> load_digits()</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>X_digits_train, X_digits_test, y_digits_train, y_digits_test <span class="op">=</span> train_test_split(</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    digits.data, digits.target, test_size<span class="op">=</span><span class="fl">0.2</span>, stratify<span class="op">=</span>digits.target, random_state<span class="op">=</span><span class="dv">123</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>grid_search <span class="op">=</span> GridSearchCV(</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    RandomForestClassifier(random_state<span class="op">=</span><span class="dv">123</span>),</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    param_grid<span class="op">=</span>{<span class="st">"n_estimators"</span>: [<span class="dv">100</span>, <span class="dv">150</span>, <span class="dv">200</span>], <span class="st">"criterion"</span>: [<span class="st">"gini"</span>, <span class="st">"entropy"</span>]},</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>grid_search.fit(X_digits_train, y_digits_train)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>grid_search.best_params_</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<pre><code>{'criterion': 'entropy', 'n_estimators': 150}</code></pre>
+</div>
+</div>
+<p>The output shows which of the six combinations had the highest mean cross-validation score in this search. This does not establish that the settings are universally best; our separate test set remains untouched.</p>
+<p>By the way, these “knobs” we’ve been setting are called <strong>hyperparameters</strong>, and the process of selecting them is called <strong>hyperparameter optimization</strong> or <strong>hyperparameter tuning</strong>.</p>
+</section>
+<section id="explanation-2" class="level4">
+<h4 class="anchored" data-anchor-id="explanation-2">Explanation 2</h4>
+<p>The following explanation is reproduced from the <a href="https://medium.datadriveninvestor.com/an-introduction-to-grid-search-ff57adcc0998">original grid-search article</a>, as in the lecture notes. Treat it as material to critique, including its technical wording. The code is shown as text rather than executed because it assumes a dataset <code>X, y</code> that the article excerpt does not define.</p>
+</section>
+<section id="an-introduction-to-grid-search" class="level4">
+<h4 class="anchored" data-anchor-id="an-introduction-to-grid-search">An introduction to Grid Search</h4>
+<p><img src="img/hyperparam_meme.png" width="300" height="200"></p>
+<p>This article will explain in simple terms what grid search is and how to implement grid search using <code>sklearn</code> in python.</p>
+<section id="what-is-grid-search" class="level5">
+<h5 class="anchored" data-anchor-id="what-is-grid-search">What is grid search?</h5>
+<p>Grid search is the process of performing hyper parameter tuning in order to determine the optimal values for a given model. This is significant as the performance of the entire model is based on the hyper parameter values specified.</p>
+</section>
+<section id="why-should-i-use-it" class="level5">
+<h5 class="anchored" data-anchor-id="why-should-i-use-it">Why should I use it?</h5>
+<p>If you work with ML, you know what a nightmare it is to stipulate values for hyper parameters. There are libraries that have been implemented, such as <code>GridSearchCV</code> of the <code>sklearn</code> library, in order to automate this process and make life a little bit easier for ML enthusiasts.</p>
+</section>
+<section id="how-does-it-work" class="level5">
+<h5 class="anchored" data-anchor-id="how-does-it-work">How does it work?</h5>
+<p>Here’s a python implementation of grid search using <code>GridSearchCV</code> of the <code>sklearn</code> library.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> GridSearchCV</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.svm <span class="im">import</span> SVR</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>gsc <span class="op">=</span> GridSearchCV(</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        estimator<span class="op">=</span>SVR(kernel<span class="op">=</span><span class="st">'rbf'</span>),</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        param_grid<span class="op">=</span>{</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">'C'</span>: [<span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">100</span>, <span class="dv">1000</span>],</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            <span class="st">'epsilon'</span>: [<span class="fl">0.0001</span>, <span class="fl">0.0005</span>, <span class="fl">0.001</span>, <span class="fl">0.005</span>, <span class="fl">0.01</span>, <span class="fl">0.05</span>, <span class="fl">0.1</span>, <span class="fl">0.5</span>, <span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">10</span>],</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            <span class="st">'gamma'</span>: [<span class="fl">0.0001</span>, <span class="fl">0.001</span>, <span class="fl">0.005</span>, <span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>]</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        },</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        cv<span class="op">=</span><span class="dv">5</span>, scoring<span class="op">=</span><span class="st">'neg_mean_squared_error'</span>, verbose<span class="op">=</span><span class="dv">0</span>, n_jobs<span class="op">=-</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>First, we need to import <code>GridSearchCV</code> from the <code>sklearn</code> library, a machine learning library for python. The <code>estimator</code> parameter of <code>GridSearchCV</code> requires the model we are using for the hyper parameter tuning process. For this example, we are using the <code>rbf</code> kernel of the Support Vector Regression model(SVR). The <code>param_grid</code> parameter requires a list of parameters and the range of values for each parameter of the specified <em>estimator</em>. The most significant parameters required when working with the <code>rbf</code> kernel of the SVR model are <code>c</code>, <code>gamma</code> and <code>epsilon</code>. A list of values to choose from should be given to each hyper parameter of the model. You can change these values and experiment more to see which value ranges give better performance. A <a href="https://medium.datadriveninvestor.com/k-fold-cross-validation-6b8518070833">cross validation process</a> is performed in order to determine the hyper parameter value set which provides the best accuracy levels.</p>
+<pre><code>grid_result = gsc.fit(X, y)
+best_params = grid_result.best_params_
+best_svr = SVR(kernel='rbf', C=best_params["C"], epsilon=best_params["epsilon"], gamma=best_params["gamma"],
+                   coef0=0.1, shrinking=True,
+                   tol=0.001, cache_size=200, verbose=False, max_iter=-1)</code></pre>
+<p>We then use the best set of hyper parameter values chosen in the grid search, in the actual model as shown above.</p>
+<p>If you want to know how to use grid search and cross-validation and train and test a model check out <a href="https://medium.datadriveninvestor.com/a-practical-guide-to-getting-started-with-machine-learning-3a6fcc0f95aa">this article</a>.</p>
+<p>Hope this article helped you. Until next time…Adios!</p>
+</section>
+</section>
+</section>
+<section id="choose-how-to-explain" class="level3 callout-exercise">
+<h3 class="anchored" data-anchor-id="choose-how-to-explain">Choose how to explain</h3>
+<p>Your teammate knows Python but has not studied ML. Use the two explanations above to help you decide.</p>
+<p><strong>1. Which opening would you use to explain why you are trying several random-forest settings?</strong></p>
+<p>A. “We are performing hyperparameter optimization using cross-validation.”</p>
+<p>B. “The model has settings we must choose before training. We will compare several choices using held-out portions of our training data.”</p>
+<p>C. “Random forests have settings such as <code>max_depth</code>, <code>max_features</code>, and <code>n_estimators</code>.”</p>
+<p>What knowledge does each opening assume? When might A be appropriate?</p>
+<p><strong>2. You have room for one worked example. Which plan would you choose?</strong></p>
+<p>A. Introduce random-forest settings, illustrate their combinations in a table, then use those same settings in code and explain the output.</p>
+<p>B. Introduce random-forest settings, demonstrate search with support vector regression, then show a result from a third model to illustrate the range of applications.</p>
+<p>C. Start with complete search code, then define all its unfamiliar terms in a glossary at the end.</p>
+<p>What would the reader need to keep track of in each plan? Could you borrow anything useful from another plan?</p>
+<p><strong>3. The reader now understands how grid search tries combinations, but asks whether tuning always helps. What would you add next?</strong></p>
+<p>A. A list of more hyperparameters they could tune.</p>
+<p>B. A comparison of a default model and a tuned model on the same evaluation data, with the relevant scores beside the code.</p>
+<p>C. A diagram showing how the grid-search loop runs.</p>
+<p>Explain why your choice addresses this question. Which addition would help if the reader instead asked how the search works?</p>
+<p>Choose individually and justify each answer before opening the discussion. If you disagree with a partner, identify which assumption about the reader differs.</p>
+</section>
+<details>
+<summary>
+Discussion after you have chosen
+</summary>
+<p>For this newcomer, <strong>1B</strong> provides a purpose before technical labels; A may be efficient shorthand for an experienced teammate. C gives examples of settings but leaves their purpose unclear. B still assumes the reader understands why we hold out data, so that may need explanation too.</p>
+<p><strong>2A</strong> reduces the number of unfamiliar ideas the reader must connect at once. B could help demonstrate breadth later, once the procedure is understood. C can be useful as a reference for an experienced reader, but a glossary alone does not explain how the pieces fit together.</p>
+<p><strong>3B</strong> supplies evidence about whether tuning helped in this experiment. It does not establish that tuning always helps. C addresses a different question about the procedure; A expands the list without answering either question. Compare the images in the original explanations too: does each clarify an idea, or mainly attract attention?</p>
+</details>
+<p>An explanation should give collaborators enough understanding to ask questions, identify assumptions, or suggest improvements. Return to the hyperparameter-optimization activity: what helped you understand the purpose of the method, and what required knowledge that a newcomer would not have?</p>
+<section id="build-from-familiar-ideas" class="level3">
+<h3 class="anchored" data-anchor-id="build-from-familiar-ideas">Build from familiar ideas</h3>
+<p>Once you understand a method, it becomes easy to forget which ideas were difficult when you first encountered it. This is sometimes called the <strong>curse of knowledge</strong>. You might explain grid search using “cross-validation” and “hyperparameter tuning” without noticing that your audience needs those ideas explained too. Before sharing an explanation, identify the background knowledge each step assumes.</p>
+<p>Introduce the concept before relying on its label when the audience is unfamiliar with it. Explanation 1 begins with knobs and switches, then connects them to random-forest settings. It establishes the problem of choosing settings before naming hyperparameter optimization. Explanation 2 introduces “hyper parameter tuning” immediately, which assumes the reader already knows what that means.</p>
+<p>Knowing a term is different from understanding the idea it names. Saying “grid search performs hyperparameter optimization” helps only if the reader already understands hyperparameter optimization.</p>
+<p><strong>Optional video:</strong> Richard Feynman illustrates the distinction between knowing a name and understanding something in <a href="https://www.youtube.com/watch?v=px_4TxC2mXU">this short video</a>. As you watch, consider what someone would need to explain about grid search to demonstrate understanding beyond naming it.</p>
+<p>An analogy can provide a starting point, but it has limits. A tree count takes integer values rather than arbitrary continuous settings. Use the analogy to help readers understand a particular idea, without implying that every detail transfers.</p>
+<p>Build new ideas in manageable steps and reuse the same example across prose, diagrams, code, and results. Explanation 1 follows the random-forest settings into a six-combination table and then into code. Explanation 2 switches quickly to support vector regression and several parameters; consider how much background a reader needs to follow it.</p>
+<p>The first explanation introduces one piece at a time: settings we must choose, a random-forest example, the difficulty of choosing those settings, and a search procedure that compares them. It then makes the procedure concrete through a table, code, and output, before naming hyperparameter optimization. Each step prepares the reader for the next. When revising an explanation, check whether a paragraph asks the reader to absorb several unfamiliar ideas at once.</p>
+<p>Starting with familiar examples is especially helpful when teaching an unfamiliar method. In a project update, however, readers may need the conclusion first, followed by evidence and technical detail. Choose the order that serves the reader rather than treating one explanation style as universally correct.</p>
+</section>
+<section id="use-contrasts-to-clarify-boundaries" class="level3">
+<h3 class="anchored" data-anchor-id="use-contrasts-to-clarify-boundaries">Use contrasts to clarify boundaries</h3>
+<p>One example can show how a method works without making clear when it is useful or how it differs from related methods. A carefully chosen contrast can help. Comparing a model before and after tuning addresses whether tuning helped in that experiment. Comparing grid search with randomized search clarifies that trying every listed combination is a feature of grid search, rather than a requirement of hyperparameter tuning.</p>
+<p>Choose contrasts that answer a likely question or misconception. Adding many related methods at once can make an explanation harder to follow. Reuse the running example where possible so the reader can focus on the difference you want to explain.</p>
+</section>
+<section id="show-evidence-alongside-the-approach" class="level3">
+<h3 class="anchored" data-anchor-id="show-evidence-alongside-the-approach">Show evidence alongside the approach</h3>
+<p>When including code, show its relevant output and explain what to notice. Place the output close to the code or claim it supports, so readers can connect the procedure to the result without searching ahead. Explanation 1 lets the reader see what the search selected. Explanation 2 shows how to retrieve the settings but no output to interpret. Neither example alone establishes that tuning provides a practically important improvement; that would require a relevant comparison with a baseline.</p>
+<p>Use images or diagrams when they explain the process or reveal behaviour. In the activity, compare the cockpit analogy with the meme: what does each contribute to understanding? An attractive or amusing image can draw attention without explaining the method.</p>
+</section>
+<section id="make-communication-a-conversation" class="level3">
+<h3 class="anchored" data-anchor-id="make-communication-a-conversation">Make communication a conversation</h3>
+<p>Share proposed approaches and early findings while teammates can still influence the work. Ask a concrete question: “Does this split represent how we will use the model?” invites more useful feedback than “Any thoughts?” When a colleague raises a concern, first check that you understand it before defending your choice.</p>
+<p>You can check shared understanding by asking someone to describe how they would use the result or what they think the main limitation is. If their interpretation differs from yours, revise the explanation together.</p>
+<p>Include detail because it helps the audience, not simply because you worked hard on it. For example, extending the cockpit analogy into a classification of numeric “knobs” and categorical “switches” might distract from the immediate question: how do we choose settings? A detail can be elegant or interesting to the writer without helping the reader. Ask what each detail helps the audience understand or decide; remove it or move it to optional supporting material when it does not serve that purpose.</p>
+<p>Keep implementation notes and experiment records available for collaborators who need them, while letting the main explanation stay focused.</p>
+</section>
+</section>
+<section id="task-2-help-a-team-decide-what-to-do-next" class="level2">
+<h2 class="anchored" data-anchor-id="task-2-help-a-team-decide-what-to-do-next">Task 2: Help a team decide what to do next</h2>
+<p>Your team is investigating house-price predictions to help staff advise sellers about asking prices. The manager needs to decide whether to fund a limited pilot. You receive this draft update:</p>
+<blockquote class="blockquote">
+<p>We compared random forests and gradient boosting. The best validation score shows which model we should deploy. Accurate predictions will help sellers get better prices. I will send the winning plot.</p>
+</blockquote>
+<p>The comparison uses a single training/validation split and several tree counts. A separate test set is reserved. No pilot has measured the effect on asking-price decisions or sale outcomes. Keep this update in view: you will improve its claims here, then choose a visualization for it in Task 3.</p>
+<section id="choose-what-the-manager-needs" class="level3 callout-exercise">
+<h3 class="anchored" data-anchor-id="choose-what-the-manager-needs">Choose what the manager needs</h3>
+<p><strong>1. What is the most useful question to settle before recommending a pilot?</strong></p>
+<p>A. Which algorithm has the highest validation score?</p>
+<p>B. How would staff use the predictions, and what would count as a better outcome than their current approach?</p>
+<p>C. How many additional hyperparameter combinations can we try?</p>
+<p>Explain what your choice would change about the project. Is there still a role for the other questions?</p>
+<p><strong>2. You have two minutes for the update. Which detail would you move to supporting material?</strong></p>
+<p>A. The comparison with the current approach.</p>
+<p>B. The full list of hyperparameter combinations tried.</p>
+<p>C. An important condition under which the model performs poorly.</p>
+<p>What change in audience or purpose could make your chosen detail essential?</p>
+<p><strong>3. Given the evidence available, which next step is best justified?</strong></p>
+<p>A. Deploy the model with the highest validation score; the score establishes the benefit to sellers.</p>
+<p>B. Stop the project because no benefit to sellers has been measured yet.</p>
+<p>C. Check whether the evaluation reflects intended use and agree on how a limited pilot would assess decisions and outcomes.</p>
+<p>Identify one claim in the draft that needs qualification. Write a replacement before reading on.</p>
+</section>
+<details>
+<summary>
+Discussion after you have chosen
+</summary>
+<p><strong>1B</strong> connects the prediction task to a decision and an objective. A and C may help choose a model, but cannot establish what staff or sellers need.</p>
+<p>For this manager, <strong>2B</strong> usually belongs in supporting material. A collaborator reproducing the search may need that list. The baseline and failure conditions affect whether the pilot is worth funding, so they belong in the main update.</p>
+<p><strong>3C</strong> treats the validation comparison as useful but incomplete evidence. A jumps from prediction quality to an unmeasured benefit; B treats an unanswered question as a reason to abandon investigation. A more defensible claim is: “The validation comparison can help us select an approach for further evaluation; it does not yet show that using it improves sale outcomes.”</p>
+</details>
+<section id="from-a-prediction-task-to-a-useful-decision" class="level3">
+<h3 class="anchored" data-anchor-id="from-a-prediction-task-to-a-useful-decision">From a prediction task to a useful decision</h3>
+<p>Imagine your team is building a video recommender using records of which videos users clicked. You improve its ability to predict clicks, but colleagues still find the recommendations disappointing. What might be missing?</p>
+<p>A click is observable, but it need not mean that someone enjoyed a video. A recommendation might attract attention while leaving the viewer dissatisfied. Before choosing a target or metric, the team needs a shared understanding of what it wants to achieve.</p>
+<p>Distinguish four pieces of the project:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Piece</th>
+<th>Question</th>
+<th>Video recommendation example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Organizational goal</td>
+<td>What outcome do we want to improve?</td>
+<td>Help viewers find videos they value.</td>
+</tr>
+<tr class="even">
+<td>Prediction task</td>
+<td>What can the model estimate?</td>
+<td>Whether a viewer will click a candidate video.</td>
+</tr>
+<tr class="odd">
+<td>Decision</td>
+<td>What action will use that estimate?</td>
+<td>Which videos to recommend and in what order.</td>
+</tr>
+<tr class="even">
+<td>Evidence</td>
+<td>How will we assess whether the approach helps?</td>
+<td>Offline evaluation, followed by an appropriate evaluation of viewer satisfaction.</td>
+</tr>
+</tbody>
+</table>
+<p>These pieces are connected, but they are not interchangeable. Better predictions of a proxy such as clicks do not by themselves establish progress toward the broader goal.</p>
+<p>The same distinction applies to churn. Predicting who will leave may help a team decide whom to contact. It does not establish that a retention offer will persuade those customers to stay. That benefit requires additional evidence.</p>
+<p>The <strong>decision-maker</strong> is the person or team choosing an action. The <strong>decision variable</strong> is what they can change directly, such as which videos to display and in what order. Their <strong>objectives</strong> are the outcomes they care about, such as viewer satisfaction. The <strong>context</strong> affects how an action leads to those outcomes: a viewer’s available time, the available videos, and limited display space can all matter. The model estimates clicks; the team still has to decide how to use those estimates within these constraints.</p>
+<p>Ask what alternatives the decision-maker has, including the current recommendation approach. Different objectives or constraints can lead to different choices even when the model’s predictions stay the same.</p>
+<p>Discuss these connections early. Agree on the decision, the current alternative, what counts as improvement, and what information will be available when predictions are made. Otherwise, teammates can spend days solving different versions of the problem.</p>
+</section>
+<section id="understand-what-your-audience-needs" class="level3">
+<h3 class="anchored" data-anchor-id="understand-what-your-audience-needs">Understand what your audience needs</h3>
+<p>A teammate implementing preprocessing may need exact feature definitions and code. A manager deciding whether to fund a pilot needs the expected benefit, supporting evidence, costs, and risks. A person affected by a prediction may need an understandable explanation and a way to question the outcome.</p>
+<p>Ask what the audience already knows, what they need to decide, and what detail will help them do so. Adjust the explanation without changing the underlying claim. For a mixed audience, begin with the shared problem and main finding, then provide technical details where readers can find them. ### Put scores in context</p>
+<p>A metric needs context. Suppose a classifier achieves 98% accuracy. That sounds impressive until we learn that always predicting the majority class achieves 97.5%. The improvement may still matter, but accuracy alone does not tell us whether it addresses the costly mistakes in this application.</p>
+<p>Report the relevant baseline, evaluation setup, and consequences of errors. Connect the finding back to the original goal and explain what action, if any, it supports. Include operational considerations such as data updates, latency, maintenance, and monitoring when they affect the decision.</p>
+</section>
+<section id="separate-evidence-from-interpretation" class="level3">
+<h3 class="anchored" data-anchor-id="separate-evidence-from-interpretation">Separate evidence from interpretation</h3>
+<p>Consider a hypothetical avocado forecasting project, building on Chapter 19. These statements play different roles:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Role</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Observation</td>
+<td>On our chronological validation period, MAE was 15% lower than a forecast that reused the previous week’s price.</td>
+</tr>
+<tr class="even">
+<td>Interpretation</td>
+<td>The model may give procurement staff more useful price forecasts under similar conditions.</td>
+</tr>
+<tr class="odd">
+<td>Recommendation</td>
+<td>Run a limited pilot to assess whether using the forecasts improves purchasing decisions.</td>
+</tr>
+</tbody>
+</table>
+<p>The observation needs a defined target, units, horizon, evaluation period, and enough detail to reproduce the comparison. The interpretation depends on how well that evaluation represents future use. The recommendation also depends on costs, risks, and alternatives.</p>
+<p>A lower forecasting error does not establish a particular dollar saving. To claim that the system saves $45,000 per month, we would need evidence linking forecast-informed purchasing decisions to those savings. If the number comes from a simulation, state its assumptions and describe it as an estimate rather than a measured deployment outcome.</p>
+</section>
+<section id="give-collaborators-an-update-they-can-use" class="level3">
+<h3 class="anchored" data-anchor-id="give-collaborators-an-update-they-can-use">Give collaborators an update they can use</h3>
+<p>A useful update answers four questions: What did you investigate? What did you find? What remains uncertain? What happens next, or what do you need from the team?</p>
+<p>For example, a hypothetical update might read:</p>
+<blockquote class="blockquote">
+<p>I compared our weekly price model with the previous-week baseline using a chronological validation period. Its MAE was 15% lower, but errors were larger during holiday weeks. We have not measured purchasing savings. I recommend a small pilot before changing the buying process. Could the procurement team confirm when forecasts would need to be available and which decisions they would inform?</p>
+</blockquote>
+<p>This explains progress and gives collaborators something specific to respond to. When reporting a blocker or an unsuccessful experiment, use the same structure: explain what you learned and which choice it affects.</p>
+<p>Make supporting material usable too. Label plots and tables, record the data version, split, metric, and model settings, and share the code or notebook that produced the result. A teammate should be able to distinguish two experiments without reconstructing your memory of them.</p>
+</section>
+<section id="communicate-limitations-and-uncertainty-honestly" class="level3">
+<h3 class="anchored" data-anchor-id="communicate-limitations-and-uncertainty-honestly">Communicate limitations and uncertainty honestly</h3>
+<p>Honesty does not require making every finding sound inconclusive. It requires matching the strength and scope of a claim to the evidence. “This approach improved recall in our validation experiment” can be a useful finding even when “This system will reduce fraud losses” has not been established.</p>
+<p>Reporting overall performance also differs from explaining an individual prediction. “How often does the fraud model make mistakes?” and “Why was this transaction flagged?” need different evidence. For the second question, a stakeholder may need to know which recorded inputs influenced the model’s output. Such an explanation describes the model’s behaviour; it does not establish that those inputs caused fraud or that the transaction is fraudulent. Be clear about what the explanation can support and where it is uncertain.</p>
+</section>
+<section id="check-what-a-probability-supports" class="level3 callout-exercise">
+<h3 class="anchored" data-anchor-id="check-what-a-probability-supports">Check what a probability supports</h3>
+<p>In another project, a fraud classifier assigns a transaction a probability of 0.9. A colleague wants to report: “We are 90% sure this model is trustworthy.” Which response is best supported?</p>
+<p>A. Agree: a high probability demonstrates reliability.</p>
+<p>B. Report the model’s estimated fraud probability, and assess its reliability using outcomes on relevant held-out examples.</p>
+<p>C. Avoid reporting probabilities because an individual prediction cannot be certain.</p>
+<p>Choose and explain. What would you want to observe among many transactions assigned probabilities near 0.9? Write your expectation before reading the next section.</p>
+</section>
+<section id="what-does-predict_proba-tell-us" class="level3">
+<h3 class="anchored" data-anchor-id="what-does-predict_proba-tell-us">What does <code>predict_proba</code> tell us?</h3>
+<p>Suppose a classifier returns a fraud probability of 0.9 for a transaction. This is the model’s estimated probability for that class. It is not a guarantee, and it is not a statement that we are 90% certain the model is trustworthy.</p>
+<p><strong>B</strong> distinguishes the model’s output from evidence about its reliability. A confuses those two things; C discards potentially useful information merely because it is uncertain.</p>
+<p>One question is whether the model’s probabilities are <strong>calibrated</strong>. Among many transactions assigned probabilities near 0.9, we would expect roughly 90% to be fraudulent if the probabilities are well calibrated for that population. We assess this pattern using outcomes on held-out examples. A single prediction cannot establish calibration, and an overall pattern can hide problems for particular groups or conditions.</p>
+<p>A model can rank fraudulent transactions well while producing poorly calibrated probabilities. Conversely, a model that assigns every transaction the overall fraud rate might be calibrated in aggregate but unhelpful for deciding which transactions to investigate. Reliability of probabilities and usefulness for a decision are related questions, not identical ones.</p>
+<p>Chapter 7 introduced the loss used to train logistic regression. Here our concern is what we can responsibly say about a fitted model’s outputs. Training with a probability-based loss does not by itself demonstrate that probabilities will be reliable on future data.</p>
+</section>
+<section id="how-much-should-we-trust-a-reported-score" class="level3">
+<h3 class="anchored" data-anchor-id="how-much-should-we-trust-a-reported-score">How much should we trust a reported score?</h3>
+<p>A validation or test score summarizes performance on particular examples under a particular evaluation design. A different sample could give a different score. A small difference between models may be sensitive to the split, and repeated searches can make the best validation result look overly optimistic. Preserve an untouched test set for the final evaluation of the selected approach.</p>
+<p>Variation across cross-validation folds can help reveal instability, but a fold-score standard deviation is not automatically a confidence interval for future performance. Even a precisely estimated score on historical data does not settle what happens when the population, data collection, or operating conditions change.</p>
+<p>Keep these questions separate when communicating:</p>
+<ul>
+<li>What probability does the model assign to this outcome?</li>
+<li>How reliable are those probabilities on relevant held-out data?</li>
+<li>How uncertain is our estimate of overall performance?</li>
+<li>How well does the evaluation represent the conditions where the model will be used?</li>
+</ul>
+</section>
+<section id="make-limitations-specific-and-actionable" class="level3">
+<h3 class="anchored" data-anchor-id="make-limitations-specific-and-actionable">Make limitations specific and actionable</h3>
+<p>“More data is needed” gives a team little guidance. A more useful limitation would be: “Our evaluation contains few holiday weeks, so we cannot yet assess holiday forecasting reliably. We should evaluate additional seasons before relying on the model for holiday purchasing.”</p>
+<p>State the conditions evaluated, important failure modes, and what remains unknown. Then explain what the uncertainty means for the decision: proceed with monitoring, gather particular evidence, narrow the intended use, or postpone deployment. A limitation should help the reader reason about the result.</p>
+<p>Avoid hiding qualifications in a footnote while making a broad claim in the headline. “Lower validation error on one year’s data; holiday performance remains uncertain” is more informative than “Model solves price forecasting.”</p>
+</section>
+</section>
+<section id="task-3-present-a-fair-comparison" class="level2">
+<h2 class="anchored" data-anchor-id="task-3-present-a-fair-comparison">Task 3: Present a fair comparison</h2>
+<p>Return to the housing-project update from Task 2. The manager needs evidence for the next decision, and you need to choose what to show. A plot can make a comparison easier to understand, but presentation choices can also make the same results appear to support different stories. Labels, axis ranges, and the examples you choose to show are part of the claim.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="img/ml-communication.png" class="img-fluid figure-img" width="650"></p>
+<figcaption>A headline to examine critically.</figcaption>
+</figure>
+</div>
+<p>Before accepting a model-performance headline, ask what task was evaluated, on which population, against which baseline, and using which metric. What additional evidence would you need before treating the result as useful in practice?</p>
+<section id="one-set-of-results-several-stories" class="level3">
+<h3 class="anchored" data-anchor-id="one-set-of-results-several-stories">One set of results, several stories</h3>
+<p>We will return to the Kaggle housing data used in Chapter 10 and compare random forests with gradient boosting for several tree counts. Our purpose is to examine how plotting choices affect interpretation, rather than to conduct a thorough model search.</p>
+<p>The following setup is folded because it repeats familiar preprocessing. It fits transformations on the training portion only. We reserve a test set and use a separate validation set for the repeated comparisons below.</p>
+<div id="bc6d1708" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-22T02:48:11.042014Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-22T02:48:11.041954Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-22T02:48:11.055346Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-22T02:48:11.054988Z&quot;}}" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(DATA_DIR <span class="op">/</span> <span class="st">"housing-kaggle"</span> <span class="op">/</span> <span class="st">"train.csv"</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>train_valid_df, test_df <span class="op">=</span> train_test_split(df, test_size<span class="op">=</span><span class="fl">0.10</span>, random_state<span class="op">=</span><span class="dv">123</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>train_df, valid_df <span class="op">=</span> train_test_split(train_valid_df, test_size<span class="op">=</span><span class="fl">0.20</span>, random_state<span class="op">=</span><span class="dv">123</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> train_df.drop(columns<span class="op">=</span>[<span class="st">"SalePrice"</span>])</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>y_train <span class="op">=</span> train_df[<span class="st">"SalePrice"</span>]</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>X_valid <span class="op">=</span> valid_df.drop(columns<span class="op">=</span>[<span class="st">"SalePrice"</span>])</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>y_valid <span class="op">=</span> valid_df[<span class="st">"SalePrice"</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="48309313" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-22T02:48:11.056361Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-22T02:48:11.056298Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-22T02:48:11.057963Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-22T02:48:11.057642Z&quot;}}" data-execution_count="4">
+<details class="code-fold">
+<summary>Show housing preprocessing setup</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>drop_features <span class="op">=</span> [<span class="st">"Id"</span>]</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>numeric_features <span class="op">=</span> [</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"BedroomAbvGr"</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"KitchenAbvGr"</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"LotFrontage"</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"LotArea"</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"OverallQual"</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"OverallCond"</span>,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"YearBuilt"</span>,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"YearRemodAdd"</span>,</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"MasVnrArea"</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"BsmtFinSF1"</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"BsmtFinSF2"</span>,</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"BsmtUnfSF"</span>,</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"TotalBsmtSF"</span>,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"1stFlrSF"</span>,</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"2ndFlrSF"</span>,</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"LowQualFinSF"</span>,</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"GrLivArea"</span>,</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">"BsmtFullBath"</span>,</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">"BsmtHalfBath"</span>,</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">"FullBath"</span>,</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">"HalfBath"</span>,</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">"TotRmsAbvGrd"</span>,</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Fireplaces"</span>,</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">"GarageYrBlt"</span>,</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"GarageCars"</span>,</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">"GarageArea"</span>,</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    <span class="st">"WoodDeckSF"</span>,</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    <span class="st">"OpenPorchSF"</span>,</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    <span class="st">"EnclosedPorch"</span>,</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>    <span class="st">"3SsnPorch"</span>,</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ScreenPorch"</span>,</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>    <span class="st">"PoolArea"</span>,</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>    <span class="st">"MiscVal"</span>,</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>    <span class="st">"YrSold"</span>,</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div id="302d5f0f" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-22T02:48:11.058740Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-22T02:48:11.058692Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-22T02:48:11.060608Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-22T02:48:11.060281Z&quot;}}" data-execution_count="5">
+<details class="code-fold">
+<summary>Show housing preprocessing setup</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>ordinal_features_reg <span class="op">=</span> [</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ExterQual"</span>,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ExterCond"</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"BsmtQual"</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"BsmtCond"</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"HeatingQC"</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"KitchenQual"</span>,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"FireplaceQu"</span>,</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"GarageQual"</span>,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"GarageCond"</span>,</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"PoolQC"</span>,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>ordering <span class="op">=</span> [</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Po"</span>,</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Fa"</span>,</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"TA"</span>,</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Gd"</span>,</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Ex"</span>,</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>]  <span class="co"># if N/A it will just impute something, per below</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>ordering_ordinal_reg <span class="op">=</span> [ordering] <span class="op">*</span> <span class="bu">len</span>(ordinal_features_reg)</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>ordering_ordinal_reg</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<pre><code>[['Po', 'Fa', 'TA', 'Gd', 'Ex'],
+ ['Po', 'Fa', 'TA', 'Gd', 'Ex'],
+ ['Po', 'Fa', 'TA', 'Gd', 'Ex'],
+ ['Po', 'Fa', 'TA', 'Gd', 'Ex'],
+ ['Po', 'Fa', 'TA', 'Gd', 'Ex'],
+ ['Po', 'Fa', 'TA', 'Gd', 'Ex'],
+ ['Po', 'Fa', 'TA', 'Gd', 'Ex'],
+ ['Po', 'Fa', 'TA', 'Gd', 'Ex'],
+ ['Po', 'Fa', 'TA', 'Gd', 'Ex'],
+ ['Po', 'Fa', 'TA', 'Gd', 'Ex']]</code></pre>
+</div>
+</div>
+<div id="79119580" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-22T02:48:11.061353Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-22T02:48:11.061298Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-22T02:48:11.062873Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-22T02:48:11.062582Z&quot;}}" data-execution_count="6">
+<details class="code-fold">
+<summary>Show housing preprocessing setup</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ordinal_features_oth <span class="op">=</span> [</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"BsmtExposure"</span>,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"BsmtFinType1"</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"BsmtFinType2"</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Functional"</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Fence"</span>,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>ordering_ordinal_oth <span class="op">=</span> [</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    [<span class="st">"NA"</span>, <span class="st">"No"</span>, <span class="st">"Mn"</span>, <span class="st">"Av"</span>, <span class="st">"Gd"</span>],</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    [<span class="st">"NA"</span>, <span class="st">"Unf"</span>, <span class="st">"LwQ"</span>, <span class="st">"Rec"</span>, <span class="st">"BLQ"</span>, <span class="st">"ALQ"</span>, <span class="st">"GLQ"</span>],</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    [<span class="st">"NA"</span>, <span class="st">"Unf"</span>, <span class="st">"LwQ"</span>, <span class="st">"Rec"</span>, <span class="st">"BLQ"</span>, <span class="st">"ALQ"</span>, <span class="st">"GLQ"</span>],</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    [<span class="st">"Sal"</span>, <span class="st">"Sev"</span>, <span class="st">"Maj2"</span>, <span class="st">"Maj1"</span>, <span class="st">"Mod"</span>, <span class="st">"Min2"</span>, <span class="st">"Min1"</span>, <span class="st">"Typ"</span>],</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    [<span class="st">"NA"</span>, <span class="st">"MnWw"</span>, <span class="st">"GdWo"</span>, <span class="st">"MnPrv"</span>, <span class="st">"GdPrv"</span>],</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div id="c3ba1707" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-22T02:48:11.063620Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-22T02:48:11.063574Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-22T02:48:11.065141Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-22T02:48:11.064745Z&quot;}}" data-execution_count="7">
+<details class="code-fold">
+<summary>Show housing preprocessing setup</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>categorical_features <span class="op">=</span> [</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    column <span class="cf">for</span> column <span class="kw">in</span> X_train.columns</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> column <span class="kw">not</span> <span class="kw">in</span> numeric_features <span class="op">+</span> ordinal_features_reg <span class="op">+</span> ordinal_features_oth <span class="op">+</span> drop_features</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div id="8b5f2b06" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-22T02:48:11.065898Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-22T02:48:11.065853Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-22T02:48:11.067548Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-22T02:48:11.067303Z&quot;}}" data-execution_count="8">
+<details class="code-fold">
+<summary>Show housing preprocessing setup</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>numeric_transformer <span class="op">=</span> make_pipeline(SimpleImputer(strategy<span class="op">=</span><span class="st">"median"</span>), StandardScaler())</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>ordinal_transformer_reg <span class="op">=</span> make_pipeline(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    SimpleImputer(strategy<span class="op">=</span><span class="st">"most_frequent"</span>),</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    OrdinalEncoder(categories<span class="op">=</span>ordering_ordinal_reg),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>ordinal_transformer_oth <span class="op">=</span> make_pipeline(</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    SimpleImputer(strategy<span class="op">=</span><span class="st">"most_frequent"</span>),</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    OrdinalEncoder(categories<span class="op">=</span>ordering_ordinal_oth),</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>categorical_transformer <span class="op">=</span> make_pipeline(</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    SimpleImputer(strategy<span class="op">=</span><span class="st">"constant"</span>, fill_value<span class="op">=</span><span class="st">"missing"</span>),</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    OneHotEncoder(handle_unknown<span class="op">=</span><span class="st">"ignore"</span>, sparse_output<span class="op">=</span><span class="va">False</span>),</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>preprocessor <span class="op">=</span> make_column_transformer(</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"drop"</span>, drop_features),</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>    (numeric_transformer, numeric_features),</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>    (ordinal_transformer_reg, ordinal_features_reg),</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>    (ordinal_transformer_oth, ordinal_features_oth),</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>    (categorical_transformer, categorical_features),</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div id="82a08ed3" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-22T02:48:11.068273Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-22T02:48:11.068226Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-22T02:48:15.703214Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-22T02:48:15.702791Z&quot;}}" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>n_estimators_values <span class="op">=</span> [<span class="dv">3</span>, <span class="dv">10</span>, <span class="dv">30</span>, <span class="dv">100</span>, <span class="dv">300</span>]</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>records <span class="op">=</span> []</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> model_name, estimator <span class="kw">in</span> [</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"Random forest"</span>, RandomForestRegressor(random_state<span class="op">=</span><span class="dv">123</span>)),</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"Gradient boosting"</span>, GradientBoostingRegressor(random_state<span class="op">=</span><span class="dv">123</span>)),</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>]:</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> n_estimators <span class="kw">in</span> n_estimators_values:</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>        model <span class="op">=</span> make_pipeline(</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>            clone(preprocessor),</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>            TransformedTargetRegressor(</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>                regressor<span class="op">=</span>clone(estimator).set_params(n_estimators<span class="op">=</span>n_estimators),</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>                func<span class="op">=</span>np.log1p,</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>                inverse_func<span class="op">=</span>np.expm1,</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>            ),</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>        model.fit(X_train, y_train)</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>        records.append({</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>            <span class="st">"model"</span>: model_name,</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>            <span class="st">"n_estimators"</span>: n_estimators,</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>            <span class="st">"train_r2"</span>: model.score(X_train, y_train),</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>            <span class="st">"validation_r2"</span>: model.score(X_valid, y_valid),</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>        })</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> pd.DataFrame(records)</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>display(results)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">model</th>
+<th data-quarto-table-cell-role="th">n_estimators</th>
+<th data-quarto-table-cell-role="th">train_r2</th>
+<th data-quarto-table-cell-role="th">validation_r2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>Random forest</td>
+<td>3</td>
+<td>0.941423</td>
+<td>0.760256</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>Random forest</td>
+<td>10</td>
+<td>0.973747</td>
+<td>0.869104</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>Random forest</td>
+<td>30</td>
+<td>0.976957</td>
+<td>0.867210</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>Random forest</td>
+<td>100</td>
+<td>0.978577</td>
+<td>0.869014</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>Random forest</td>
+<td>300</td>
+<td>0.978045</td>
+<td>0.871251</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>Gradient boosting</td>
+<td>3</td>
+<td>0.260023</td>
+<td>0.312821</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>Gradient boosting</td>
+<td>10</td>
+<td>0.633202</td>
+<td>0.651561</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>Gradient boosting</td>
+<td>30</td>
+<td>0.891737</td>
+<td>0.866797</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>Gradient boosting</td>
+<td>100</td>
+<td>0.966897</td>
+<td>0.905721</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>Gradient boosting</td>
+<td>300</td>
+<td>0.988798</td>
+<td>0.913425</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Both models are trained using a log-transformed target, with predictions converted back to dollars before calculating <span class="math inline">\(R^2\)</span>. The validation scores below therefore assess predictions on the original price scale. These are single-split comparisons with mostly default settings. Equal tree counts do not mean equal computation or equally thorough tuning of the two methods.</p>
+</section>
+<section id="predict-how-the-story-could-change" class="level3 callout-exercise">
+<h3 class="anchored" data-anchor-id="predict-how-the-story-could-change">Predict how the story could change</h3>
+<p>Before viewing the plots, inspect the table. Your manager asks how the two methods compare across the tree counts tried. Which presentation would you choose?</p>
+<p>A. Show only the smaller tree counts where the difference is easiest to explain.</p>
+<p>B. Show all five settings with clearly labelled axes and a shared vertical scale, separating training and validation results.</p>
+<p>C. Show all five settings on a vertical scale wide enough that the curves look almost identical.</p>
+<p>Justify your choice in terms of the manager’s question. Predict how A or C could change the apparent conclusion. Under what stated constraint might showing only smaller models be reasonable?</p>
+</section>
+<div id="3b32f77a" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-22T02:48:15.704156Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-22T02:48:15.704095Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-22T02:48:15.903310Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-22T02:48:15.902941Z&quot;}}" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">14</span>, <span class="fl">3.8</span>))</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> model_name, group <span class="kw">in</span> results.groupby(<span class="st">"model"</span>, sort<span class="op">=</span><span class="va">False</span>):</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    early <span class="op">=</span> group.iloc[:<span class="dv">3</span>]</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    axes[<span class="dv">0</span>].plot(early[<span class="st">"n_estimators"</span>], early[<span class="st">"validation_r2"</span>], marker<span class="op">=</span><span class="st">"o"</span>, label<span class="op">=</span>model_name)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    axes[<span class="dv">1</span>].plot(group[<span class="st">"n_estimators"</span>], group[<span class="st">"validation_r2"</span>], marker<span class="op">=</span><span class="st">"o"</span>, label<span class="op">=</span>model_name)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    axes[<span class="dv">2</span>].plot(group[<span class="st">"n_estimators"</span>], group[<span class="st">"validation_r2"</span>], marker<span class="op">=</span><span class="st">"o"</span>, label<span class="op">=</span>model_name)</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_title(<span class="st">"Only the first three settings"</span>)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_title(<span class="st">"All settings, linear spacing"</span>)</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">2</span>].set_title(<span class="st">"A very wide vertical range"</span>)</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">2</span>].set_ylim(<span class="op">-</span><span class="dv">10</span>, <span class="fl">1.2</span>)</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> axes:</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    ax.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"Number of trees"</span>, ylabel<span class="op">=</span><span class="st">"Validation $R^2$"</span>)</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].legend()</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="st">"Presentation choices to examine critically"</span>)</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="21_communication_files/figure-html/cell-11-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>B</strong> preserves the settings needed to answer the stated question. Compare that choice with the three panels above. The first panel omits the larger ensembles. That might be a reasonable restriction if only small models were feasible, but it needs to be stated and justified. Otherwise it can hide where the comparison changes. The second panel includes every setting, yet linear spacing compresses the smaller tree counts. The third uses a vertical range so wide that differences become difficult to see.</p>
+<p>These examples illustrate why a plot needs both a clear question and an explanation of its scope. A restricted range is not inherently dishonest. The issue is whether the display supports the claim being made or conceals relevant evidence.</p>
+<section id="show-a-fair-comparison" class="level3">
+<h3 class="anchored" data-anchor-id="show-a-fair-comparison">Show a fair comparison</h3>
+<p>Use a shared vertical scale when comparing the same metric, show the settings relevant to the question, and explain any non-linear axis. Here, a logarithmic horizontal axis makes multiplicative increases in tree count easier to compare. Separate panels keep training and validation results distinct.</p>
+<div id="dda1c1c4" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-22T02:48:15.904484Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-22T02:48:15.904401Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-22T02:48:15.971532Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-22T02:48:15.971119Z&quot;}}" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">4</span>), sharex<span class="op">=</span><span class="va">True</span>, sharey<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> model_name, group <span class="kw">in</span> results.groupby(<span class="st">"model"</span>, sort<span class="op">=</span><span class="va">False</span>):</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> ax, column <span class="kw">in</span> <span class="bu">zip</span>(axes, [<span class="st">"train_r2"</span>, <span class="st">"validation_r2"</span>]):</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>        ax.plot(group[<span class="st">"n_estimators"</span>], group[column], marker<span class="op">=</span><span class="st">"o"</span>, label<span class="op">=</span>model_name)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, title <span class="kw">in</span> <span class="bu">zip</span>(axes, [<span class="st">"Training"</span>, <span class="st">"Validation"</span>]):</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    ax.set_xscale(<span class="st">"log"</span>)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    ax.set_xticks(n_estimators_values, labels<span class="op">=</span>n_estimators_values)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    ax.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"Number of trees (log scale)"</span>, title<span class="op">=</span>title)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    ax.grid(alpha<span class="op">=</span><span class="fl">0.25</span>)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_ylabel(<span class="st">"$R^2$ on original sale prices"</span>)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].legend()</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="st">"Housing model comparison: one fixed train/validation split"</span>)</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="21_communication_files/figure-html/cell-12-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This display allows us to compare the measured scores across all five settings. It does not establish that one algorithm is generally superior. Another split, different hyperparameters, or a different metric could change the comparison. The test set remains untouched; a final evaluation would come after choosing the approach.</p>
+<p>When reviewing a visualization, check whether the axis ranges exaggerate or obscure differences, whether values or settings have been selectively omitted, and whether colours and labels make the comparison clear. Dual vertical axes are particularly risky for comparing two series because independently chosen scales can make them appear to agree or diverge.</p>
+<p>Bar charts generally need a zero baseline because bar lengths encode magnitude. Line and scatter plots need not always start at zero; a narrower range can reveal useful variation. Make the scale clear and choose it to answer the question fairly. When areas or volumes encode quantities, their sizes should be proportional to those quantities rather than visually exaggerating differences.</p>
+</section>
+<section id="complete-the-housing-update" class="level3 callout-exercise">
+<h3 class="anchored" data-anchor-id="complete-the-housing-update">Complete the housing update</h3>
+<p>Rewrite the draft from Task 2 for the manager, using the fair comparison. In at most 100 words, state an observation supported by the measured results, a limitation that affects the decision, and a next step. Choose what belongs in the main message and what should be supporting material. Do not invent benefits to sellers.</p>
+<p>Exchange updates with a partner if possible. Ask them to describe what decision your update supports and what remains unknown. Revise any wording that led them to a stronger conclusion than you intended.</p>
+</section>
+<p>Chart choice matters too. In a histogram of prediction errors, changing the bin widths or boundaries can make the same errors look concentrated, spread out, or clustered into separate groups. Use bins that help answer the question, and check whether an apparent pattern depends on one particular choice.</p>
+<p>Decoration can also compete with the evidence. A house-shaped graphic might attract attention to a housing-price comparison while making values harder to compare than simple points or bars. Start with the comparison readers need to make, then choose a chart that supports it. Do not force data into an attractive visual form that obscures the quantities or relationships. The visualization resources below call these pitfalls “dataviz ducks” and “glass slippers,” respectively; recognizing the problem matters more than remembering the labels.</p>
+<p>For further examples, see the <a href="https://www.youtube.com/playlist?list=PLPnZfvKID1Sje5jWxt-4CSZD7bUI4gSPS">Calling Bullshit visualization videos</a> and this <a href="https://www.darkhorseanalytics.com/blog/data-looks-better-naked">demonstration of simplifying a chart</a>.</p>
+</section>
+<section id="try-it-in-a-different-setting" class="level2">
+<h2 class="anchored" data-anchor-id="try-it-in-a-different-setting">Try it in a different setting</h2>
+<section id="write-an-update-without-answer-options" class="level3 callout-exercise">
+<h3 class="anchored" data-anchor-id="write-an-update-without-answer-options">Write an update without answer options</h3>
+<p>A team wants to reduce the time staff spend routing customer-support requests. A classifier assigns each request to a department. On a random held-out sample of historical requests, its accuracy is 88%; always choosing the most common department gives 70%. The model uses only text available when a request arrives. Requests sent to the wrong department must be rerouted manually. You have not measured time saved, and a new product launch may change the kinds of requests received.</p>
+<p>Write an update of at most 120 words for the support manager, who must decide whether to fund a pilot and has no ML background. Explain what the result supports, what remains uncertain, and what you recommend doing next. Include one specific question for the manager. Do not invent measurements.</p>
+<p>Then explain two choices you made in the wording or selection of details. Finally, identify what you would add for a technical teammate checking the evaluation.</p>
+</section>
+<details>
+<summary>
+Review after writing
+</summary>
+<p>Does your update make the comparison understandable without relying on ML jargon? Does it distinguish routing accuracy from staff time saved? Have you explained why historical performance may not represent requests after the product launch? Your next step should address a specific unanswered question, and your question for the manager should help establish the decision, costs of mistakes, or evidence needed. Several recommendations can be reasonable if you justify them with the facts given.</p>
+</details>
+</section>
+<section id="chapter-summary" class="level2">
+<h2 class="anchored" data-anchor-id="chapter-summary">Chapter summary</h2>
+<p>Applied ML is a team activity. Communication helps people agree on the problem, improve an approach, interpret evidence, and decide what to do next. A technically correct explanation is useful when the audience can understand its relevance and its limits.</p>
+<p>Keep the organizational goal in view, and distinguish it from the prediction task and the decision that uses the prediction. Explain ideas from the audience’s starting point, introduce unfamiliar ideas in manageable steps, and use running examples and purposeful contrasts. Choose details for their usefulness to the reader. Share findings while others can still contribute, and support recommendations with relevant comparisons. Be explicit about which benefits have been measured and which remain hypotheses.</p>
+<p>Honest communication includes uncertainty and limitations where they affect the conclusion. A probability score does not establish its own reliability, and a strong historical score does not guarantee future performance. Visualizations deserve the same care as prose: show the evidence needed for a fair interpretation.</p>
+<p>Before sharing an explanation, update, or recommendation, ask:</p>
+<ul>
+<li><strong>Audience:</strong> Who needs this, what do they already know, and what background might I be assuming?</li>
+<li><strong>Explanation:</strong> Are the steps manageable? Would a running example or contrast help? Does each detail serve the reader?</li>
+<li><strong>Goal and decision:</strong> What problem does the work address? Who makes the decision, what alternatives do they have, and what constraints matter?</li>
+<li><strong>Evidence and baseline:</strong> What did we observe, how did we evaluate it, and compared with what?</li>
+<li><strong>Uncertainty and limitations:</strong> Where might the conclusion fail, and what remains untested?</li>
+<li><strong>Next step:</strong> What action or feedback does the evidence justify?</li>
+</ul>
+<p>A useful communication leaves collaborators able to explain what you found, why it matters, and what they can responsibly do with it.</p>
+<p><strong>Attribution.</strong> The explanation activities and principles are adapted from <a href="https://github.com/UBC-MDS/DSCI_542_comm-arg">DSCI 542</a>, created by <a href="https://davidklaing.com/">David Laing</a>. The visualization material benefited from discussions with <a href="https://github.com/UBC-MDS/DSCI_531_viz-1">DSCI 531</a> instructors.</p>
+
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/UBC-CS\.github\.io\/cpsc330-book\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
+          if (lineIds.length > 0) {
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            placeBand(gutterDiv, el, lastEl);
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+<nav class="page-navigation" aria-label="Page">
+  <div class="nav-page nav-page-previous">
+      <a href="../book/20_survival-analysis.html" class="pagination-link" aria-label="Chapter 20: Survival analysis">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Chapter 20: Survival analysis</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
