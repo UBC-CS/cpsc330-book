@@ -25,6 +25,7 @@ project:
     - book/17_intro_to_computer-vision.ipynb
     - book/18_natural-language-processing.ipynb
     - book/19_time-series.ipynb
+    - book/21_communication.ipynb    
     - book/20_survival-analysis.ipynb
     - book/chapter-03-ml-fundamentals-demo.ipynb
     - book/chapter-04-decision-boundaries-KNN-demo.ipynb
@@ -82,6 +83,9 @@ website:
             - book/18_natural-language-processing.ipynb
             - book/19_time-series.ipynb
             - book/20_survival-analysis.ipynb
+        - section: Responsible ML Practice
+          contents:
+            - book/21_communication.ipynb
 
     - id: demos
       title: Demos
